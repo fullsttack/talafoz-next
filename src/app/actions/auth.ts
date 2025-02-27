@@ -5,6 +5,9 @@ import { revalidatePath } from 'next/cache'
 import { type User, type VerifyOTPResponse } from '@/types/auth'
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000'
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID!
+const GITHUB_CLIENT_ID = process.env.GITHUB_CLIENT_ID!
+const GITHUB_CLIENT_SECRET = process.env.GITHUB_CLIENT_SECRET!
 
 export async function sendOTP(formData: FormData) {
   const phone_number = formData.get('phone_number') as string
@@ -214,4 +217,98 @@ export async function logout() {
   await cookieStore.delete('access_token')
   await cookieStore.delete('refresh_token')
   revalidatePath('/')
+}
+
+export async function socialLogin(provider: 'google' | 'github', code: string) {
+  try {
+    let access_token = '';
+
+    if (provider === 'google') {
+      // Exchange code for token with Google
+      const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          client_id: GOOGLE_CLIENT_ID,
+          client_secret: process.env.GOOGLE_CLIENT_SECRET,
+          code,
+          grant_type: 'authorization_code',
+          redirect_uri: `${process.env.NEXT_PUBLIC_APP_URL}/api/auth/callback/google`
+        }),
+      });
+
+      const tokenData = await tokenResponse.json();
+      access_token = tokenData.access_token;
+    } else {
+      // Exchange code for token with GitHub
+      const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          client_id: GITHUB_CLIENT_ID,
+          client_secret: GITHUB_CLIENT_SECRET,
+          code,
+        }),
+      });
+
+      const tokenData = await tokenResponse.json();
+      access_token = tokenData.access_token;
+    }
+
+    // Send token to our backend
+    const res = await fetch(`${API_URL}/api/auth/social/${provider}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ access_token }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.detail || 'خطای سرور'
+      }
+    }
+
+    const cookieStore = await cookies();
+    
+    await cookieStore.set('access_token', data.tokens.access, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 5,
+      path: '/'
+    });
+    
+    await cookieStore.set('refresh_token', data.tokens.refresh, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 30 * 24 * 60 * 60,
+      path: '/'
+    });
+
+    revalidatePath('/');
+    return {
+      success: true,
+      message: 'ورود موفقیت‌آمیز',
+      data: {
+        user: data.user
+      }
+    }
+
+  } catch {
+    return {
+      success: false,
+      message: 'خطا در ارتباط با سرور'
+    }
+  }
 } 

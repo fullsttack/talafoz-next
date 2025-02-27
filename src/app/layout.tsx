@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { UserProvider } from "@/contexts/user-context";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+
 const vazir = localFont({
   src: "./fonts/Yekan.woff",
   variable: "--font-vazir",
@@ -32,14 +33,14 @@ export default function RootLayout({
         className={`${vazir.className} antialiased min-h-screen bg-background`}
       >
         <UserProvider>
-        <ThemeProvider
+          <ThemeProvider
             attribute="class"
             defaultTheme="dark"
             enableSystem
             disableTransitionOnChange
           >
-          <Toaster position="top-center" richColors />
-          {children}
+            <Toaster position="top-center" richColors />
+            {children}
           </ThemeProvider>
         </UserProvider>
       </body>
