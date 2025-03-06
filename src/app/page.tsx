@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="">
       <Header />
-      <div className="w-full flex flex-col gap-32 max-w-7xl mx-auto">
+      <div className="w-full flex flex-col gap-44 max-w-7xl mx-auto">
         <Hero />
         <LastCourse />
       </div>

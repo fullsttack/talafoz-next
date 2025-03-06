@@ -9,17 +9,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MagicCard } from "@/components/magicui/magic-card";
 import { useTheme } from "next-themes";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
+import dynamic from "next/dynamic";
+
+// Client-side only component to prevent hydration mismatch
+const DynamicMagicCard = dynamic(
+  () => import("@/components/magicui/magic-card").then((mod) => mod.MagicCard),
+  { ssr: false }
+);
 
 // Course data
 const COURSES = [
   {
     id: 1,
     title: "مبانی توسعه وب",
-    description: "آموزش اصول HTML، CSS و جاوااسکریپت",
+    description:
+      "ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت",
+
     image: "/image/next.jpg",
     duration: "۸ هفته",
     level: "سطح مبتدی",
@@ -28,6 +36,7 @@ const COURSES = [
     rating: 4.8,
     students: 1240,
     tags: ["HTML", "CSS", "JavaScript"],
+    discount: 20,
     isTrending: true,
     gradientFrom: "#4F46E5",
     gradientTo: "#14B8A6",
@@ -35,7 +44,8 @@ const COURSES = [
   {
     id: 2,
     title: "دوره جامع ری‌اکت و نکست‌جی‌اس",
-    description: "ساخت اپلیکیشن‌های مدرن با ری‌اکت",
+    description:
+      "ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت",
     image: "/image/next.jpg",
     duration: "۱۰ هفته",
     level: "سطح متوسط",
@@ -44,6 +54,7 @@ const COURSES = [
     rating: 4.9,
     students: 850,
     tags: ["React", "Next.js", "TypeScript"],
+    discount: 15,
     isTrending: false,
     gradientFrom: "#FF6363",
     gradientTo: "#FFA07A",
@@ -51,7 +62,8 @@ const COURSES = [
   {
     id: 3,
     title: "اصول طراحی رابط کاربری",
-    description: "طراحی رابط‌های کاربری زیبا و کاربردی",
+    description:
+      "ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت",
     image: "/image/next.jpg",
     duration: "۶ هفته",
     level: "همه سطوح",
@@ -60,6 +72,7 @@ const COURSES = [
     rating: 4.7,
     students: 920,
     tags: ["UI", "UX", "Figma"],
+    discount: 30,
     isTrending: true,
     gradientFrom: "#7E22CE",
     gradientTo: "#2DD4BF",
@@ -68,57 +81,87 @@ const COURSES = [
 
 export function LastCourse() {
   const { theme } = useTheme();
-  
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
       {COURSES.map((course) => (
-        <Card key={course.id} className="group overflow-hidden border-0 shadow-md">
-          <MagicCard 
+        <Card
+          key={course.id}
+          className="group overflow-hidden border-0 shadow-md hover:shadow-cyan-500/50 hover:shadow-lg transition-all duration-300"
+        >
+          <DynamicMagicCard
             gradientColor={theme === "dark" ? "#262626" : "#D9D9D955"}
             gradientFrom={course.gradientFrom}
             gradientTo={course.gradientTo}
           >
             <div className="relative">
-              {course.isTrending && (
-                <div className="absolute top-4 right-4 z-10">
-                  <Badge className="bg-amber-500 hover:bg-amber-600 px-3 py-1 rounded-full">پرطرفدار</Badge>
+              {course.discount > 0 && (
+                <div className="absolute top-4 left-4 z-10">
+                  <Badge className="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-full text-foreground">
+                    تخفیف ویژه
+                  </Badge>
                 </div>
               )}
-              
+
               <div className="aspect-video relative w-full overflow-hidden p-4">
                 <div className="relative h-full w-full rounded-lg overflow-hidden bg-muted/20">
-                  <Image 
+                  <Image
                     src={course.image}
                     alt={course.title}
-                    fill 
+                    fill
                     className="object-cover transition-transform group-hover:scale-105 duration-300"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                 </div>
               </div>
             </div>
-            
+
             <CardHeader className="pb-2">
               <div className="flex justify-between items-start">
                 <div className="flex items-center gap-1 text-amber-500">
                   <span className="text-sm font-medium">{course.rating}</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                  <span className="text-xs text-muted-foreground">({course.students})</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    stroke="none"
+                  >
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                  </svg>
+                  <span className="text-xs text-muted-foreground">
+                    ({course.students})
+                  </span>
                 </div>
                 <button className="text-muted-foreground hover:text-primary transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+                  </svg>
                 </button>
               </div>
-              <CardTitle className="text-right mt-3 text-xl">{course.title}</CardTitle>
-              <CardDescription className="text-right">
+              <CardTitle className="text-right mt-3 text-xl">
+                {course.title}
+              </CardTitle>
+              <CardDescription className="text-right text-sm py-2">
                 {course.description}
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="pb-2">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-8 w-8 rounded-full bg-primary/10 overflow-hidden relative">
-                  <Image 
+                  <Image
                     src={`/images/instructors/avatar-${course.id}.jpg`}
                     alt={course.instructor}
                     fill
@@ -127,17 +170,46 @@ export function LastCourse() {
                 </div>
                 <span className="text-sm">{course.instructor}</span>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3 mb-4">
                 <div className="bg-muted/50 rounded-lg p-2 text-center">
                   <div className="flex justify-center items-center gap-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-primary"
+                    >
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
                     <span>{course.duration}</span>
                   </div>
                 </div>
                 <div className="bg-muted/50 rounded-lg p-2 text-center">
                   <div className="flex justify-center items-center gap-1 text-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary"><path d="M2 12a5 5 0 0 0 5 5 8 8 0 0 1 5 2 8 8 0 0 1 5-2 5 5 0 0 0 5-5V7h-5a8 8 0 0 0-5 2 8 8 0 0 0-5-2H2Z"/><path d="M6 11H8"/><path d="M16 11h2"/></svg>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="text-primary"
+                    >
+                      <path d="M2 12a5 5 0 0 0 5 5 8 8 0 0 1 5 2 8 8 0 0 1 5-2 5 5 0 0 0 5-5V7h-5a8 8 0 0 0-5 2 8 8 0 0 0-5-2H2Z" />
+                      <path d="M6 11H8" />
+                      <path d="M16 11h2" />
+                    </svg>
                     <span>{course.level}</span>
                   </div>
                 </div>
@@ -145,16 +217,26 @@ export function LastCourse() {
 
               <div className="flex gap-1 flex-wrap mb-4 justify-end">
                 {course.tags.map((tag, index) => (
-                  <Badge key={index} variant="outline" className="rounded-full text-xs">{tag}</Badge>
+                  <Badge
+                    key={index}
+                    variant="outline"
+                    className="rounded-full text-xs"
+                  >
+                    {tag}
+                  </Badge>
                 ))}
               </div>
             </CardContent>
-            
+
             <CardFooter className="pt-2 flex justify-between items-center">
-              <div className="text-primary font-bold text-lg">{course.price}</div>
-              <Button variant="default" size="sm" className="rounded-full px-5">ثبت‌نام</Button>
+              <div className="text-primary font-bold text-lg">
+                {course.price}
+              </div>
+              <Button variant="default" size="sm" className="rounded-lg px-5">
+                مشاهده دوره
+              </Button>
             </CardFooter>
-          </MagicCard>
+          </DynamicMagicCard>
         </Card>
       ))}
     </div>
