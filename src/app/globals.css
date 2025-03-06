@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prevent horizontal scrolling */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: Vazir;
 }
@@ -109,5 +115,29 @@ body {
       after:rounded-[6px] after:opacity-0
       after:transition-opacity after:duration-300
       hover:after:opacity-30;
+  }
+}
+
+.dark .gridlines[data-v-257aca76] {
+  background-image: url('/gridlines/gridlines-dark.svg');
+}
+
+.gridlines[data-v-257aca76] {
+  background-image: url('/gridlines/gridlines.svg');
+}
+
+/* Fix for header background on mobile */
+@media (max-width: 640px) {
+  .gridlines[data-v-257aca76] {
+    margin-top: 0 !important;
+  }
+  
+  .absolute.inset-x-0.z-1 {
+    margin-top: 0 !important;
+  }
+  
+  .grid.grid-cols-2.-space-x-52 {
+    margin-right: 0 !important;
+    margin-left: 0 !important;
   }
 }

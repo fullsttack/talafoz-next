@@ -1,32 +1,41 @@
-import Image from "next/image";
 import Link from "next/link";
-
+import { TerminalDemo } from "../magicui/TerminalDemo";
+import { BorderMagic } from "../magicui/BorderMagic";
 export default function Hero() {
   return (
-    <div>
-      <div className="container mx-auto max-w-7xl">
-        <div className="flex justify-between items-center">
-          <div className="w-full flex flex-col gap-4">
-            <p className="text-3xl font-bold">زمان و دانش بزرگ ترین سرمایه هر انسان است ...</p>
-            <p className="text-sm text-gray-500">
-              لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله در ستون و سطرآنچنان که لازم است و برای شرایط فعلی
+    <div className="mt-12 md:mt-44">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="flex flex-col md:flex-row justify-between items-center w-full gap-8">
+          <div className="w-full flex flex-col gap-4 mt-8 md:mt-0">
+            <p className="text-xl md:text-3xl font-bold">
+              زمان و دانش بزرگ ترین سرمایه هر انسان است ...
+            </p>
+            <p className="text-xs sm:text-sm text-gray-300">
+              لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با
+              استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله
+              در ستون و سطرآنچنان که لازم است و برای شرایط فعلی
             </p>
 
-            <div className="flex items-center gap-4 mt-12">
-              <Link href="/" className="w-32 text-center border px-2 py-2 rounded-xl">
+            <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mt-6 md:mt-12">
+              <Link
+                href="/"
+                className="w-32 text-center border bg-cyan-500 text-background px-2 py-1.5 rounded-xl"
+              >
                 مشاهده دوره ها
               </Link>
-              <Link 
-                href="/" 
-                className="btn-gradient w-36 text-center"
-              >
-                مسیر یادگیری
+              <Link href="/" className="">
+                <BorderMagic />
               </Link>
             </div>
           </div>
 
-          <div className="w-full flex justify-end mt-24">
-            <Image src="/image/main.png" className="w-10/12 " alt="hero" width={1800} height={1800} />
+          <div
+            dir="ltr"
+            className="w-full max-w-full md:max-w-[50%] flex justify-center md:justify-end"
+          >
+            <div className="w-full max-w-[90%] sm:max-w-[80%] md:max-w-full">
+              <TerminalDemo />
+            </div>
           </div>
         </div>
       </div>

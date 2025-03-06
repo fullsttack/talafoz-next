@@ -13,7 +13,7 @@ export async function sendOTP(formData: FormData) {
   const phone_number = formData.get('phone_number') as string
 
   try {
-    const res = await fetch(`${API_URL}/api/users/send_otp/`, {
+    const res = await fetch(`${API_URL}/api/auth/send-otp/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -48,7 +48,7 @@ export async function verifyOTP(formData: FormData) {
   const otp = formData.get('otp') as string
 
   try {
-    const res = await fetch(`${API_URL}/api/users/verify_otp/`, {
+    const res = await fetch(`${API_URL}/api/auth/verify-otp/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
