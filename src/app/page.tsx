@@ -1,6 +1,7 @@
 import Hero from "@/components/site/Hero";
 import { Header } from "@/components/layout/Header";
 import { LastCourse } from "@/components/course/LastCourse";
+import BannerDiscount from "@/components/site/BannerDiscount";
 export default function Home() {
   return (
     <div className="">
@@ -8,6 +9,7 @@ export default function Home() {
       <div className="w-full flex flex-col gap-44 max-w-7xl mx-auto">
         <Hero />
         <LastCourse />
+        <BannerDiscount />
       </div>
     </div>
   );

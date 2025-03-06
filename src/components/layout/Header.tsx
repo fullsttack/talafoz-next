@@ -21,7 +21,7 @@ export const Header = () => {
       <div className="absolute inset-x-0 z-1 -mt-24 py-20">
         <div className="mt-12 grid grid-cols-2 -space-x-52 opacity-60 2xl:mx-auto 2xl:max-w-6xl dark:opacity-50">
           <div
-            className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 blur-3xl "
+            className="bg-gradient-to-r from-indigo-500 via-cyan-500 to-cyan-500 blur-3xl "
             data-v-257aca76=""
           ></div>
           <div

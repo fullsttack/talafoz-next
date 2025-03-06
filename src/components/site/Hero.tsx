@@ -5,7 +5,7 @@ import { TerminalDemo } from "../magicui/TerminalDemo";
 import { BorderMagic } from "../magicui/BorderMagic";
 export default function Hero() {
   return (
-    <div className="mt-12 md:mt-12">
+    <div className="mt-12 md:mt-24">
       <div className="container mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex flex-col md:flex-row justify-between items-center w-full gap-8">
           <div className="w-full flex flex-col gap-4 mt-8 md:mt-0">

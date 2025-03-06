@@ -56,8 +56,8 @@ const COURSES = [
     tags: ["React", "Next.js", "TypeScript"],
     discount: 15,
     isTrending: false,
-    gradientFrom: "#FF6363",
-    gradientTo: "#FFA07A",
+    gradientFrom: "#4F46E5",
+    gradientTo: "#14B8A6",
   },
   {
     id: 3,
@@ -159,16 +159,22 @@ export function LastCourse() {
             </CardHeader>
 
             <CardContent className="pb-2">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="h-8 w-8 rounded-full bg-primary/10 overflow-hidden relative">
-                  <Image
-                    src={`/images/instructors/avatar-${course.id}.jpg`}
-                    alt={course.instructor}
-                    fill
-                    className="object-cover"
-                  />
+              <div className="flex justify-between">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="h-8 w-8 rounded-full bg-primary/10 overflow-hidden relative">
+                    <Image
+                      src={`/images/instructors/avatar-${course.id}.jpg`}
+                      alt={course.instructor}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+                  <span className="text-sm">{course.instructor}</span>
                 </div>
-                <span className="text-sm">{course.instructor}</span>
+
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="text-sm">10 جلسه</span>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3 mb-4">
