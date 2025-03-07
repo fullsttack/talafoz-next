@@ -1,8 +1,8 @@
-
+"use client";
 
 import Link from "next/link";
-import { TerminalDemo } from "../magicui/TerminalDemo";
 import { BorderMagic } from "../magicui/BorderMagic";
+import { GlobeDemo } from "../magicui/GlobeDemo";
 export default function Hero() {
   return (
     <div className="mt-12 md:mt-24">
@@ -36,7 +36,7 @@ export default function Hero() {
             className="w-full max-w-full md:max-w-[50%] flex justify-center md:justify-end"
           >
             <div className="w-full max-w-[90%] sm:max-w-[80%] md:max-w-full">
-              <TerminalDemo />
+              <GlobeDemo />
             </div>
           </div>
         </div>
