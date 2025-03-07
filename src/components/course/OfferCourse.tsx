@@ -20,73 +20,72 @@ const DynamicMagicCard = dynamic(
   { ssr: false }
 );
 
-// Course data
-const COURSES = [
+// Recommended Course data
+const RECOMMENDED_COURSES = [
   {
-    id: 1,
-    title: "مبانی توسعه وب",
+    id: 4,
+    title: "برنامه‌نویسی پایتون پیشرفته",
     description:
-      "ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت",
-
+      "یادگیری پایتون پیشرفته برای توسعه نرم‌افزار، هوش مصنوعی و تحلیل داده",
     image: "/image/next.jpg",
-    duration: "۸ هفته",
-    level: "سطح مبتدی",
-    price: "۱,۵۰۰,۰۰۰ تومان",
-    instructor: "علی محمدی",
-    rating: 4.8,
-    students: 1240,
-    tags: ["HTML", "CSS", "JavaScript"],
-    discount: 20,
+    duration: "۱۲ هفته",
+    level: "سطح پیشرفته",
+    price: "۳,۲۰۰,۰۰۰ تومان",
+    instructor: "رضا کریمی",
+    rating: 4.9,
+    students: 780,
+    tags: ["Python", "AI", "Data Science"],
+    discount: 25,
     isTrending: true,
-    gradientFrom: "#4F46E5",
-    gradientTo: "#14B8A6",
+    gradientFrom: "#8B5CF6",
+    gradientTo: "#EC4899",
   },
   {
-    id: 2,
-    title: "دوره جامع ری‌اکت و نکست‌جی‌اس",
+    id: 5,
+    title: "آموزش جامع فلاتر",
     description:
-      "ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت",
+      "ساخت اپلیکیشن‌های موبایل چندسکویی با فلاتر و دارت برای iOS و اندروید",
     image: "/image/next.jpg",
     duration: "۱۰ هفته",
     level: "سطح متوسط",
-    price: "۲,۸۰۰,۰۰۰ تومان",
-    instructor: "مهدی حسینی",
-    rating: 4.9,
-    students: 850,
-    tags: ["React", "Next.js", "TypeScript"],
+    price: "۲,۵۰۰,۰۰۰ تومان",
+    instructor: "زهرا احمدی",
+    rating: 4.7,
+    students: 650,
+    tags: ["Flutter", "Dart", "Mobile"],
     discount: 15,
-    isTrending: false,
-    gradientFrom: "#4F46E5",
-    gradientTo: "#14B8A6",
+    isTrending: true,
+    gradientFrom: "#0EA5E9",
+    gradientTo: "#10B981",
   },
   {
-    id: 3,
-    title: "اصول طراحی رابط کاربری",
+    id: 6,
+    title: "امنیت وب و شبکه",
     description:
-      "ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت ساخت اپلیکیشن‌های مدرن با ری‌اکت",
+      "آموزش اصول امنیت سایبری، تست نفوذ و محافظت از برنامه‌های تحت وب",
     image: "/image/next.jpg",
-    duration: "۶ هفته",
-    level: "همه سطوح",
-    price: "۱,۹۵۰,۰۰۰ تومان",
-    instructor: "سارا اکبری",
-    rating: 4.7,
-    students: 920,
-    tags: ["UI", "UX", "Figma"],
-    discount: 30,
-    isTrending: true,
-    gradientFrom: "#7E22CE",
-    gradientTo: "#2DD4BF",
+    duration: "۸ هفته",
+    level: "سطح متوسط تا پیشرفته",
+    price: "۳,۸۰۰,۰۰۰ تومان",
+    instructor: "امیر حسینی",
+    rating: 4.8,
+    students: 420,
+    tags: ["Security", "Ethical Hacking", "Web"],
+    discount: 10,
+    isTrending: false,
+    gradientFrom: "#F43F5E",
+    gradientTo: "#8B5CF6",
   },
 ];
 
-export function LastCourse() {
+export default function OfferCourse() {
   const { theme } = useTheme();
 
   return (
     <div>
       {/* Header section with title and view all button */}
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold">آخرین دوره‌ها</h2>
+        <h2 className="text-2xl font-bold">دوره‌های پیشنهادی</h2>
         <Button variant="link" className="text-primary flex items-center gap-1">
           مشاهده همه
           <svg
@@ -107,7 +106,7 @@ export function LastCourse() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-        {COURSES.map((course) => (
+        {RECOMMENDED_COURSES.map((course) => (
           <Card
             key={course.id}
             className="group overflow-hidden border-0 shadow-md hover:shadow-cyan-500/50 hover:shadow-lg transition-all duration-300"
@@ -271,4 +270,4 @@ export function LastCourse() {
       </div>
     </div>
   );
-}
+} 
