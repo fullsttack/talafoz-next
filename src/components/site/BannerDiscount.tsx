@@ -87,7 +87,7 @@ export default function BannerDiscount() {
             </div>
             
             {/* Floating elements */}
-            <div className="absolute -right-16 bottom-0 hidden md:block">
+            <div className="absolute -left-16 top-4 hidden md:block">
               <div className="w-60 h-60 rotate-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/30 rounded-2xl backdrop-blur-md border border-emerald-500/20 p-2">
                 <div className="w-full h-full border border-white/20 rounded-xl flex items-center justify-center">
                   <div className="text-center">
