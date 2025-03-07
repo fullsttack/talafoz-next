@@ -35,7 +35,7 @@ export default function Hero() {
             dir="ltr"
             className="w-full max-w-full md:max-w-[50%] flex justify-center md:justify-end"
           >
-            <div className="w-full max-w-[90%] sm:max-w-[80%] md:max-w-full">
+            <div className="relative w-full h-[500px] flex items-center justify-center overflow-hidden rounded-lg shadow-lg">
               <GlobeDemo />
             </div>
           </div>
