@@ -30,165 +30,133 @@ export default function BannerDiscount() {
   }, []);
 
   return (
-    <div className="my-12">
-      {/* Modern glass-morphism banner with vibrant gradients */}
-      <div className="relative w-full overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-700">
-        {/* Animated background elements */}
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-          <div className="absolute top-20 left-10 w-72 h-72 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-          <div className="absolute -bottom-8 left-20 w-80 h-80 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    <div className="my-16">
+      {/* New modern design with 3D elements and neomorphism style */}
+      <div className="relative rounded-3xl bg-gradient-to-tr from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 shadow-2xl overflow-hidden">
+        {/* Decorative elements */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-cyan-400/20 dark:bg-cyan-500/10 blur-3xl"></div>
+          <div className="absolute -left-24 -bottom-24 w-96 h-96 rounded-full bg-amber-400/20 dark:bg-amber-500/10 blur-3xl"></div>
+          <div className="absolute right-1/4 bottom-0 w-64 h-64 rounded-full bg-purple-400/20 dark:bg-purple-500/10 blur-3xl"></div>
         </div>
-        
-        {/* Glass overlay */}
-        <div className="relative backdrop-blur-sm bg-white/10 border border-white/20 shadow-xl">
-          {/* Main Content */}
-          <div className="p-8 pt-14 md:p-12">
-            {/* Top floating badge */}
-            <div className="absolute left-1/2 -translate-x-1/2 top-0 -translate-y-1/3">
-              <div className="relative">
-                <div className="relative bg-gradient-to-r from-pink-500 to-indigo-600 rounded-full py-2 px-6 text-xs font-bold text-white shadow-lg">
-                  پیشنهاد ویژه محدود
-                </div>
+
+        {/* Main content container */}
+        <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-8 p-8 lg:p-12">
+          {/* Left Section - Content */}
+          <div className="flex flex-col justify-center text-right space-y-8">
+            {/* Badge */}
+            <div className="self-start">
+              <div className="inline-flex items-center py-1.5 px-3 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300 text-xs font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                </svg>
+                پیشنهاد محدود
               </div>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-              {/* Left side content */}
-              <div className="md:col-span-7 text-right">
-                <h2 className="text-3xl md:text-4xl font-bold text-white mb-4 leading-tight">
-                  <span className="relative inline-block">
-                    <span className="relative">تخفیف ویژه</span>
-                    <span className="absolute -bottom-1 left-0 right-0 h-1 bg-gradient-to-r from-pink-500 to-indigo-500 rounded-full"></span>
-                  </span>{" "}
+
+            {/* Heading */}
+            <div>
+              <h2 className="text-3xl md:text-4xl font-black text-zinc-800 dark:text-white">
+                <span className="block">تخفیف استثنایی</span>
+                <span className="bg-gradient-to-r from-amber-600 to-orange-600 dark:from-amber-500 dark:to-orange-500 bg-clip-text text-transparent">
                   دوره‌های آموزشی دیجیتال
-                </h2>
-                
-                <p className="text-white/80 mb-6">
-                  فرصتی استثنایی برای ارتقای مهارت‌های دیجیتال خود با کمترین هزینه. این پیشنهاد محدود شامل دوره‌های پیشرفته برنامه‌نویسی، طراحی و دیجیتال مارکتینگ می‌شود.
-                </p>
-                
-                {/* Highlights */}
-                <div className="flex flex-wrap gap-6 mb-8">
-                  <div className="flex items-center gap-3 text-white text-sm">
-                    <span className="flex-none w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-indigo-500 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                        <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-                      </svg>
-                    </span>
-                    <span>دسترسی نامحدود</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-white text-sm">
-                    <span className="flex-none w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-indigo-500 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                        <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-                      </svg>
-                    </span>
-                    <span>پشتیبانی ۲۴/۷</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-white text-sm">
-                    <span className="flex-none w-6 h-6 rounded-full bg-gradient-to-r from-pink-500 to-indigo-500 flex items-center justify-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
-                        <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
-                      </svg>
-                    </span>
-                    <span>گواهی معتبر</span>
-                  </div>
+                </span>
+              </h2>
+              <p className="mt-4 text-zinc-600 dark:text-zinc-300">
+                فرصتی طلایی برای ارتقای مهارت‌های دیجیتالی خود با کمترین هزینه. آموزش‌های تخصصی با کیفیت عالی از مدرسین برتر.
+              </p>
+            </div>
+
+            {/* Features */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {[
+                { icon: "✓", text: "دسترسی نامحدود به محتوا" },
+                { icon: "✓", text: "پشتیبانی آنلاین ۲۴/۷" },
+                { icon: "✓", text: "پروژه‌های عملی و کاربردی" },
+                { icon: "✓", text: "گواهینامه معتبر بین‌المللی" }
+              ].map((item, index) => (
+                <div key={index} className="flex items-center space-x-2 space-x-reverse">
+                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 flex items-center justify-center text-xs">
+                    {item.icon}
+                  </span>
+                  <span className="text-sm text-zinc-700 dark:text-zinc-300">{item.text}</span>
                 </div>
+              ))}
+            </div>
+
+            {/* CTA */}
+            <div className="flex flex-wrap gap-4">
+              <button className="px-6 py-3 bg-gradient-to-br from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white rounded-xl font-medium shadow-lg shadow-orange-500/20 hover:shadow-orange-500/30 transition-all duration-300 transform hover:-translate-y-0.5">
+                خرید با ۵۰٪ تخفیف
+              </button>
+              <button className="px-6 py-3 bg-white/80 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 hover:bg-white hover:dark:bg-zinc-700 rounded-xl font-medium border border-zinc-200 dark:border-zinc-700 transition-all duration-300">
+                اطلاعات بیشتر
+              </button>
+            </div>
+          </div>
+
+          {/* Right Section - Discount and Timer */}
+          <div className="flex flex-col items-center justify-center space-y-8">
+            {/* Discount Card */}
+            <div className="relative w-full max-w-sm">
+              {/* Card */}
+              <div className="relative p-6 bg-white dark:bg-zinc-800 rounded-2xl shadow-lg border border-zinc-100 dark:border-zinc-700 overflow-hidden">
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-bl from-amber-400/20 to-orange-500/20 blur-2xl rounded-full -mr-20 -mt-20"></div>
+                <div className="absolute bottom-0 left-0 w-40 h-40 bg-gradient-to-tr from-cyan-400/20 to-teal-500/20 blur-2xl rounded-full -ml-20 -mb-20"></div>
                 
-                {/* CTA Buttons */}
-                <div className="flex flex-wrap gap-4">
-                  <button className="px-8 py-3 bg-gradient-to-r from-pink-500 to-indigo-600 text-white rounded-full font-medium shadow-lg hover:shadow-pink-500/25 hover:from-pink-600 hover:to-indigo-700 transition-all duration-300 transform hover:-translate-y-1">
-                    مشاهده دوره ها
-                  </button>
-                  <button className="px-8 py-3 bg-white/10 backdrop-blur-sm text-white border border-white/20 rounded-full font-medium hover:bg-white/20 transition-all duration-300">
-                    اطلاعات بیشتر
-                  </button>
-                </div>
-              </div>
-              
-              {/* Right side - Discount circle and timer */}
-              <div className="md:col-span-5">
-                <div className="flex flex-col items-center gap-8">
+                {/* Content */}
+                <div className="relative flex items-center">
                   {/* Discount Circle */}
-                  <div className="relative">
-                    <div className="absolute -inset-4 rounded-full blur-xl bg-gradient-to-r from-pink-500 to-indigo-500 opacity-70 animate-pulse-slow"></div>
-                    <div className="relative w-40 h-40 rounded-full bg-gradient-to-br from-pink-500/80 to-indigo-600/80 backdrop-blur-md border border-white/30 flex items-center justify-center shadow-2xl">
-                      <div className="absolute inset-1 rounded-full bg-gradient-to-br from-pink-500/20 to-indigo-600/20 backdrop-blur-md border border-white/20"></div>
-                      <div className="text-center z-10">
-                        <div className="text-6xl font-extrabold text-white">50٪</div>
-                        <div className="text-sm text-white/80 font-medium mt-1">تخفیف</div>
-                      </div>
+                  <div className="flex-shrink-0 w-28 h-28 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center shadow-lg shadow-orange-500/20">
+                    <div className="text-center">
+                      <span className="block text-4xl font-extrabold text-white">۵۰٪</span>
+                      <span className="block text-sm font-medium text-white/90">تخفیف</span>
                     </div>
                   </div>
                   
-                  {/* Timer */}
-                  <div dir='ltr' className="w-full backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl p-6 shadow-xl">
-                    <div className="text-center mb-4">
-                      <h3 className="text-white font-medium">زمان باقیمانده:</h3>
-                    </div>
-                    
-                    <div className="grid grid-cols-4 gap-3">
-                      {[
-                        { value: timeLeft.days, label: 'روز' },
-                        { value: timeLeft.hours, label: 'ساعت' },
-                        { value: timeLeft.minutes, label: 'دقیقه' },
-                        { value: timeLeft.seconds, label: 'ثانیه' }
-                      ].map((item, index) => (
-                        <div key={index} className="relative">
-                          <div className="bg-gradient-to-br from-white/5 to-white/10 backdrop-blur-md border border-white/20 rounded-lg shadow-lg p-3">
-                            <div className="text-center">
-                              <div className="text-2xl font-bold text-white">
-                                {String(item.value).padStart(2, '0')}
-                              </div>
-                              <div className="text-xs text-white/70">
-                                {item.label}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                  {/* Product Info */}
+                  <div className="ml-6 text-right">
+                    <div className="flex flex-col">
+                      <span className="text-zinc-500 dark:text-zinc-400 text-sm line-through">۱۸۰۰,۰۰۰ تومان</span>
+                      <span className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">۹۰۰,۰۰۰ تومان</span>
+                      <span className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">شامل تمام دوره‌های آموزشی</span>
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Timer */}
+            <div className="w-full max-w-sm">
+              <div className="p-5 bg-white/70 dark:bg-zinc-800/70 backdrop-blur-sm rounded-2xl shadow-lg border border-zinc-100 dark:border-zinc-700">
+                <h3 className="text-center text-zinc-700 dark:text-zinc-300 font-medium mb-4">فرصت باقیمانده:</h3>
+                
+                <div className="grid grid-cols-4 gap-2">
+                  {[
+                    { value: timeLeft.days, label: 'روز' },
+                    { value: timeLeft.hours, label: 'ساعت' },
+                    { value: timeLeft.minutes, label: 'دقیقه' },
+                    { value: timeLeft.seconds, label: 'ثانیه' }
+                  ].map((item, index) => (
+                    <div key={index} className="relative">
+                      <div className="p-2 bg-gradient-to-b from-zinc-50 to-zinc-100 dark:from-zinc-700 dark:to-zinc-800 rounded-lg shadow-sm border border-zinc-200 dark:border-zinc-600">
+                        <div className="text-center">
+                          <div className="text-xl md:text-2xl font-bold text-zinc-800 dark:text-white">
+                            {String(item.value).padStart(2, '0')}
+                          </div>
+                          <div className="text-xs text-zinc-500 dark:text-zinc-400">
+                            {item.label}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <style jsx>{`
-        @keyframes pulse-slow {
-          0%, 100% { opacity: 0.7; }
-          50% { opacity: 0.9; }
-        }
-        .animate-pulse-slow {
-          animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-        }
-        @keyframes blob {
-          0% {
-            transform: translate(0px, 0px) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-          100% {
-            transform: translate(0px, 0px) scale(1);
-          }
-        }
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </div>
   );
 }
