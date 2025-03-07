@@ -39,9 +39,13 @@ export const Header = () => {
         {/* Desktop Menu */}
         <div className="hidden md:flex gap-8">
           <Link href="/" className="hover:text-primary transition-colors duration-200">خانه</Link>
-          <Link href="/request" className="hover:text-primary transition-colors duration-200">ثبت درخواست</Link>
+          <Link href="/request" className="hover:text-primary transition-colors duration-200">دوره ها</Link>
+          <Link href="/request" className="hover:text-primary transition-colors duration-200">مسیر یادگیری</Link>
+          <Link href="/request" className="hover:text-primary transition-colors duration-200">اشتراک ها</Link>
           <Link href="/blog" className="hover:text-primary transition-colors duration-200">وبلاگ</Link>
           <Link href="/about" className="hover:text-primary transition-colors duration-200">درباره ما</Link>
+          <Link href="/about" className="hover:text-primary transition-colors duration-200">تماس با ما</Link>
+
         </div>
 
         <div className="flex gap-4 items-center">
