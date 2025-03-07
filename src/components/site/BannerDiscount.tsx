@@ -1,124 +1,104 @@
 'use client'
 
-import { MagicCard } from "@/components/magicui/magic-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Code, BarChart, Monitor, ChevronRight } from 'lucide-react';
+import { ArrowUpRight, Layers, Zap, Monitor } from 'lucide-react';
 
 export default function BannerDiscount() {
   return (
-    <div className="container py-12">
-      <div className="bg-background rounded-3xl overflow-hidden border shadow-md">
-        <MagicCard
-          gradientFrom="#10B981"
-          gradientTo="#0EA5E9"
-          gradientSize={600}
-          gradientOpacity={0.07}
-          className="h-full"
-        >
-          <div className="grid grid-cols-1 lg:grid-cols-12 min-h-[300px]">
-            {/* Left Section - Details */}
-            <div className="col-span-1 lg:col-span-7 p-8 lg:p-12 flex flex-col justify-between">
-              {/* Top Heading */}
-              <div>
-                <Badge variant="outline" className="mb-6 py-1.5 px-4 bg-background border-primary/20 text-primary">
-                  <Calendar className="h-3.5 w-3.5 mr-1" />
-                  <span>چالش ۱۰۰ روزه</span>
-                </Badge>
-                
-                <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 tracking-tight">
-                  چالش <span className="text-primary">کدنویسی</span> صد روزه
-                </h2>
-                
-                <p className="text-muted-foreground mb-6 max-w-xl">
-                  یادگیری کدنویسی را با چالش ۱۰۰ روزه ما شروع کنید. هر روز یک مهارت جدید، 
-                  هر هفته یک پروژه و در پایان یک برنامه‌نویس حرفه‌ای شوید.
-                </p>
-                
-                {/* Feature Row */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-                  {[
-                    { icon: <Code className="h-5 w-5 text-primary" />, title: "پروژه‌های عملی", desc: "۲۰+ پروژه کاربردی" },
-                    { icon: <Monitor className="h-5 w-5 text-primary" />, title: "دسترسی آنلاین", desc: "ویدیوهای آموزشی" },
-                    { icon: <BarChart className="h-5 w-5 text-primary" />, title: "پیشرفت قابل اندازه‌گیری", desc: "رصد پیشرفت روزانه" },
-                  ].map((item, i) => (
-                    <div key={i} className="flex flex-col">
-                      <div className="flex items-center gap-2 mb-1">
-                        {item.icon}
-                        <h3 className="font-semibold text-base">{item.title}</h3>
-                      </div>
-                      <p className="text-muted-foreground text-sm">{item.desc}</p>
-                    </div>
-                  ))}
+    <div className="container py-8">
+      <div className="relative overflow-hidden rounded-2xl bg-black">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] opacity-90"></div>
+        
+        {/* Animated grid lines */}
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGZpbGw9IiMyMzJCM0MiIGQ9Ik0wIDBoNjB2NjBIMHoiLz48cGF0aCBkPSJNNjAgMEgwdjYwaDYwVjB6TTIgMmg1NnY1NkgyVjJ6IiBmaWxsPSIjMkQzNzQ4Ii8+PC9nPjwvc3ZnPg==')] opacity-25"></div>
+        
+        {/* Content */}
+        <div className="relative px-6 py-16 md:py-20 md:px-12 overflow-hidden">
+          {/* Glowing orbs */}
+          <div className="absolute top-10 right-10 w-40 h-40 rounded-full bg-blue-500/30 blur-[80px]"></div>
+          <div className="absolute -bottom-10 -left-10 w-60 h-60 rounded-full bg-purple-500/20 blur-[100px]"></div>
+          
+          <div className="relative mx-auto max-w-5xl">
+            {/* Top badge */}
+            <div className="inline-flex items-center bg-white/10 backdrop-blur-sm border border-white/10 rounded-full px-4 py-1.5 text-white/80 text-sm mb-8">
+              <span className="flex h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>
+              <span>کلاس‌های آنلاین زنده در حال برگزاری هستند</span>
+            </div>
+            
+            {/* Main headline */}
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight max-w-2xl leading-tight">
+              مسیر یادگیری برنامه‌نویسی را با کلاس‌های 
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-400 ml-2">آنلاین</span> 
+              ما شروع کنید
+            </h2>
+            
+            <p className="text-white/70 text-lg max-w-2xl mb-10">
+              تجربه آموزش زنده، تعاملی و کارآمد با مدرسین مجرب و برنامه‌نویسان حرفه‌ای در یک محیط حمایتی
+            </p>
+            
+            {/* Feature cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-12">
+              {[
+                {
+                  icon: <Monitor className="h-5 w-5 text-emerald-400" />,
+                  title: "آموزش زنده",
+                  desc: "رفع اشکال و پرسش و پاسخ در لحظه"
+                },
+                {
+                  icon: <Layers className="h-5 w-5 text-cyan-400" />,
+                  title: "محتوای کاربردی",
+                  desc: "پروژه‌های عملی و مهارت‌های بازار کار"
+                },
+                {
+                  icon: <Zap className="h-5 w-5 text-purple-400" />,
+                  title: "شبکه‌سازی",
+                  desc: "ارتباط با همکلاسی‌ها و مدرسین"
+                }
+              ].map((feature, i) => (
+                <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-5 hover:bg-white/10 transition-colors">
+                  <div className="bg-black/30 rounded-lg w-10 h-10 flex items-center justify-center mb-3">
+                    {feature.icon}
+                  </div>
+                  <h3 className="text-white font-semibold mb-1">{feature.title}</h3>
+                  <p className="text-white/60 text-sm">{feature.desc}</p>
                 </div>
-              </div>
-
-              {/* Bottom CTA & Pricing */}
-              <div className="flex flex-col sm:flex-row sm:items-center gap-6">
-                <div className="flex items-baseline gap-2">
-                  <div className="text-xl font-bold">۱,۴۹۰,۰۰۰ تومان</div>
-                  <div className="text-muted-foreground line-through text-sm">۲,۹۰۰,۰۰۰</div>
-                </div>
-                
-                <Button size="lg" className="bg-primary hover:bg-primary/90 text-white rounded-full px-6">
-                  شروع چالش
-                  <ChevronRight className="ml-1 h-4 w-4" />
+              ))}
+            </div>
+            
+            {/* CTA Section */}
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="relative group">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-lg blur opacity-60 group-hover:opacity-80 transition"></div>
+                <Button className="relative bg-black hover:bg-black/80 text-white border border-white/10 rounded-lg py-6 px-8 text-base font-semibold">
+                  شروع یادگیری
+                  <ArrowUpRight className="h-5 w-5 ml-2" />
                 </Button>
+              </div>
+              
+              <div className="flex items-center">
+                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                  ۳۰٪ تخفیف ویژه
+                </Badge>
+                <span className="mx-3 text-white/50">|</span>
+                <span className="text-white/70">شروع ثبت‌نام از اول تیرماه</span>
               </div>
             </div>
             
-            {/* Right Section - Progress Visualization */}
-            <div className="col-span-1 lg:col-span-5 bg-muted/50 p-8 lg:p-10 flex items-center justify-center">
-              <div className="w-full max-w-sm">
-                <div className="flex items-center justify-between mb-8">
-                  <Badge variant="secondary" className="rounded-full font-semibold">
-                    دوره ۳ ماهه
-                  </Badge>
-                  <Badge variant="secondary" className="rounded-full font-semibold">
-                    گواهینامه معتبر
-                  </Badge>
-                </div>
-                
-                {/* Progress Visualization */}
-                <div className="space-y-6">
-                  {/* Week Progress */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">پیشرفت هفتگی</span>
-                      <span className="font-medium">۱۴ هفته</span>
-                    </div>
-                    <div className="h-2 bg-muted rounded-full overflow-hidden">
-                      <div className="h-full bg-gradient-to-r from-green-500 to-emerald-400 w-[35%] rounded-full"></div>
-                    </div>
-                    <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>هفته ۱</span>
-                      <span>هفته ۵</span>
-                      <span>هفته ۱۰</span>
-                      <span>هفته ۱۴</span>
-                    </div>
-                  </div>
-                  
-                  {/* Skills */}
-                  <div className="grid grid-cols-5 gap-2">
-                    {['HTML', 'CSS', 'JS', 'React', 'Node'].map((skill, i) => (
-                      <div key={i} className="text-center">
-                        <div className={`h-16 rounded-md flex items-center justify-center ${i <= 2 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                          <span className="font-mono text-xs">{skill}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Countdown */}
-                  <div className="bg-background rounded-lg p-4 text-center">
-                    <div className="text-sm text-muted-foreground mb-1">زمان باقیمانده ثبت‌نام:</div>
-                    <div className="text-xl font-bold text-primary">۴ روز و ۱۲ ساعت</div>
+            {/* Floating elements */}
+            <div className="absolute -right-16 bottom-0 hidden md:block">
+              <div className="w-60 h-60 rotate-12 bg-gradient-to-br from-emerald-500/20 to-cyan-500/30 rounded-2xl backdrop-blur-md border border-emerald-500/20 p-2">
+                <div className="w-full h-full border border-white/20 rounded-xl flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="text-emerald-400 font-bold text-4xl">۱۰۰+</div>
+                    <div className="text-white/70 mt-1">دانشجوی موفق</div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </MagicCard>
+        </div>
       </div>
     </div>
   );
