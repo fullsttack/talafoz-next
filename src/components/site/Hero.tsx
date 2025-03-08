@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { BorderMagic } from "../magicui/BorderMagic";
-import { GlobeDemo } from "../magicui/GlobeDemo";
+import HeroVideo from "./HeroVideo";
 export default function Hero() {
   return (
     <div className="mt-12 md:mt-24">
@@ -36,7 +36,7 @@ export default function Hero() {
             className="w-full max-w-full md:max-w-[50%] flex justify-center md:justify-end"
           >
             <div className="relative w-full h-[500px] flex items-center justify-center overflow-hidden rounded-lg ">
-              <GlobeDemo />
+              <HeroVideo />
             </div>
           </div>
         </div>
