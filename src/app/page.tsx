@@ -6,11 +6,12 @@ import OfferCourse from "@/components/course/OfferCourse";
 import SubCart from "@/components/subscription/SubCart";
 import LastBlog from "@/components/blog/LastBlog";
 import TechBanner from "@/components/site/TechBanner";
+import Footer from "@/components/layout/Footer";
 export default function Home() {
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden flex flex-col min-h-screen">
       <Header />
-      <div className="w-full flex flex-col gap-44 max-w-7xl mx-auto">
+      <div className="w-full flex flex-col gap-44 max-w-7xl mx-auto mb-32">
         <Hero />
         <LastCourse />
         <BannerDiscount />
@@ -19,6 +20,7 @@ export default function Home() {
         <LastBlog />
         <TechBanner />
       </div>
+      <Footer />
     </div>
   );
 }
