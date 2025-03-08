@@ -112,7 +112,7 @@ export default function SubCart() {
           >
             {plan.highlightText && (
               <div className="absolute top-0 inset-x-0 flex justify-center -translate-y-1/2 z-10">
-                <Badge className="bg-primary text-white py-1 px-4 text-sm font-medium rounded-full shadow-lg">
+                <Badge className="bg-indigo-800 text-white py-1 px-4 text-sm font-medium rounded-full shadow-lg">
                   {plan.highlightText}
                 </Badge>
               </div>

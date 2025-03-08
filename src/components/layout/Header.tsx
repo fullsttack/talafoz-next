@@ -6,7 +6,7 @@ import Link from "next/link";
 import { ModeToggle } from "@/components/ui/ModeToggle";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { AnimatePresence, motion } from "framer-motion";
-
+import Image from "next/image";
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   
@@ -32,8 +32,8 @@ export const Header = () => {
       </div>
 
       <div className="container mx-auto flex justify-between items-center gap-4 md:gap-10 py-6 md:py-12 relative z-10 px-4">
-        <div>
-          <p>Logo</p>
+        <div className="dark:bg-white p-2 rounded-full">
+          <Image src="/image/logo.png" alt="logo" width={30} height={30} />
         </div>
         
         {/* Desktop Menu */}
@@ -50,7 +50,11 @@ export const Header = () => {
 
         <div className="flex gap-4 items-center">
           <ModeToggle />
-          <Link className="border p-2 rounded-lg bg-foreground text-background" href="/cart">
+          <Link 
+            className="border p-2 rounded-lg bg-foreground text-background" 
+            href="/cart"
+            aria-label="سبد خرید"
+          >
             <ShoppingCart className="w-4 h-4" />
           </Link>
           <div className="hidden md:block ">

@@ -46,7 +46,7 @@ export default function Hero() {
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mt-6 md:mt-12">
                 <Link
                   href="/"
-                  className="w-32 text-center border  bg-green text-foreground px-2 py-1.5 rounded-xl"
+                  className="w-32 text-center border bg-emerald-700 text-white px-2 py-1.5 rounded-xl"
                 >
                   مشاهده دوره ها
                 </Link>
