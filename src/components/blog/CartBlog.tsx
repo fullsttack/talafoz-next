@@ -35,7 +35,7 @@ export default function CartBlog({
   return (
     <Link href={`/blog/${slug}`} className="block group">
       <Card className="h-full overflow-hidden border transition-colors hover:bg-muted/50">
-        <div className="relative aspect-[12/7] overflow-hidden">
+        <div className="relative aspect-12/7 overflow-hidden">
           <Image
             src={coverImage}
             alt={title}
@@ -50,7 +50,7 @@ export default function CartBlog({
           )}
           
           <div className="absolute top-3 left-3 z-10">
-            <Badge variant="outline" className="bg-black/40 backdrop-blur-sm text-white border-white/10">
+            <Badge variant="outline" className="bg-black/40 backdrop-blur-xs text-white border-white/10">
               {category}
             </Badge>
           </div>

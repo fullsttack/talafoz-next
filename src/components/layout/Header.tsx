@@ -21,11 +21,11 @@ export const Header = () => {
       <div className="absolute inset-x-0 z-1 -mt-24 py-20">
         <div className="mt-12 grid grid-cols-2 -space-x-52 opacity-60 2xl:mx-auto 2xl:max-w-6xl dark:opacity-50">
           <div
-            className="bg-gradient-to-r from-indigo-500 via-cyan-500 to-cyan-500 blur-3xl "
+            className="bg-linear-to-r from-indigo-500 via-cyan-500 to-cyan-500 blur-3xl "
             data-v-257aca76=""
           ></div>
           <div
-            className="dark:to-primary-600 h-24 bg-gradient-to-r from-indigo-400 to-indigo-700 blur-3xl"
+            className="dark:to-primary-600 h-24 bg-linear-to-r from-indigo-400 to-indigo-700 blur-3xl"
             data-v-257aca76=""
           ></div>
         </div>
@@ -76,7 +76,7 @@ export const Header = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden absolute top-24 inset-x-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border shadow-lg"
+            className="md:hidden absolute top-24 inset-x-0 z-20 bg-background/95 backdrop-blur-xs border-b border-border shadow-lg"
           >
             <div className="container mx-auto px-4 py-6 flex flex-col gap-4">
               <Link href="/" className="py-3 border-b border-border/30 hover:text-primary transition-colors duration-200">خانه</Link>

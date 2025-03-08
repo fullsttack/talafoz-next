@@ -144,9 +144,9 @@ export default function SubCart() {
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-3">
                         {feature.included ? (
-                          <Check className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                          <Check className="h-5 w-5 text-primary shrink-0 mt-0.5" />
                         ) : (
-                          <X className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                          <X className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
                         )}
                         <span className={feature.included ? "" : "text-muted-foreground"}>
                           {feature.text}
