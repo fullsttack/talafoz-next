@@ -40,8 +40,7 @@ export default function Hero() {
               </p>
               <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300">
                 لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با
-                استفاده از طراحان گرافیک است. چاپگرها و متون بلکه روزنامه و مجله
-                در ستون و سطرآنچنان که لازم است و برای شرایط فعلی
+                استفاده از طراحان گرافیک است.
               </p>
 
               <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mt-6 md:mt-12">

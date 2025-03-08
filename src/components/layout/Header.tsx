@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState } from "react";
-import { Phone, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { ModeToggle } from "@/components/ui/ModeToggle";
 import { LoginDialog } from "@/components/auth/login-dialog";
@@ -50,8 +50,8 @@ export const Header = () => {
 
         <div className="flex gap-4 items-center">
           <ModeToggle />
-          <Link className="border p-2 rounded-lg bg-foreground text-background" href="/login">
-            <Phone className="w-4 h-4" />
+          <Link className="border p-2 rounded-lg bg-foreground text-background" href="/cart">
+            <ShoppingCart className="w-4 h-4" />
           </Link>
           <div className="hidden md:block ">
             <LoginDialog />

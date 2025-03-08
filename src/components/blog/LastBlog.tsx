@@ -15,7 +15,7 @@ const sampleBlogs = [
     coverImage: '/image/next.jpg',
     author: {
       name: 'علی محمدی',
-      avatar: '/images/avatars/ali.jpg'
+      avatar: '/globe.svg'
     },
     category: 'طراحی وب',
     publishDate: '۱۵ خرداد ۱۴۰۳',
@@ -30,7 +30,7 @@ const sampleBlogs = [
     coverImage: '/image/next.jpg',
     author: {
       name: 'مریم حسینی',
-      avatar: '/images/avatars/maryam.jpg'
+      avatar: '/globe.svg'
     },
     category: 'فرانت‌اند',
     publishDate: '۸ خرداد ۱۴۰۳',
@@ -45,7 +45,7 @@ const sampleBlogs = [
     coverImage: '/image/next.jpg',
     author: {
       name: 'حسین رضایی',
-      avatar: '/images/avatars/hossein.jpg'
+      avatar: '/globe.svg'
     },
     category: 'بک‌اند',
     publishDate: '۲ خرداد ۱۴۰۳',
