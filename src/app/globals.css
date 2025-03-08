@@ -19,6 +19,7 @@ body {
     --card: 0 0% 100%;
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
+    --yellow: #e7b657;
     --popover-foreground: 0 0% 3.9%;
     --primary: 0 0% 9%;
     --primary-foreground: 0 0% 98%;
@@ -46,6 +47,7 @@ body {
     --card: 0 0% 3.9%;
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
+    --yellow: #e7b657;
     --popover-foreground: 0 0% 98%;
     --primary: 0 0% 98%;
     --primary-foreground: 0 0% 9%;
@@ -104,40 +106,6 @@ body {
   }
 }
 
-@layer components {
-  .btn-gradient {
-    @apply relative px-2 py-2
-      bg-gradient-to-r from-[#FE6272] via-[#BD38FF] to-[#1ADBE3]
-      text-white 
-      rounded-xl
-      after:absolute after:inset-[1px]
-      after:bg-gradient-to-r after:from-[#FE6272] after:via-[#BD38FF] after:to-[#1ADBE3]
-      after:rounded-[6px] after:opacity-0
-      after:transition-opacity after:duration-300
-      hover:after:opacity-30;
-  }
-}
 
-.dark .gridlines[data-v-257aca76] {
-  background-image: url('/gridlines/gridlines-dark.svg');
-}
 
-.gridlines[data-v-257aca76] {
-  background-image: url('/gridlines/gridlines.svg');
-}
 
-/* Fix for header background on mobile */
-@media (max-width: 640px) {
-  .gridlines[data-v-257aca76] {
-    margin-top: 0 !important;
-  }
-  
-  .absolute.inset-x-0.z-1 {
-    margin-top: 0 !important;
-  }
-  
-  .grid.grid-cols-2.-space-x-52 {
-    margin-right: 0 !important;
-    margin-left: 0 !important;
-  }
-}

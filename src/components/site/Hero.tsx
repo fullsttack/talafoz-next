@@ -21,7 +21,7 @@ export default function Hero() {
             <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mt-6 md:mt-12">
               <Link
                 href="/"
-                className="w-32 text-center border bg-cyan-500 text-background px-2 py-1.5 rounded-xl"
+                className="w-32 text-center border text-black bg-yellow text-background px-2 py-1.5 rounded-xl"
               >
                 مشاهده دوره ها
               </Link>
