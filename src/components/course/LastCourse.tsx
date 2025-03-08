@@ -13,7 +13,8 @@ import { useTheme } from "next-themes";
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import dynamic from "next/dynamic";
-
+import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 // Client-side only component to prevent hydration mismatch
 const DynamicMagicCard = dynamic(
   () => import("@/components/magicui/magic-card").then((mod) => mod.MagicCard),
@@ -85,25 +86,20 @@ export function LastCourse() {
   return (
     <div>
       {/* Header section with title and view all button */}
-      <div className="flex justify-between items-center mb-8">
-        <h2 className="text-2xl font-bold">آخرین دوره‌ها</h2>
-        <Button variant="link" className="text-primary flex items-center gap-1">
-          مشاهده همه
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            className="rotate-180"
-          >
-            <path d="m9 18 6-6-6-6" />
-          </svg>
-        </Button>
+      <div className="flex flex-col md:flex-row justify-between items-center mb-10">
+        <div>
+          <h2 className="text-3xl font-bold mb-2">آخرین دوره ها</h2>
+          <p className="text-muted-foreground max-w-xl">
+            جدیدترین و تخصصی ترین دوره ها وبسایت تلفظ
+          </p>
+        </div>
+        
+        <Link href="/blog" className="mt-2 md:mt-0">
+          <Button variant="outline" className="rounded-full group">
+            <span>مشاهده همه</span>
+            <ArrowLeft className="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />
+          </Button>
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
