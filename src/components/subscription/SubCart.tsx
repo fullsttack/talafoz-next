@@ -12,7 +12,13 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MagicCard } from "@/components/magicui/magic-card";
+import dynamic from "next/dynamic";
+
+// Use dynamic import for MagicCard
+const DynamicMagicCard = dynamic(
+  () => import("@/components/magicui/magic-card").then((mod) => mod.MagicCard),
+  { ssr: false } // Disable SSR for this component
+);
 
 interface PlanFeature {
   text: string;
@@ -113,7 +119,7 @@ export default function SubCart() {
             )}
             
             <Card className={`overflow-hidden h-full ${plan.popular ? "border-primary border-2 shadow-lg" : "shadow-md"}`}>
-              <MagicCard
+              <DynamicMagicCard
                 gradientFrom={plan.gradientFrom}
                 gradientTo={plan.gradientTo}
                 gradientSize={400}
@@ -165,7 +171,7 @@ export default function SubCart() {
                     {plan.buttonText}
                   </Button>
                 </CardFooter>
-              </MagicCard>
+              </DynamicMagicCard>
             </Card>
           </div>
         ))}

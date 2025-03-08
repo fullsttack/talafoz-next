@@ -1,6 +1,13 @@
-import { useLottie } from "lottie-react";
+"use client";
+
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import dynamic from "next/dynamic";
+
+// Dynamically import the LottieReact component with SSR disabled
+const LottieReact = dynamic(() => import("lottie-react"), {
+  ssr: false,
+});
 
 export default function HeroVideo() {
   const [animationData, setAnimationData] = useState(null);
@@ -20,14 +27,6 @@ export default function HeroVideo() {
       });
   }, []);
 
-  const options = {
-    animationData,
-    loop: true,
-    autoplay: true,
-  };
-
-  const { View } = useLottie(options);
-
   if (isLoading || !animationData) {
     return (
       <div className="w-full h-full flex items-center justify-center">
@@ -41,7 +40,11 @@ export default function HeroVideo() {
   return (
     <div className="w-full mx-auto flex items-center justify-center">
       <div className="relative">
-        {View}
+        <LottieReact
+          animationData={animationData}
+          loop={true}
+          autoplay={true}
+        />
       </div>
     </div>
   );
