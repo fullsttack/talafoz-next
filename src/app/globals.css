@@ -174,5 +174,14 @@
 }
 
 
+.dark .gridlines[data-v-257aca76] {
+  background-image: url('/gridlines/gridlines-dark.svg');
+}
+
+.gridlines[data-v-257aca76] {
+  background-image: url('/gridlines/gridlines.svg');
+}
+
+
 
 
