@@ -6,7 +6,7 @@ export default function HeroVideo() {
 
   useEffect(() => {
     // Load the coding.json file instead of hero.json
-    fetch("/json/hero.json")
+    fetch("/json/hero-2.json")
       .then((response) => response.json())
       .then((data) => setAnimationData(data))
       .catch((error) => console.error("Error loading Lottie animation:", error));
