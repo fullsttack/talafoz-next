@@ -15,6 +15,13 @@ const nextConfig = {
     domains: ['img.freepik.com']
   },
   
+  // Cache and performance optimizations
+  poweredByHeader: false, // Remove X-Powered-By header
+  generateEtags: true, // Enable ETag generation for caching
+  
+  // Static page generation optimization
+  staticPageGenerationTimeout: 60, // Increase timeout for static page generation
+  
   // Enable webpack bundle analyzer in production build
   webpack: (config, { dev, isServer }) => {
     // Only run bundle analyzer on client and in production build
@@ -66,11 +73,83 @@ const nextConfig = {
             minChunks: 2,
             priority: 20,
           },
+          styles: {
+            name: 'styles',
+            test: /\.css$/,
+            chunks: 'all',
+            enforce: true,
+          },
         },
       };
+      
+      // Add terser plugin options for better compression
+      if (config.optimization.minimizer) {
+        config.optimization.minimizer.forEach((minimizer) => {
+          if (minimizer.constructor.name === 'TerserPlugin') {
+            minimizer.options.terserOptions = {
+              ...minimizer.options.terserOptions,
+              compress: {
+                ...minimizer.options.terserOptions.compress,
+                drop_console: true,
+                pure_funcs: ['console.info', 'console.debug', 'console.warn'],
+              },
+            };
+          }
+        });
+      }
     }
 
     return config;
+  },
+  
+  // HTTP headers optimization
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=3600, s-maxage=86400, stale-while-revalidate=604800',
+          },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+        ],
+      },
+      {
+        source: '/api/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, max-age=0, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, s-maxage=604800, stale-while-revalidate=31536000',
+          },
+        ],
+      },
+    ];
   },
   
   // Performance hints
