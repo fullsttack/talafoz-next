@@ -44,9 +44,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
           toast.error('نشست شما منقضی شده است. لطفا دوباره وارد شوید.')
           setUser(null)
           sessionStorage.removeItem('isLoggedIn')
-          if (!pathname.includes('/login')) {
-            router.push('/login')
-          }
+          router.push('/')
         } else if (userData) {
           setUser(userData)
           const isLoggedIn = sessionStorage.getItem('isLoggedIn')
@@ -82,7 +80,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
   // چک کردن دوره‌ای
   useEffect(() => {
-    if (!mounted.current || pathname.includes('/login')) return
+    if (!mounted.current || !pathname || pathname.includes('/login')) return
 
     const interval = setInterval(() => {
       checkUserSessionRef.current()
