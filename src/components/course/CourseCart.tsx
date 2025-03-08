@@ -44,7 +44,7 @@ interface CourseCartProps {
   showLikeButton?: boolean;
 }
 
-export default function CourseCart({ course, gradientColor, showLikeButton = false }: CourseCartProps) {
+export default function CourseCart({ course, gradientColor }: CourseCartProps) {
   return (
     <Card
       className="group overflow-hidden border-0 shadow-md hover:shadow-cyan-500/50 hover:shadow-lg transition-all duration-300"
@@ -95,23 +95,7 @@ export default function CourseCart({ course, gradientColor, showLikeButton = fal
               </span>
             </div>
             
-            {showLikeButton && (
-              <button className="text-muted-foreground hover:text-primary transition-colors">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="20"
-                  height="20"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                </svg>
-              </button>
-            )}
+            
           </div>
           <CardTitle className="text-right mt-3 text-xl">
             {course.title}

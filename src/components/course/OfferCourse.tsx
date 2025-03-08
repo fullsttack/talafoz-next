@@ -93,7 +93,6 @@ export default function OfferCourse() {
             key={course.id} 
             course={course} 
             gradientColor={gradientColor}
-            showLikeButton={true}
           />
         ))}
       </div>
