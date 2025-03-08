@@ -10,8 +10,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { MagicCard } from "@/components/magicui/magic-card";
+import dynamic from "next/dynamic";
 import Image from "next/image";
+
+// Client-side only component to prevent hydration mismatch
+const DynamicMagicCard = dynamic(
+  () => import("@/components/magicui/magic-card").then((mod) => mod.MagicCard),
+  { ssr: false }
+);
 
 // Define the course type for better type safety
 export interface CourseType {
@@ -43,7 +49,7 @@ export default function CourseCart({ course, gradientColor, showLikeButton = fal
     <Card
       className="group overflow-hidden border-0 shadow-md hover:shadow-cyan-500/50 hover:shadow-lg transition-all duration-300"
     >
-      <MagicCard
+      <DynamicMagicCard
         gradientColor={gradientColor}
         gradientFrom={course.gradientFrom}
         gradientTo={course.gradientTo}
@@ -209,7 +215,7 @@ export default function CourseCart({ course, gradientColor, showLikeButton = fal
             مشاهده دوره
           </Button>
         </CardFooter>
-      </MagicCard>
+      </DynamicMagicCard>
     </Card>
   );
 }
