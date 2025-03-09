@@ -105,15 +105,20 @@ export default function Hero() {
             dir="ltr"
             className="w-full max-w-full md:max-w-[50%] flex justify-center md:justify-end"
           >
-            <div className="relative w-full  flex items-center justify-center overflow-hidden rounded-lg">
+            <div className="relative w-full flex items-center justify-center overflow-hidden rounded-lg">
               {!isVideoVisible ? (
-                <Skeleton className="w-full flex flex-col" />
+                <div className="w-full">
+                  <Skeleton className="w-full aspect-video" />
+                  {/* Reserve space for SparklesPreview with the proper height */}
+                  <div className="h-14 md:h-16 w-full"></div>
+                </div>
               ) : (
-                <div className="w-full flex flex-col ">
+                <div className="w-full flex flex-col">
                   <div>
                     <HeroVideo />
                   </div>
-                  <div className="-mt-7 md:-mt-10">
+                  {/* Replace negative margins with proper spacing */}
+                  <div className="h-14 md:h-24 -mt-10 overflow-hidden w-full">
                     <SparklesPreview />
                   </div>
                 </div>
