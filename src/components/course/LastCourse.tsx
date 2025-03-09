@@ -80,7 +80,7 @@ export function LastCourse() {
           </p>
         </div>
         
-        <Link href="/blog" className="mt-2 md:mt-0">
+        <Link href="/courses" className="mt-2 md:mt-0">
           <Button variant="outline" className="rounded-full group">
             <span>مشاهده همه</span>
             <ArrowLeft className="h-4 w-4 mr-2 transition-transform group-hover:-translate-x-1" />

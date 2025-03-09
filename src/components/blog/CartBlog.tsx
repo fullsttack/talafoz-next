@@ -1,102 +1,86 @@
-'use client'
-
-import Image from 'next/image';
+import Image from "next/image";
+import Link from "next/link";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Calendar, ArrowLeft, Clock, User } from 'lucide-react';
-import Link from 'next/link';
+import { CalendarIcon, ClockIcon, EyeIcon, TagIcon } from "lucide-react";
 
-interface CartBlogProps {
+interface BlogCardProps {
+  id: number;
   title: string;
-  excerpt: string;
-  slug: string;
-  coverImage: string;
-  author: {
-    name: string;
-    avatar?: string;
-  };
+  description: string;
   category: string;
-  publishDate: string;
+  tags: string[];
   readTime: string;
-  isFeatured?: boolean;
+  date: string;
+  viewCount: number;
+  imageUrl: string;
+  slug: string;
 }
 
 export default function CartBlog({
+  id,
   title,
-  excerpt,
-  slug,
-  coverImage,
-  author,
+  description,
   category,
-  publishDate,
+  tags,
   readTime,
-  isFeatured = false
-}: CartBlogProps) {
+  date,
+  viewCount,
+  imageUrl,
+  slug,
+}: BlogCardProps) {
   return (
-    <Link href={`/blog/${slug}`} className="block group">
-      <Card className="h-full overflow-hidden border transition-colors hover:bg-muted/50">
-        <div className="relative aspect-12/7 overflow-hidden">
+    <Link href={`/blog/${slug}`}>
+      <Card className="group h-full overflow-hidden transition-all duration-300 hover:shadow-md">
+        <div className="relative aspect-[16/9] w-full overflow-hidden">
           <Image
-            src={coverImage}
+            src={imageUrl}
             alt={title}
             fill
-            className=" transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            priority={id <= 3}
           />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+          <Badge className="absolute right-3 top-3 bg-primary/90 font-medium hover:bg-primary">
+            {category}
+          </Badge>
+        </div>
+        <CardHeader className="p-4 pb-0">
+          <CardTitle className="line-clamp-2 text-lg font-bold transition-colors duration-300 group-hover:text-primary">
+            {title}
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-4">
+          <CardDescription className="line-clamp-3 text-sm text-muted-foreground">
+            {description}
+          </CardDescription>
           
-          {isFeatured && (
-            <div className="absolute top-3 right-3 z-10">
-              <Badge className="bg-primary">مقاله ویژه</Badge>
+          {tags && tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              <TagIcon className="h-4 w-4 text-muted-foreground" />
+              {tags.map((tag, index) => (
+                <span 
+                  key={index} 
+                  className="rounded-md bg-secondary px-2 py-1 text-xs font-medium text-secondary-foreground"
+                >
+                  {tag}
+                </span>
+              ))}
             </div>
           )}
-          
-          <div className="absolute top-3 left-3 z-10">
-            <Badge variant="outline" className="bg-black/40 backdrop-blur-xs text-white border-white/10">
-              {category}
-            </Badge>
-          </div>
-        </div>
-        
-        <CardContent className="p-5">
-          <h3 className="font-bold text-xl mb-2 line-clamp-1 group-hover:text-primary transition-colors">
-            {title}
-          </h3>
-          
-          <p className="text-muted-foreground line-clamp-2 mb-4 text-sm">
-            {excerpt}
-          </p>
-          
-          <div className="flex items-center gap-3 text-xs text-muted-foreground">
-            <div className="flex items-center gap-1">
-              <Calendar className="h-3.5 w-3.5" />
-              <span>{publishDate}</span>
-            </div>
-            <span className="text-muted-foreground/30">|</span>
-            <div className="flex items-center gap-1">
-              <Clock className="h-3.5 w-3.5" />
-              <span>{readTime}</span>
-            </div>
-          </div>
         </CardContent>
-        
-        <CardFooter className="px-5 py-4 border-t flex justify-between items-center">
-          <div className="flex items-center gap-2">
-            {author.avatar ? (
-              <Image
-                src={author.avatar}
-                alt={author.name}
-                width={24}
-                height={24}
-                className="rounded-full"
-              />
-            ) : (
-              <User className="h-5 w-5 text-muted-foreground" />
-            )}
-            <span className="text-sm">{author.name}</span>
+        <CardFooter className="flex items-center justify-between p-4 pt-0 text-xs text-muted-foreground">
+          <div className="flex items-center gap-1.5">
+            <CalendarIcon className="h-3.5 w-3.5" />
+            <span>{date}</span>
           </div>
-          
-          <div className="text-primary flex items-center text-sm font-medium">
-            <span>ادامه مطلب</span>
-            <ArrowLeft className="h-4 w-4 mr-1 transition-transform group-hover:translate-x-1" />
+          <div className="flex items-center gap-1.5">
+            <ClockIcon className="h-3.5 w-3.5" />
+            <span>{readTime}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <EyeIcon className="h-3.5 w-3.5" />
+            <span>{viewCount.toLocaleString()}</span>
           </div>
         </CardFooter>
       </Card>
