@@ -3,13 +3,24 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   images: {
-    domains: ["avatar.vercel.sh"],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatar.vercel.sh',
+      },
+    ],
   },
   // Optimize bundle size by enabling compression
   compress: true,
   
   // Enable React strict mode for better development experience
   reactStrictMode: true,
+  
+  // Set output mode for proper static assets
+  output: 'standalone',
+  
+  // Optimize production build
+  // swcMinify is removed as it's unrecognized in Next.js 15.1.6
   
   // Configure how Next.js handles JavaScript
   experimental: {
@@ -23,39 +34,11 @@ const nextConfig: NextConfig = {
       '@tsparticles/slim',
       'embla-carousel-react',
     ],
+    // Prefer smaller bundle sizes - remove optimizeServerReact as it may not be supported
   },
   
-  // Custom webpack configuration to optimize bundle size
-  webpack: (config, { dev }) => {
-    // Only apply optimizations for production builds
-    if (!dev) {
-      // Split chunks more aggressively for better caching
-      config.optimization.splitChunks = {
-        chunks: 'all',
-        maxInitialRequests: 25,
-        minSize: 20000,
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          // Create a separate chunk for large libraries
-          framework: {
-            name: 'framework',
-            chunks: 'all',
-            test: /[\\/]node_modules[\\/](react|react-dom|framer-motion)[\\/]/,
-            priority: 40,
-            enforce: true,
-          },
-          // Create a commons chunk for modules used in multiple places
-          commons: {
-            name: 'commons',
-            chunks: 'all',
-            minChunks: 2,
-            priority: 20,
-          },
-        },
-      };
-    }
-    
+  // Simplified webpack configuration
+  webpack: (config) => {
     return config;
   },
   

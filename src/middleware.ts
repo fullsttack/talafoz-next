@@ -3,12 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 // Static assets cache configuration
 const STATIC_ASSET_REGEX = /\.(jpe?g|png|webp|avif|gif|svg|css|js|woff2?|ttf|otf|eot)$/i;
 
-// List of critical resources to preload/prefetch
-const CRITICAL_RESOURCES = [
-  { path: '/_next/static/css/', as: 'style' },
-  { path: '/_next/static/chunks/pages/_app', as: 'script' },
-  { path: '/_next/static/chunks/framework', as: 'script' },
-];
+// Removing CRITICAL_RESOURCES to stop preloading non-existent resources
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
@@ -38,15 +33,8 @@ export function middleware(request: NextRequest) {
 
   // For HTML pages (non-static assets)
   if (!pathname.includes('.')) {
-    // Generate preload/prefetch headers for critical resources
-    const preloadHeaders = CRITICAL_RESOURCES.map(({ path, as }) => {
-      return `<${path}>; rel=preload; as=${as}`;
-    }).join(', ');
-
-    if (preloadHeaders) {
-      response.headers.set('Link', preloadHeaders);
-    }
-
+    // Removing preload headers since they're causing 404 errors
+    
     // Set caching for HTML pages
     response.headers.set(
       'Cache-Control',
@@ -78,7 +66,5 @@ export const config = {
      * 4. all root files inside /public (e.g. /favicon.ico)
      */
     '/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)',
-    // Also explicitly match api routes for specific headers
-    '/api/:path*',
   ]
 } 
