@@ -11,9 +11,6 @@ const nextConfig: NextConfig = {
   // Enable React strict mode for better development experience
   reactStrictMode: true,
   
-  // Optimize production build
-  swcMinify: true,
-  
   // Configure how Next.js handles JavaScript
   experimental: {
     // Optimize for modern browsers
@@ -26,8 +23,6 @@ const nextConfig: NextConfig = {
       '@tsparticles/slim',
       'embla-carousel-react',
     ],
-    // Prefer smaller bundle sizes
-    optimizeServerReact: true,
   },
   
   // Custom webpack configuration to optimize bundle size
@@ -56,16 +51,6 @@ const nextConfig: NextConfig = {
             chunks: 'all',
             minChunks: 2,
             priority: 20,
-          },
-          // Create separate chunks for larger libraries
-          lib: {
-            test: /[\\/]node_modules[\\/]/,
-            chunks: 'all',
-            name(module: { context: string }) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)?.[1] || 'unknown';
-              return `npm.${packageName.replace('@', '')}`;
-            },
-            priority: 10,
           },
         },
       };
