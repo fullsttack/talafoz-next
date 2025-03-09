@@ -117,7 +117,7 @@ export default function Hero() {
                   <div>
                     <HeroVideo />
                   </div>
-                  {/* Replace negative margins with proper spacing */}
+                  {/* Fixed height container for SparklesPreview without negative margins */}
                   <div className="h-14 md:h-24 -mt-10 overflow-hidden w-full">
                     <SparklesPreview />
                   </div>

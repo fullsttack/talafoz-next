@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
   },
   
   // Custom webpack configuration to optimize bundle size
-  webpack: (config, { dev, isServer }) => {
+  webpack: (config, { dev }) => {
     // Only apply optimizations for production builds
     if (!dev) {
       // Split chunks more aggressively for better caching
@@ -61,8 +61,8 @@ const nextConfig: NextConfig = {
           lib: {
             test: /[\\/]node_modules[\\/]/,
             chunks: 'all',
-            name(module: any) {
-              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+            name(module: { context: string }) {
+              const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)?.[1] || 'unknown';
               return `npm.${packageName.replace('@', '')}`;
             },
             priority: 10,
