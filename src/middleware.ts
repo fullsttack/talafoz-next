@@ -19,6 +19,10 @@ export function middleware(request: NextRequest) {
       'Cache-Control',
       'public, max-age=31536000, immutable'
     );
+    
+    // Enable compression for static assets
+    response.headers.set('Accept-Encoding', 'br, gzip, deflate');
+    
     return response;
   }
 
@@ -33,16 +37,20 @@ export function middleware(request: NextRequest) {
 
   // For HTML pages (non-static assets)
   if (!pathname.includes('.')) {
-    // Removing preload headers since they're causing 404 errors
-    
-    // Set caching for HTML pages
+    // Set caching for HTML pages - use a moderate cache for faster repeat visits
     response.headers.set(
       'Cache-Control',
-      'public, max-age=60, s-maxage=3600, stale-while-revalidate=86400'
+      'public, max-age=3600, s-maxage=3600, stale-while-revalidate=86400'
     );
 
-    // Enable compression
-    response.headers.set('Accept-Encoding', 'gzip, deflate, br');
+    // Enable compression for HTML
+    response.headers.set('Accept-Encoding', 'br, gzip, deflate');
+    
+    // Add resource hints for common resources
+    response.headers.set(
+      'Link',
+      '</fonts/Yekan.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff'
+    );
   }
 
   if (pathname.startsWith('/dashboard') && !token) {

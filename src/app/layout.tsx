@@ -29,6 +29,19 @@ export default function RootLayout({
       suppressHydrationWarning
       className={vazir.variable}
     >
+      <head>
+        <style dangerouslySetInnerHTML={{ __html: `
+          img, video, svg, canvas, picture {
+            display: block;
+            max-width: 100%;
+            height: auto;
+          }
+          @font-face {
+            font-family: 'Yekan';
+            font-display: swap;
+          }
+        `}} />
+      </head>
       <body
         className={`${vazir.className} antialiased min-h-screen bg-background`}
       >

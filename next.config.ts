@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
         hostname: 'avatar.vercel.sh',
       },
     ],
+    // Optimize images for better performance
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
   },
   // Optimize bundle size by enabling compression
   compress: true,
@@ -33,12 +36,37 @@ const nextConfig: NextConfig = {
       '@tsparticles/react',
       '@tsparticles/slim',
       'embla-carousel-react',
+      'lucide-react',
+      'sonner',
+      'tailwind-merge',
+      'class-variance-authority',
+      'clsx',
     ],
-    // Prefer smaller bundle sizes - remove optimizeServerReact as it may not be supported
+    // Add modern bundling for better tree-shaking
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
   },
   
-  // Simplified webpack configuration
-  webpack: (config) => {
+  // Simplified webpack configuration with treeshaking improvements
+  webpack: (config, { dev, isServer }) => {
+    // Enable aggressive tree shaking
+    if (!dev) {
+      config.optimization.usedExports = true;
+      
+      // Reduce bundle size
+      config.optimization.minimize = true;
+      
+      // Improve code splitting
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        maxInitialRequests: 30,
+        maxAsyncRequests: 30,
+        minSize: 20000,
+        maxSize: 244000, // ~240kb chunk size limit
+      };
+    }
+    
     return config;
   },
   
