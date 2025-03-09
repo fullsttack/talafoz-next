@@ -4,21 +4,22 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 import dynamic from "next/dynamic";
-
+import { SparklesPreview } from "@/components/ui/SparklesPreview";
 // Preloaded critical text content
 const HERO_TITLE = "زمان و دانش بزرگ ترین سرمایه هر انسان است ...";
-const HERO_DESCRIPTION = "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.";
+const HERO_DESCRIPTION =
+  "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است.";
 
 // Dynamically import non-critical components
 const BorderMagic = dynamic(
-  () => import("../magicui/BorderMagic").then(mod => mod.BorderMagic),
+  () => import("../magicui/BorderMagic").then((mod) => mod.BorderMagic),
   { ssr: true, loading: () => <Skeleton className="w-32 h-9 rounded-xl" /> }
 );
 
-const HeroVideo = dynamic(
-  () => import("./HeroVideo"),
-  { ssr: false, loading: () => <Skeleton className="w-full h-full" /> }
-);
+const HeroVideo = dynamic(() => import("./HeroVideo"), {
+  ssr: false,
+  loading: () => <Skeleton className="w-full h-full" />,
+});
 
 // TypeScript declaration for requestIdleCallback
 declare global {
@@ -42,21 +43,24 @@ export default function Hero() {
     setIsLoading(false);
 
     // Load non-critical components only when browser is idle
-    if (typeof window !== 'undefined') {
-      if ('requestIdleCallback' in window) {
-        idleCallbackId = window.requestIdleCallback(() => {
-          setIsVideoVisible(true);
-        }, { timeout: 2000 });
+    if (typeof window !== "undefined") {
+      if ("requestIdleCallback" in window) {
+        idleCallbackId = window.requestIdleCallback(
+          () => {
+            setIsVideoVisible(true);
+          },
+          { timeout: 2000 }
+        );
       } else {
         idleCallbackId = setTimeout(() => {
           setIsVideoVisible(true);
         }, 1000);
       }
     }
-    
+
     return () => {
-      if (typeof window !== 'undefined') {
-        if ('cancelIdleCallback' in window && 'requestIdleCallback' in window) {
+      if (typeof window !== "undefined") {
+        if ("cancelIdleCallback" in window && "requestIdleCallback" in window) {
           window.cancelIdleCallback(idleCallbackId as number);
         } else {
           clearTimeout(idleCallbackId as NodeJS.Timeout);
@@ -70,11 +74,9 @@ export default function Hero() {
       <div className="container mx-auto max-w-7xl px-4 sm:px-6">
         <div className="flex flex-col md:flex-row justify-between items-center w-full gap-8">
           {/* Priority content for LCP - load immediately */}
-          <div className="w-full flex flex-col gap-4 mt-8 md:mt-0">
+          <div className="w-full flex flex-col gap-4 mt-8 md:mt-0 text-center md:text-right">
             {/* High priority - LCP element */}
-            <p className="text-xl md:text-3xl font-bold">
-              {HERO_TITLE}
-            </p>
+            <p className="text-xl md:text-3xl font-bold">{HERO_TITLE}</p>
             {/* Text content - also high priority */}
             <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-300">
               {HERO_DESCRIPTION}
@@ -90,7 +92,11 @@ export default function Hero() {
                 مشاهده دوره ها
               </Link>
               {/* Secondary elements - lower priority */}
-              {!isLoading && <Link href="/" prefetch={false}><BorderMagic /></Link>}
+              {!isLoading && (
+                <Link href="/" prefetch={false}>
+                  <BorderMagic />
+                </Link>
+              )}
             </div>
           </div>
 
@@ -99,11 +105,18 @@ export default function Hero() {
             dir="ltr"
             className="w-full max-w-full md:max-w-[50%] flex justify-center md:justify-end"
           >
-            <div className="relative w-full h-[500px] flex items-center justify-center overflow-hidden rounded-lg">
+            <div className="relative w-full  flex items-center justify-center overflow-hidden rounded-lg">
               {!isVideoVisible ? (
-                <Skeleton className="w-full h-full" />
+                <Skeleton className="w-full flex flex-col" />
               ) : (
-                <HeroVideo />
+                <div className="w-full flex flex-col ">
+                  <div>
+                    <HeroVideo />
+                  </div>
+                  <div className="-mt-7 md:-mt-10">
+                    <SparklesPreview />
+                  </div>
+                </div>
               )}
             </div>
           </div>

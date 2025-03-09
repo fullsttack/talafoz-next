@@ -119,7 +119,7 @@ export const Header = () => {
           
           {/* Hamburger Menu Button */}
           <Button 
-            className="md:hidden border p-2 rounded-lg bg-background hover:bg-muted transition-colors"
+            className="md:hidden border p-2 rounded-lg bg-background text-foreground hover:bg-muted transition-colors"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
