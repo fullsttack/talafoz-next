@@ -49,7 +49,7 @@ const nextConfig: NextConfig = {
   },
   
   // Simplified webpack configuration with treeshaking improvements
-  webpack: (config, { dev, isServer }) => {
+  webpack: (config, { dev }) => {
     // Enable aggressive tree shaking
     if (!dev) {
       config.optimization.usedExports = true;
