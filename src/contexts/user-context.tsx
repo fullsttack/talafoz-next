@@ -61,7 +61,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         setIsLoading(false)
       }
     }
-  }, [pathname, router, user])
+  }, [router, user])
 
   // به‌روزرسانی ref با آخرین نسخه تابع
   useEffect(() => {

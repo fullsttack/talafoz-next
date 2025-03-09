@@ -46,11 +46,8 @@ export function middleware(request: NextRequest) {
     // Enable compression for HTML
     response.headers.set('Accept-Encoding', 'br, gzip, deflate');
     
-    // Add resource hints for common resources
-    response.headers.set(
-      'Link',
-      '</fonts/Yekan.woff>; rel=preload; as=font; crossorigin=anonymous; type=font/woff'
-    );
+    // فونت‌ها توسط Next.js به صورت خودکار مدیریت می‌شوند، نیازی به preload خاص نیست
+    // Next.js از هش‌های داخلی برای فونت‌ها استفاده می‌کند که در زمان اجرا تعیین می‌شوند
   }
 
   if (pathname.startsWith('/dashboard') && !token) {
