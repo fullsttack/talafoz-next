@@ -9,6 +9,9 @@
   --color-green: #54b7bc;
   --color-green-dark: #54b7bc;
 
+  --color-white-10: #fdf4e1;
+  --color-white-10-dark: #fdf4e1;
+
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
 

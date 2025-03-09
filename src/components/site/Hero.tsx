@@ -84,7 +84,7 @@ export default function Hero() {
               {/* Primary CTA - high priority */}
               <Link
                 href="/"
-                className="w-32 text-center border bg-emerald-700 text-white px-2 py-1.5 rounded-xl"
+                className="w-32 text-center border bg-white-10 text-black px-2 py-1.5 rounded-xl"
                 prefetch={false}
               >
                 مشاهده دوره ها

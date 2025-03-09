@@ -1,18 +1,38 @@
 'use client'
 
 import React, { useState } from "react";
-import { ShoppingCart, Menu, X } from "lucide-react";
+import { ShoppingCart, Menu, X, Bell } from "lucide-react";
 import Link from "next/link";
 import { ModeToggle } from "@/components/ui/ModeToggle";
 import { LoginDialog } from "@/components/auth/login-dialog";
 import { AnimatePresence, motion } from "framer-motion";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { useUser } from "@/contexts/user-context";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
+
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user } = useUser();
   
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
+
+  // Fake notifications data
+  const notifications = [
+    { id: 1, text: "دوره جدید React اضافه شد", time: "۱۰ دقیقه پیش" },
+    { id: 2, text: "نظر شما تایید شد", time: "۱ ساعت پیش" },
+    { id: 3, text: "تخفیف ویژه برای دوره‌های جاوااسکریپت", time: "۶ ساعت پیش" },
+  ];
 
   return (
     <div className="relative">
@@ -50,25 +70,61 @@ export const Header = () => {
 
         <div className="flex gap-4 items-center">
           <ModeToggle />
-          <Link 
-            className="border p-2 rounded-lg bg-foreground text-background" 
-            href="/cart"
+          
+          {/* Notification Icon - Only shown for logged-in users */}
+          {user && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  className="border p-2 rounded-lg bg-background text-foreground hover:bg-muted transition-colors relative"
+                  aria-label="اعلان‌ها"
+                >
+                  <Bell className="w-4 h-4" />
+                  <Badge className="absolute -top-2 -right-2 px-1.5 h-4 min-w-4 flex items-center justify-center text-[10px]">
+                    {notifications.length}
+                  </Badge>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-72">
+                <DropdownMenuLabel>اعلان‌های جدید</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {notifications.map((notification) => (
+                  <DropdownMenuItem key={notification.id} className="py-3 cursor-pointer">
+                    <div className="flex flex-col">
+                      <span>{notification.text}</span>
+                      <span className="text-xs text-muted-foreground">{notification.time}</span>
+                    </div>
+                  </DropdownMenuItem>
+                ))}
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild className="justify-center text-primary font-medium py-2 cursor-pointer">
+                  <Link href="/dashboard/notifications">مشاهده همه اعلان‌ها</Link>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
+          
+          <Button 
+            asChild
+            className="border p-2 rounded-lg bg-background text-foreground hover:bg-muted transition-colors"
             aria-label="سبد خرید"
           >
-            <ShoppingCart className="w-4 h-4" />
-          </Link>
-          <div className="hidden md:block ">
+            <Link href="/cart">
+              <ShoppingCart className="w-4 h-4" />
+            </Link>
+          </Button>
+          <div className="hidden md:block">
             <LoginDialog />
           </div>
           
           {/* Hamburger Menu Button */}
-          <button 
-            className="md:hidden border p-2 rounded-lg "
+          <Button 
+            className="md:hidden border p-2 rounded-lg bg-background hover:bg-muted transition-colors"
             onClick={toggleMenu}
             aria-label="Toggle menu"
           >
             {isMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-          </button>
+          </Button>
         </div>
       </div>
 

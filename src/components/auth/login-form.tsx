@@ -172,23 +172,41 @@ export function LoginForm() {
   const [otpValue, setOtpValue] = useState("");
   const [canResend, setCanResend] = useState(false);
   const { pending } = useFormStatus();
+  
+  // Add loading state for specific buttons
+  const [isPhoneSubmitLoading, setIsPhoneSubmitLoading] = useState(false);
+  const [isResendLoading, setIsResendLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isGithubLoading, setIsGithubLoading] = useState(false);
+  const [isChangeNumberLoading, setIsChangeNumberLoading] = useState(false);
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (pending) return;
+    if (isPhoneSubmitLoading) return;
 
+    setIsPhoneSubmitLoading(true);
     const formData = new FormData();
     formData.append("phone_number", phoneNumber);
 
-    const result = await sendOTP(formData);
-    if (result.success) {
-      startTransition(() => {
-        setStep("otp");
-        setCanResend(false);
-      });
-      toast.success(result.message);
-    } else {
-      toast.error(result.message);
+    try {
+      const result = await sendOTP(formData);
+      if (result.success) {
+        startTransition(() => {
+          setStep("otp");
+          setCanResend(false);
+        });
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error: unknown) {
+      toast.error(
+        typeof error === 'object' && error !== null && 'message' in error 
+          ? String(error.message) 
+          : "خطا در ارسال کد تایید"
+      );
+    } finally {
+      setIsPhoneSubmitLoading(false);
     }
   };
 
@@ -213,23 +231,38 @@ export function LoginForm() {
   };
 
   const handleResend = async () => {
-    if (!canResend) return;
+    if (!canResend || isResendLoading) return;
 
+    setIsResendLoading(true);
     const formData = new FormData();
     formData.append("phone_number", phoneNumber);
 
-    const result = await sendOTP(formData);
-    if (result.success) {
-      setCanResend(false);
-      setOtpValue("");
-      toast.success("کد تایید مجدداً ارسال شد");
-    } else {
-      toast.error(result.message);
+    try {
+      const result = await sendOTP(formData);
+      if (result.success) {
+        setCanResend(false);
+        setOtpValue("");
+        toast.success("کد تایید مجدداً ارسال شد");
+      } else {
+        toast.error(result.message);
+      }
+    } catch (error: unknown) {
+      toast.error(typeof error === 'object' && error !== null && 'message' in error 
+        ? String(error.message) 
+        : "خطا در ارسال کد تایید");
+    } finally {
+      setIsResendLoading(false);
     }
   };
 
   const handleSocialLogin = async (provider: "google" | "github") => {
     try {
+      if (provider === "google") {
+        setIsGoogleLoading(true);
+      } else {
+        setIsGithubLoading(true);
+      }
+      
       // Open OAuth popup
       const width = 500;
       const height = 600;
@@ -251,6 +284,11 @@ export function LoginForm() {
         const checkPopup = setInterval(async () => {
           if (popup.closed) {
             clearInterval(checkPopup);
+            if (provider === "google") {
+              setIsGoogleLoading(false);
+            } else {
+              setIsGithubLoading(false);
+            }
             return;
           }
 
@@ -272,6 +310,11 @@ export function LoginForm() {
                 } else {
                   toast.error(result.message);
                 }
+                if (provider === "google") {
+                  setIsGoogleLoading(false);
+                } else {
+                  setIsGithubLoading(false);
+                }
               }
             }
           } catch (e) {
@@ -280,8 +323,17 @@ export function LoginForm() {
           }
         }, 500);
       }
-    } catch (error) {
-      toast.error("خطا در برقراری ارتباط");
+    } catch (error: unknown) {
+      if (provider === "google") {
+        setIsGoogleLoading(false);
+      } else {
+        setIsGithubLoading(false);
+      }
+      toast.error(
+        typeof error === 'object' && error !== null && 'message' in error 
+          ? String(error.message) 
+          : "خطا در برقراری ارتباط"
+      );
       console.error("Error:", error);
     }
   };
@@ -324,10 +376,10 @@ export function LoginForm() {
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-background"
-                  disabled={pending || phoneNumber.length !== 11}
+                  className="w-full bg-white-10 text-background"
+                  disabled={isPhoneSubmitLoading || phoneNumber.length !== 11}
                 >
-                  {pending ? (
+                  {isPhoneSubmitLoading ? (
                     <>
                       <Icons.spinner className="ml-2 h-4 w-4 animate-spin" />
                       در حال ارسال...
@@ -353,18 +405,38 @@ export function LoginForm() {
                 <Button
                   variant="outline"
                   onClick={() => handleSocialLogin("google")}
+                  disabled={isGoogleLoading}
                   className="w-full"
                 >
-                  Google
-                  <Chrome className="ml-2 h-4 w-4" />
+                  {isGoogleLoading ? (
+                    <>
+                      <Icons.spinner className="ml-2 h-4 w-4 animate-spin" />
+                      در حال ورود...
+                    </>
+                  ) : (
+                    <>
+                      Google
+                      <Chrome className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </Button>
                 <Button
                   variant="outline"
                   onClick={() => handleSocialLogin("github")}
+                  disabled={isGithubLoading}
                   className="w-full"
                 >
-                  GitHub
-                  <Github className="ml-2 h-4 w-4" />
+                  {isGithubLoading ? (
+                    <>
+                      <Icons.spinner className="ml-2 h-4 w-4 animate-spin" />
+                      در حال ورود...
+                    </>
+                  ) : (
+                    <>
+                      GitHub
+                      <Github className="ml-2 h-4 w-4" />
+                    </>
+                  )}
                 </Button>
               </div>
             </motion.div>
@@ -387,20 +459,27 @@ export function LoginForm() {
                     type="button"
                     variant="link"
                     onClick={handleResend}
-                    disabled={!canResend}
+                    disabled={!canResend || isResendLoading}
                     className={cn(
                       "px-0",
-                      !canResend && "opacity-50 cursor-not-allowed"
+                      (!canResend || isResendLoading) && "opacity-50 cursor-not-allowed"
                     )}
                   >
-                    ارسال مجدد کد
+                    {isResendLoading ? (
+                      <>
+                        <Icons.spinner className="ml-2 h-4 w-4 animate-spin" />
+                        در حال ارسال...
+                      </>
+                    ) : (
+                      "ارسال مجدد کد"
+                    )}
                   </Button>
                   {!canResend && <Timer onFinish={() => setCanResend(true)} />}
                 </div>
               </div>
               <Button
                 type="submit"
-                className="w-full bg-cyan-500 hover:bg-cyan-600 text-background "
+                className="w-full bg-white-10 text-background "
                 disabled={pending || otpValue.length !== 6}
               >
                 {pending ? (
@@ -421,12 +500,24 @@ export function LoginForm() {
           <Button
             variant="link"
             className="w-full"
+            disabled={isChangeNumberLoading}
             onClick={() => {
-              setStep("phone");
-              setOtpValue("");
+              setIsChangeNumberLoading(true);
+              setTimeout(() => {
+                setStep("phone");
+                setOtpValue("");
+                setIsChangeNumberLoading(false);
+              }, 500); // Small delay to show loading state
             }}
           >
-            تغییر شماره موبایل
+            {isChangeNumberLoading ? (
+              <>
+                <Icons.spinner className="ml-2 h-4 w-4 animate-spin" />
+                در حال تغییر...
+              </>
+            ) : (
+              "تغییر شماره موبایل"
+            )}
           </Button>
         )}
       </CardFooter>

@@ -5,17 +5,32 @@ import { UserRoundPlus } from "lucide-react"
 import { LoginForm } from "./login-form"
 import { useUser } from "@/contexts/user-context"
 import { useRouter } from "next/navigation"
-import { cn } from "@/lib/utils"
 import { Button } from "../ui/button"
+import { useState, useEffect } from "react"
+
 export function LoginDialog() {
   const { user } = useUser()
   const router = useRouter()
+  const [mounted, setMounted] = useState(false)
+  
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+  
+  // На сервере или до монтирования рендерим просто кнопку без проверки состояния
+  if (!mounted) {
+    return (
+      <Button className="border p-2 rounded-lg bg-background hover:bg-muted transition-colors">
+        <UserRoundPlus className="w-4 h-4" />
+      </Button>
+    )
+  }
 
   if (user) {
     return (
       <Button 
         onClick={() => router.push('/dashboard')}
-        className=""
+        className="border p-2 rounded-lg bg-background hover:bg-muted transition-colors"
       >
         <UserRoundPlus className="w-4 h-4 text-green-500" />
       </Button>
@@ -25,10 +40,7 @@ export function LoginDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className={cn(
-          "border p-2 rounded-lg",
-          "hover:bg-muted transition-colors"
-        )}>
+        <Button className="border p-2 rounded-lg bg-background text-foreground cursor-pointer hover:bg-muted transition-colors">
           <UserRoundPlus className="w-4 h-4" />
         </Button>
       </DialogTrigger>

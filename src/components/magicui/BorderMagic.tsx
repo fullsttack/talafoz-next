@@ -8,7 +8,7 @@ export function BorderMagic() {
       <BorderBeam
         size={40}
         initialOffset={20}
-        className="from-transparent via-green to-transparent "
+        className="from-transparent via-white-10 to-transparent "
         transition={{
           type: "spring",
           stiffness: 30,

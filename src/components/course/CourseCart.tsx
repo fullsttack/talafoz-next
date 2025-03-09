@@ -195,7 +195,7 @@ export default function CourseCart({ course, gradientColor }: CourseCartProps) {
           <div className="text-primary font-bold text-lg">
             {course.price}
           </div>
-          <Button variant="default" size="sm" className="rounded-lg px-5">
+          <Button variant="default" size="sm" className="rounded-lg px-5 bg-white-10">
             مشاهده دوره
           </Button>
         </CardFooter>
