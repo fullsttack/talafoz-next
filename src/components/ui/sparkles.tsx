@@ -17,6 +17,7 @@ type ParticlesProps = {
   speed?: number;
   particleColor?: string;
   particleDensity?: number;
+
 };
 export const SparklesCore = (props: ParticlesProps) => {
   const {
@@ -50,6 +51,7 @@ export const SparklesCore = (props: ParticlesProps) => {
     }
   };
 
+  
   const generatedId = useId();
   return (
     <motion.div animate={controls} className={cn("opacity-0", className)}>
@@ -83,6 +85,7 @@ export const SparklesCore = (props: ParticlesProps) => {
                 resize: {
                   enable: true,
                   delay: 0
+                  
                 },
               },
               modes: {

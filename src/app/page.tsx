@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div className="overflow-x-hidden flex flex-col min-h-screen">
       <Header />
-      <div className="w-full flex flex-col gap-24 max-w-7xl mx-auto mb-32">
+      <div className="w-full flex flex-col gap-32 max-w-7xl mx-auto mb-32">
         <Hero />
         <LastCourse />
         <BannerDiscount />

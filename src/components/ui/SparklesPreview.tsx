@@ -20,7 +20,7 @@ export function SparklesPreview() {
           maxSize={1}
           particleDensity={1200}
           className="w-full h-full"
-          particleColor="#FFFFFF"
+          particleColor="#54b7bc"
         />
 
         {/* Radial Gradient to prevent sharp edges */}
