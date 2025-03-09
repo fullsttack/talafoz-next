@@ -7,7 +7,7 @@ import SubCart from "@/components/subscription/SubCart";
 import LastBlog from "@/components/blog/LastBlog";
 import TechBanner from "@/components/site/TechBanner";
 import Footer from "@/components/layout/Footer";
-import { MarqueeDemo } from "@/components/magicui/marquee";
+import { MarqueeDemo } from "@/components/magicui/MarqueeDemo";
 export default function Home() {
   return (
     <div className="overflow-x-hidden flex flex-col min-h-screen">

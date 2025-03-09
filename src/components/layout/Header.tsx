@@ -52,7 +52,7 @@ export const Header = () => {
       </div>
 
       <div className="container mx-auto flex justify-between items-center gap-4 md:gap-10 py-6 md:py-12 relative z-10 px-4">
-        <div className="dark:bg-white p-2 rounded-full">
+        <div className="bg-white-10 p-2 rounded-full">
           <Image src="/image/logo.png" alt="logo" width={30} height={30} />
         </div>
         

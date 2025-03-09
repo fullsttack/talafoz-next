@@ -109,6 +109,7 @@
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --background-color: white;
   }
   .dark {
     --background: 0 0% 3.9%;
@@ -135,6 +136,7 @@
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --background-color: rgb(10, 10, 10);
   }
 }
 
@@ -183,6 +185,40 @@
 
 .gridlines[data-v-257aca76] {
   background-image: url('/gridlines/gridlines.svg');
+}
+
+/* Marquee animations */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(calc(-100% - var(--gap, 1rem))); }
+}
+
+@keyframes marquee-vertical {
+  from { transform: translateY(0); }
+  to { transform: translateY(calc(-100% - var(--gap, 1rem))); }
+}
+
+.animate-marquee {
+  animation: marquee var(--duration, 40s) linear infinite;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical var(--duration, 40s) linear infinite;
+}
+
+.animation-reverse {
+  animation-direction: reverse;
+}
+
+.group:hover .group-hover-paused {
+  animation-play-state: paused;
+}
+
+/* Gradient overlays for marquee edges */
+.from-background {
+  --tw-gradient-from: var(--background-color, white) var(--tw-gradient-from-position);
+  --tw-gradient-to: transparent var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
 }
 
 
