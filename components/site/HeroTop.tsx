@@ -168,7 +168,7 @@ export default function HeroTop() {
                 </Link>
                 <Link
                   href="/roadmap"
-                  className="w-full md:w-auto px-6 sm:px-8 py-2.5 bg-green text-white rounded-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2"
+                  className="w-full md:w-auto px-6 sm:px-8 py-2.5 border-b border-green rounded-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2"
                 >
                   <span>مسیر آموزشی</span>
                 </Link>
