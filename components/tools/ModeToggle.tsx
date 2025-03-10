@@ -23,7 +23,7 @@ export function ModeToggle() {
       <Button
         variant="outline"
         size="icon"
-        className="relative rounded-full border-none hover:bg-secondary transition-colors duration-300"
+        className="relative rounded-full border-none hover:bg-secondary transition-colors duration-300 h-8 w-8 sm:h-9 sm:w-9"
         aria-label="تغییر حالت نمایش"
       >
         <span className="h-4 w-4" />
@@ -36,7 +36,7 @@ export function ModeToggle() {
       onClick={toggleTheme}
       variant="outline"
       size="icon"
-      className="relative rounded-full border-none hover:bg-secondary transition-colors duration-300"
+      className="relative rounded-full border-none hover:bg-secondary transition-colors duration-300 h-8 w-8 sm:h-9 sm:w-9"
       aria-label="تغییر حالت نمایش"
     >
       {theme === "dark" ? (

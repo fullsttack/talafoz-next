@@ -80,7 +80,7 @@ export default function HeroJson1() {
           animationData={animationData}
           loop={true}
           autoplay={true}
-          style={{ width: '100%', height: '450px' }}
+          style={{ width: '100%', height: '100%' }}
         />
       )}
     </div>
