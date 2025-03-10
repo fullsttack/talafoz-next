@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
@@ -48,7 +50,7 @@ export default function HeroJson1() {
   useEffect(() => {
     const fetchAnimation = async () => {
       try {
-        const response = await fetch('/json/hero-1.json');
+        const response = await fetch('/json/login.json');
         if (!response.ok) {
           throw new Error('Failed to load animation data');
         }
@@ -80,7 +82,7 @@ export default function HeroJson1() {
           animationData={animationData}
           loop={true}
           autoplay={true}
-          style={{ width: '100%', height: '6xv00px' }}
+          style={{ width: '100%', height: '400px' }}
         />
       )}
     </div>

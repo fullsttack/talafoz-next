@@ -14,7 +14,11 @@ export const Header = () => {
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    document.body.style.overflow = isMenuOpen ? "auto" : "hidden";
+    if (isMenuOpen) {
+      document.body.style.overflow = "auto";
+    } else {
+      document.body.style.overflow = "hidden";
+    }
   };
 
   useEffect(() => {
@@ -144,7 +148,7 @@ export const Header = () => {
                 className="relative rounded-full border-none hover:bg-secondary transition-colors duration-300 h-8 w-8 sm:h-9 sm:w-9"
                 aria-label="ورود/ثبت نام"
               >
-                <Link href="/auth/login">
+                <Link href="/login">
                   <User className="w-4 h-4" />
                 </Link>
               </Button>
@@ -172,10 +176,22 @@ export const Header = () => {
       {isMenuOpen && (
         <div className="md:hidden fixed inset-0 z-50 bg-background/95 pt-20">
           <div className="container mx-auto px-4">
+            {/* Botón de cierre en la parte superior del menú móvil */}
+            <Button
+              className="absolute top-5 right-5 border-none p-2 rounded-full bg-secondary/80 text-foreground hover:bg-secondary transition-colors duration-300 h-10 w-10"
+              onClick={toggleMenu}
+              variant="outline"
+              size="icon"
+              aria-label="Close menu"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+            
             <nav className="flex flex-col space-y-6">
               {[
                 { href: "/", label: "خانه" },
                 { href: "/courses", label: "دوره‌ها" },
+                { href: "/roadmap", label: "مسیر آموزشی" },
                 { href: "/blog", label: "وبلاگ" },
                 { href: "/about", label: "درباره ما" },
                 { href: "/contact", label: "تماس با ما" },

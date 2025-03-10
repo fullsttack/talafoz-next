@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import HeroJson1 from "@/components/tools/HeroJson1";
 import Link from "next/link";
+import { ChevronLeft, BadgeCheck, ArrowRight, User } from "lucide-react";
 
 export default function HeroTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -70,161 +71,67 @@ export default function HeroTop() {
                 کنید.
               </p>
 
-              {/* Features */}
-              <div className="grid grid-cols-2 gap-4 sm:gap-6 mt-4 sm:mt-6">
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green/10 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-green"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-300">
-                    بیش از ۵۰ دوره تخصصی
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green/10 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-green"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-300">
-                    گواهینامه معتبر بین‌المللی
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green/10 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-green"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-300">
-                    پشتیبانی ۲۴/۷
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green/10 flex items-center justify-center">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-4 w-4 text-green"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M5 13l4 4L19 7"
-                      />
-                    </svg>
-                  </div>
-                  <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-300">
-                    پروژه‌های عملی و واقعی
-                  </span>
-                </div>
-              </div>
+              
 
               {/* CTA Buttons with enhanced design */}
               <div className="w-full flex gap-3 sm:gap-4 mt-6 sm:mt-8">
                 <Link
                   href="/courses"
-                  className="w-full md:w-auto px-6 sm:px-8 py-2.5 border border-green rounded-lg shadow-lg shadow-green/20 transition-all hover:shadow-xl hover:shadow-green/30 hover:-translate-y-0.5 text-sm sm:text-base flex items-center justify-center gap-2"
+                  className="w-full md:w-auto px-6 sm:px-8 py-3 bg-gradient-to-r from-green to-green-500 hover:from-green-600 hover:to-green-500 text-white rounded-xl shadow-lg shadow-green/20 transition-all duration-300 hover:shadow-xl hover:shadow-green/30 hover:-translate-y-0.5 text-sm sm:text-base font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
                 >
-                  <span>شروع یادگیری</span>
+                  <span className="relative z-10">شروع یادگیری</span>
+                  <ArrowRight className="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
+                  <span className="absolute right-0 top-0 h-full w-0 bg-white/10 transition-all duration-300 group-hover:w-full"></span>
                 </Link>
                 <Link
                   href="/roadmap"
-                  className="w-full md:w-auto px-6 sm:px-8 py-2.5 border-b border-green rounded-lg transition-all text-sm sm:text-base flex items-center justify-center gap-2"
+                  className="w-full md:w-auto px-6 sm:px-8 py-3 bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 hover:border-green dark:hover:border-green text-gray-700 dark:text-gray-200 hover:text-green dark:hover:text-green rounded-xl shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5 text-sm sm:text-base font-medium flex items-center justify-center gap-2"
                 >
+                  <ChevronLeft className="h-5 w-5" />
                   <span>مسیر آموزشی</span>
                 </Link>
               </div>
 
               {/* Trust indicators */}
-              <div className="flex pt-4 sm:pt-6">
-                <p className="text-xs sm:text-sm dark:text-gray-300 text-gray-500 mb-2 sm:mb-3">
-                  مورد اعتماد بیش از ۱۰۰,۰۰۰ دانشجو
-                </p>
-                <div className="flex items-center gap-4 xs:gap-6">
-                  <div className="h-6 sm:h-8 w-auto opacity-70">
-                    <svg
-                      width="100"
-                      height="30"
-                      viewBox="0 0 100 30"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <rect
-                        width="100"
-                        height="30"
-                        rx="4"
-                        fill="currentColor"
-                        fillOpacity="0.1"
-                        className="text-gray-800"
-                      />
-                      <path
-                        d="M20 15L22.5 20L27.5 10L32.5 20L37.5 5L42.5 25L47.5 15L50 18.5L57.5 8.5L65 15L70 12.5L80 17.5"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        className="text-green"
-                      />
-                    </svg>
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-4 sm:pt-6">
+                <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm px-3 py-2 relative">
+                  <div className="absolute -left-1 -top-1">
+                    <div className="h-5 w-5 rounded-full bg-green flex items-center justify-center ring-2 ring-white dark:ring-gray-800">
+                      <BadgeCheck className="h-3 w-3 text-white" />
+                    </div>
                   </div>
+                  <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 pl-2">
+                    مورد اعتماد بیش از <span className="text-green font-bold">۱۰۰,۰۰۰</span> دانشجو
+                  </p>
+                </div>
+                <div className="flex items-center gap-4 xs:gap-6">
+                  {/* Chart indicator - custom designed to match previous look but using Lucide */}
+                  <div className="h-6 sm:h-8 bg-gray-100/50 dark:bg-gray-800/30 rounded-lg px-1.5 py-1 flex items-center">
+                    <div className="flex items-end h-full gap-0.5">
+                      <div className="w-1 h-[30%] bg-green/60 rounded-sm"></div>
+                      <div className="w-1 h-[60%] bg-green/70 rounded-sm"></div>
+                      <div className="w-1 h-[40%] bg-green/60 rounded-sm"></div>
+                      <div className="w-1 h-[80%] bg-green rounded-sm"></div>
+                      <div className="w-1 h-[45%] bg-green/70 rounded-sm"></div>
+                      <div className="w-1 h-[65%] bg-green/80 rounded-sm"></div>
+                      <div className="w-1 h-[35%] bg-green/60 rounded-sm"></div>
+                    </div>
+                  </div>
+
+                  {/* Modernized user avatars */}
                   <div className="flex -space-x-2 rtl:space-x-reverse">
                     {[1, 2, 3, 4, 5].map((i) => (
                       <div
                         key={i}
-                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white shadow-sm bg-gray-200 flex items-center justify-center overflow-hidden"
+                        className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white shadow-sm bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center overflow-hidden transition-transform hover:scale-105 hover:z-10"
                       >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-full w-full text-gray-500"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
+                        <User 
+                          className="h-[60%] w-[60%] text-gray-500 dark:text-gray-300" 
+                          strokeWidth={1.5}
+                        />
                       </div>
                     ))}
-                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white shadow-sm bg-green/10 flex items-center justify-center text-xs font-bold text-green">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white dark:border-gray-700 shadow-sm bg-gradient-to-br from-green/20 to-green/40 dark:from-green/40 dark:to-green/60 flex items-center justify-center text-xs font-bold text-green dark:text-green-300 transition-transform hover:scale-105">
                       +99
                     </div>
                   </div>
