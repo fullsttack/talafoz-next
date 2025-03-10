@@ -63,12 +63,7 @@ export function LoginForm({
           </Button>
         </div>
       </div>
-      <div className="text-center text-sm">
-        حساب کاربری ندارید؟{" "}
-        <a href="#" className="underline underline-offset-4">
-          ثبت نام
-        </a>
-      </div>
+
     </form>
   );
 }

@@ -71,13 +71,11 @@ export default function HeroTop() {
                 کنید.
               </p>
 
-              
-
               {/* CTA Buttons with enhanced design */}
               <div className="w-full flex gap-3 sm:gap-4 mt-6 sm:mt-8">
                 <Link
                   href="/courses"
-                  className="w-full md:w-auto px-6 sm:px-8 py-3 bg-green text-black rounded-xl shadow-lg shadow-green/20 transition-all duration-300 hover:shadow-xl hover:shadow-green/30 hover:-translate-y-0.5 text-sm sm:text-base font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
+                  className="w-full md:w-auto px-6 sm:px-8 py-3 bg-foreground text-background rounded-xl shadow-lg shadow-green/20 transition-all duration-300 hover:shadow-xl hover:shadow-green/30 hover:-translate-y-0.5 text-sm sm:text-base font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
                 >
                   <span className="relative z-10">شروع یادگیری</span>
                   <ArrowLeft className="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
@@ -93,7 +91,7 @@ export default function HeroTop() {
               </div>
 
               {/* Trust indicators */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 pt-4 sm:pt-6">
+              <div className="flex flex-col sm:flex-row justify-center md:justify-start items-center gap-4 pt-4 sm:pt-6">
                 <div className="flex items-center gap-2 bg-white dark:bg-gray-800/80 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm px-3 py-2 relative">
                   <div className="absolute -left-1 -top-1">
                     <div className="h-5 w-5 rounded-full bg-green flex items-center justify-center ring-2 ring-white dark:ring-gray-800">
@@ -101,7 +99,8 @@ export default function HeroTop() {
                     </div>
                   </div>
                   <p className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-200 pl-2">
-                    مورد اعتماد بیش از <span className="text-green font-bold">۱۰۰,۰۰۰</span> دانشجو
+                    مورد اعتماد بیش از{" "}
+                    <span className="text-green font-bold">۱۰۰,۰۰۰</span> دانشجو
                   </p>
                 </div>
                 <div className="flex items-center gap-4 xs:gap-6">
@@ -125,8 +124,8 @@ export default function HeroTop() {
                         key={i}
                         className="w-6 h-6 sm:w-8 sm:h-8 rounded-full border-2 border-white shadow-sm bg-gradient-to-b from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 flex items-center justify-center overflow-hidden transition-transform hover:scale-105 hover:z-10"
                       >
-                        <User 
-                          className="h-[60%] w-[60%] text-gray-500 dark:text-gray-300" 
+                        <User
+                          className="h-[60%] w-[60%] text-gray-500 dark:text-gray-300"
                           strokeWidth={1.5}
                         />
                       </div>
@@ -148,6 +147,8 @@ export default function HeroTop() {
           </div>
         </div>
       </div>
+
+      
     </section>
   );
 }
