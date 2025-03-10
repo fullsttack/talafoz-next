@@ -5,16 +5,29 @@
 1. [Introduction](#introduction)
 2. [Key Features](#key-features)
 3. [Getting Started](#getting-started)
-4. [Data Fetching](#data-fetching)
+4. [Breaking Changes](#breaking-changes)
+   - [Caching Model Changes](#caching-model-changes)
+   - [Async Request APIs](#async-request-apis)
+5. [Data Fetching](#data-fetching)
    - [Data Fetching and Caching](#data-fetching-and-caching)
    - [Server Actions and Mutations](#server-actions-and-mutations)
    - [Incremental Static Regeneration (ISR)](#incremental-static-regeneration-isr)
-5. [Routing](#routing)
-6. [Server Components](#server-components)
-7. [Authentication](#authentication)
-8. [Error Handling](#error-handling)
-9. [Configuration](#configuration)
-10. [API Reference](#api-reference)
+6. [New Features](#new-features)
+   - [after API](#after-api)
+   - [instrumentation.js API](#instrumentationjs-api)
+   - [Form Component](#form-component)
+   - [Static Indicator](#static-indicator)
+7. [React 19 Support](#react-19-support)
+   - [Pages Router with React 18](#pages-router-with-react-18)
+   - [React Compiler](#react-compiler)
+   - [Hydration Error Improvements](#hydration-error-improvements)
+8. [Routing](#routing)
+9. [Server Components](#server-components)
+10. [Authentication](#authentication)
+11. [Error Handling](#error-handling)
+12. [Configuration](#configuration)
+13. [API Reference](#api-reference)
+14. [Upgrade Guide](#upgrade-guide)
 
 ## Introduction
 
@@ -30,7 +43,7 @@ Next.js 15 introduces several new features and improvements:
 - **React 19 Support:** Support for React 19, React Compiler (Experimental), and hydration error improvements
 - **Turbopack Dev (Stable):** Performance and stability improvements
 - **Static Indicator:** New visual indicator shows static routes during development
-- **unstable_after API (Experimental):** Execute code after a response finishes streaming
+- **after API (Stable):** Execute code after a response finishes streaming
 - **instrumentation.js API (Stable):** New API for server lifecycle observability
 - **Enhanced Forms (next/form):** Enhance HTML forms with client-side navigation
 - **next.config:** TypeScript support for `next.config.ts`
@@ -49,7 +62,99 @@ To upgrade to Next.js 15:
 npx @next/codemod@canary upgrade latest
 
 # ...or upgrade manually
-npm install next@latest react@rc react-dom@rc
+npm install next@latest react@latest react-dom@latest
+```
+
+## Breaking Changes
+
+### Caching Model Changes
+
+Next.js 15 introduces significant changes to the caching strategy:
+
+#### Fetch Requests
+- **Before:** Used `force-cache` strategy by default (were cached)
+- **Now:** Use `no-store` strategy by default (not cached)
+
+To enable caching:
+```typescript
+// Cache a fetch request
+const res = await fetch('https://api.example.com', { cache: 'force-cache' });
+
+// Or set caching strategy for the entire route
+export const dynamic = 'force-static';
+```
+
+#### GET Route Handlers
+- **Before:** Cached by default
+- **Now:** Not cached by default
+
+To enable caching:
+```typescript
+// app/api/data/route.ts
+import { NextResponse } from 'next/server';
+
+// Enable caching for this route handler
+export const dynamic = 'force-static';
+
+export async function GET() {
+  const data = await fetchSomeData();
+  return NextResponse.json({ data });
+}
+```
+
+#### Client Router Cache
+- **Before:** Page components were cached during navigation
+- **Now:** Page components are not cached by default during navigation
+
+To configure client router cache:
+```typescript
+// next.config.ts
+const nextConfig = {
+  experimental: {
+    staleTimes: {
+      dynamic: 30, // Cache time for dynamic routes (in seconds)
+      static: 180, // Cache time for static routes (in seconds)
+    },
+  },
+};
+
+export default nextConfig;
+```
+
+### Async Request APIs
+
+Next.js 15 has moved to async request APIs. These APIs include:
+- `cookies`
+- `headers`
+- `draftMode`
+- `params` in `layout.js`, `page.js`, `route.js`
+- `searchParams` in `page.js`
+
+Previous code:
+```typescript
+import { cookies } from 'next/headers';
+
+export function AdminPanel() {
+  const cookieStore = cookies();
+  const token = cookieStore.get('token');
+  // ...
+}
+```
+
+New code:
+```typescript
+import { cookies } from 'next/headers';
+
+export async function AdminPanel() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get('token');
+  // ...
+}
+```
+
+For automatic migration:
+```bash
+npx @next/codemod@canary next-async-request-api
 ```
 
 ## Data Fetching
@@ -131,6 +236,186 @@ export default function Page() {
 ### Incremental Static Regeneration (ISR)
 
 Incremental Static Regeneration (ISR) allows you to create or update static pages at runtime. This enables you to get the benefits of static generation while still keeping your content fresh.
+
+## New Features
+
+### after API
+
+This API (previously `unstable_after`) provides the ability to execute code after sending a response to the user, without making the user wait for its completion. Ideal for tasks like logging, analytics, and syncing with external systems.
+
+To use this API in Next.js 15:
+
+```typescript
+// next.config.ts
+const nextConfig = {
+  experimental: {
+    after: true,
+  },
+};
+
+export default nextConfig;
+```
+
+```typescript
+// app/layout.tsx
+import { after } from 'next/server';
+import { log } from '@/app/utils';
+
+export default function Layout({ children }) {
+  // Secondary task
+  after(() => {
+    log();
+  });
+
+  // Main task
+  return <>{children}</>;
+}
+```
+
+In Next.js 15.1, this API has become stable:
+
+```typescript
+// app/api/route.ts
+import { after } from 'next/server';
+import { cookies, headers } from 'next/headers';
+import { logUserAction } from '@/app/utils';
+
+export async function POST(request: Request) {
+  // Primary operation
+  // ...
+
+  // Log user activity for analytics
+  after(async () => {
+    const userAgent = (await headers().get('user-agent')) || 'unknown';
+    const sessionCookie = (await cookies().get('session-id'))?.value || 'anonymous';
+
+    logUserAction({ sessionCookie, userAgent });
+  });
+
+  return new Response(JSON.stringify({ status: 'success' }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+```
+
+### instrumentation.js API
+
+This API, now stable in Next.js 15, enables monitoring of the Next.js server lifecycle. You can use it for performance monitoring, error tracking, and integration with monitoring tools like OpenTelemetry.
+
+To use it, place an `instrumentation.js` or `instrumentation.ts` file in your project root or inside the `src` folder:
+
+```typescript
+// instrumentation.ts
+import { registerOTel } from '@vercel/otel';
+
+export function register() {
+  registerOTel('next-app');
+}
+
+export async function onRequestError(err, request, context) {
+  await fetch('https://your-monitoring-service.com', {
+    method: 'POST',
+    body: JSON.stringify({ message: err.message, request, context }),
+    headers: { 'Content-Type': 'application/json' },
+  });
+}
+```
+
+This API provides two main functions:
+- `register()`: Called when the Next.js server starts up
+- `onRequestError()`: Used to log and report server errors
+
+### Form Component
+
+The new `Form` component in Next.js 15 provides preloading, client-side navigation on form submission, and progressive enhancement.
+
+Basic example:
+
+```typescript
+// app/ui/search.tsx
+import Form from 'next/form';
+
+export default function Page() {
+  return (
+    <Form action="/search">
+      {/* On submit, the input value gets added to the URL, e.g., /search?query=abc */}
+      <input name="query" />
+      <button type="submit">Search</button>
+    </Form>
+  );
+}
+```
+
+Using with Server Actions:
+
+```typescript
+// app/invoices/page.tsx
+export default function Page() {
+  async function createInvoice(formData: FormData) {
+    'use server';
+
+    const rawFormData = {
+      customerId: formData.get('customerId'),
+      amount: formData.get('amount'),
+      status: formData.get('status'),
+    };
+
+    // Save operation
+    // Revalidate cache
+  }
+
+  return <Form action={createInvoice}>...</Form>;
+}
+```
+
+### Static Indicator
+
+Next.js 15 displays a visual indicator in the development environment that shows whether a route is pre-rendered at build time. This feature helps you identify static and dynamic routes.
+
+To disable this indicator:
+
+```typescript
+// next.config.ts
+import type { NextConfig } from 'next';
+
+const nextConfig: NextConfig = {
+  devIndicators: {
+    appIsrStatus: false,
+  },
+};
+
+export default nextConfig;
+```
+
+If you expect a route to be static but the indicator is not showing, the route has likely opted out of static rendering. Possible reasons:
+- Using dynamic APIs that depend on runtime information
+- Requesting uncached data, like an ORM or database driver call
+
+## React 19 Support
+
+Next.js 15 supports React 19 while maintaining backward compatibility with React 18 for the Pages Router. This flexibility allows you to upgrade to React 19 at your own pace.
+
+### Pages Router with React 18
+
+If you're using the Pages Router, you can continue using React 18 while benefiting from Next.js 15 improvements.
+
+> **Important Note**: While it's possible to run Pages Router with React 18 and App Router with React 19 in the same application, this configuration is not recommended as it may lead to unpredictable behavior and typing inconsistencies.
+
+### React Compiler
+
+Next.js 15 supports React Compiler, a new compiler from the React team at Meta. This compiler deeply understands your code and adds automatic optimizations to it.
+
+Benefits of React Compiler:
+- Reduced need for manual use of `useMemo` and `useCallback`
+- Simpler code and easier maintenance
+- Reduced chance of bugs
+
+> **Note**: Currently, React Compiler is only available as a Babel plugin which results in slower development and build times.
+
+### Hydration Error Improvements
+
+Next.js 15 has improved the display of hydration errors. Hydration errors now show the source code of the error along with suggestions for fixing the issue.
 
 ## Routing
 
@@ -303,325 +588,33 @@ export default nextConfig;
 - **useRouter**
 - **userAgent**
 
-For more detailed information, visit the [official Next.js documentation](https://nextjs.org/docs).
+## Upgrade Guide
 
-# تغییرات اساسی در Next.js 15
-
-## تغییر در مدل کش‌کردن
-Next.js 15 تغییرات مهمی در استراتژی کش‌کردن ایجاد کرده است:
-
-### درخواست‌های `fetch`
-- **قبل**: به طور پیش‌فرض از استراتژی `force-cache` استفاده می‌کردند (کش می‌شدند)
-- **اکنون**: به طور پیش‌فرض از استراتژی `no-store` استفاده می‌کنند (کش نمی‌شوند)
-
-برای فعال‌سازی کش:
-```typescript
-// کش‌کردن یک درخواست fetch
-const res = await fetch('https://api.example.com', { cache: 'force-cache' });
-
-// یا تنظیم استراتژی کش برای کل مسیر
-export const dynamic = 'force-static';
-```
-
-### Route Handlers نوع GET
-- **قبل**: به طور پیش‌فرض کش می‌شدند
-- **اکنون**: به طور پیش‌فرض کش نمی‌شوند
-
-برای فعال‌سازی کش:
-```typescript
-// app/api/data/route.ts
-import { NextResponse } from 'next/server';
-
-// فعال‌سازی کش برای این route handler
-export const dynamic = 'force-static';
-
-export async function GET() {
-  const data = await fetchSomeData();
-  return NextResponse.json({ data });
-}
-```
-
-### کش روتر سمت کلاینت
-- **قبل**: کامپوننت‌های صفحه در ناوبری کش می‌شدند
-- **اکنون**: کامپوننت‌های صفحه به طور پیش‌فرض در ناوبری کش نمی‌شوند
-
-برای تنظیم کش روتر سمت کلاینت:
-```typescript
-// next.config.ts
-const nextConfig = {
-  experimental: {
-    staleTimes: {
-      dynamic: 30, // زمان کش برای مسیرهای پویا (به ثانیه)
-      static: 180, // زمان کش برای مسیرهای استاتیک (به ثانیه)
-    },
-  },
-};
-
-export default nextConfig;
-```
-
-## API‌های درخواست ناهمگام
-Next.js 15 به API‌های درخواست ناهمگام انتقال یافته است. این API‌ها شامل موارد زیر هستند:
-- `cookies`
-- `headers`
-- `draftMode`
-- `params` در `layout.js`، `page.js`، `route.js`
-- `searchParams` در `page.js`
-
-نمونه کد قبلی:
-```typescript
-import { cookies } from 'next/headers';
-
-export function AdminPanel() {
-  const cookieStore = cookies();
-  const token = cookieStore.get('token');
-  // ...
-}
-```
-
-نمونه کد جدید:
-```typescript
-import { cookies } from 'next/headers';
-
-export async function AdminPanel() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('token');
-  // ...
-}
-```
-
-برای مهاجرت خودکار:
-```bash
-npx @next/codemod@canary next-async-request-api
-```
-
-## ویژگی‌های جدید در Next.js 15
-
-## API `after` (قبلاً `unstable_after`)
-این API امکان اجرای کد پس از ارسال پاسخ به کاربر را فراهم می‌کند، بدون اینکه کاربر منتظر تکمیل آن بماند. مناسب برای وظایفی مانند لاگینگ، آنالیتیکس و همگام‌سازی با سیستم‌های خارجی.
-
-برای استفاده از این API در Next.js 15:
-
-```typescript
-// next.config.ts
-const nextConfig = {
-  experimental: {
-    after: true,
-  },
-};
-
-export default nextConfig;
-```
-
-```typescript
-// app/layout.tsx
-import { unstable_after as after } from 'next/server';
-import { log } from '@/app/utils';
-
-export default function Layout({ children }) {
-  // وظیفه ثانویه
-  after(() => {
-    log();
-  });
-
-  // وظیفه اصلی
-  return <>{children}</>;
-}
-```
-
-در نسخه 15.1، این API به حالت پایدار رسیده و نام آن به `after` تغییر کرده است:
-
-```typescript
-// app/api/route.ts
-import { after } from 'next/server';
-import { cookies, headers } from 'next/headers';
-import { logUserAction } from '@/app/utils';
-
-export async function POST(request: Request) {
-  // انجام عملیات اصلی
-  // ...
-
-  // لاگ کردن فعالیت کاربر برای آنالیتیکس
-  after(async () => {
-    const userAgent = (await headers().get('user-agent')) || 'unknown';
-    const sessionCookie = (await cookies().get('session-id'))?.value || 'anonymous';
-
-    logUserAction({ sessionCookie, userAgent });
-  });
-
-  return new Response(JSON.stringify({ status: 'success' }), {
-    status: 200,
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-```
-
-## API `instrumentation.js`
-این API که در Next.js 15 به حالت پایدار رسیده، امکان نظارت بر چرخه حیات سرور Next.js را فراهم می‌کند. می‌توانید از آن برای مانیتورینگ عملکرد، ردیابی خطاها و ادغام با ابزارهای نظارتی مانند OpenTelemetry استفاده کنید.
-
-برای استفاده، فایل `instrumentation.js` یا `instrumentation.ts` را در ریشه پروژه یا داخل پوشه `src` قرار دهید:
-
-```typescript
-// instrumentation.ts
-import { registerOTel } from '@vercel/otel';
-
-export function register() {
-  registerOTel('next-app');
-}
-
-export async function onRequestError(err, request, context) {
-  await fetch('https://your-monitoring-service.com', {
-    method: 'POST',
-    body: JSON.stringify({ message: err.message, request, context }),
-    headers: { 'Content-Type': 'application/json' },
-  });
-}
-```
-
-این API دو تابع اصلی ارائه می‌دهد:
-- `register()`: هنگام راه‌اندازی سرور Next.js فراخوانی می‌شود
-- `onRequestError()`: برای ثبت و گزارش خطاهای سرور استفاده می‌شود
-
-## کامپوننت `Form` از `next/form`
-کامپوننت `Form` جدید در Next.js 15 امکان پیش‌بارگیری، ناوبری سمت کلاینت هنگام ارسال فرم و بهبود تدریجی را فراهم می‌کند.
-
-مثال پایه:
-
-```typescript
-// app/ui/search.tsx
-import Form from 'next/form';
-
-export default function Page() {
-  return (
-    <Form action="/search">
-      {/* هنگام ارسال، مقدار ورودی به URL اضافه می‌شود، مثلاً /search?query=abc */}
-      <input name="query" />
-      <button type="submit">جستجو</button>
-    </Form>
-  );
-}
-```
-
-استفاده با Server Actions:
-
-```typescript
-// app/invoices/page.tsx
-export default function Page() {
-  async function createInvoice(formData: FormData) {
-    'use server';
-
-    const rawFormData = {
-      customerId: formData.get('customerId'),
-      amount: formData.get('amount'),
-      status: formData.get('status'),
-    };
-
-    // عملیات ذخیره‌سازی
-    // بازنشانی کش
-  }
-
-  return <Form action={createInvoice}>...</Form>;
-}
-```
-
-## نشانگر استاتیک (Static Indicator)
-Next.js 15 یک نشانگر بصری در محیط توسعه نمایش می‌دهد که مشخص می‌کند آیا یک مسیر در زمان ساخت پیش‌رندر می‌شود یا خیر. این ویژگی به شما کمک می‌کند تا مسیرهای استاتیک و پویا را شناسایی کنید.
-
-برای غیرفعال کردن این نشانگر:
-
-```typescript
-// next.config.ts
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
-  devIndicators: {
-    appIsrStatus: false,
-  },
-};
-
-export default nextConfig;
-```
-
-اگر انتظار دارید مسیری استاتیک باشد اما نشانگر نمایش داده نمی‌شود، احتمالاً مسیر از رندرینگ استاتیک خارج شده است. دلایل احتمالی:
-- استفاده از API‌های پویا که به اطلاعات زمان اجرا وابسته هستند
-- درخواست داده‌ای که کش نشده، مانند فراخوانی ORM یا درایور پایگاه داده
-
-# پشتیبانی از React 19
-
-Next.js 15 از React 19 پشتیبانی می‌کند و همچنین سازگاری عقب‌گرد با React 18 برای Pages Router را حفظ کرده است. این انعطاف‌پذیری به شما امکان می‌دهد تا با سرعت خودتان به React 19 ارتقا دهید.
-
-## Pages Router با React 18
-اگر از Pages Router استفاده می‌کنید، می‌توانید همچنان از React 18 استفاده کنید و از بهبودهای Next.js 15 بهره‌مند شوید.
-
-> **نکته مهم**: اگرچه می‌توان Pages Router را با React 18 و App Router را با React 19 در یک برنامه اجرا کرد، این پیکربندی توصیه نمی‌شود زیرا ممکن است به رفتار غیرقابل پیش‌بینی و ناسازگاری‌های تایپینگ منجر شود.
-
-## React Compiler (آزمایشی)
-Next.js 15 از React Compiler پشتیبانی می‌کند که یک کامپایلر جدید از تیم React در Meta است. این کامپایلر کد شما را در سطح عمیق درک می‌کند و بهینه‌سازی‌های خودکار را به کد شما اضافه می‌کند.
-
-مزایای React Compiler:
-- کاهش نیاز به استفاده دستی از `useMemo` و `useCallback`
-- کد ساده‌تر و نگهداری آسان‌تر
-- کاهش احتمال خطا
-
-> **نکته**: React Compiler در حال حاضر فقط به عنوان یک پلاگین Babel در دسترس است که منجر به کندتر شدن زمان توسعه و ساخت می‌شود.
-
-## بهبود پیام‌های خطای Hydration
-Next.js 15 نمایش خطاهای hydration را بهبود بخشیده است. خطاهای hydration اکنون کد منبع خطا را همراه با پیشنهاداتی برای رفع مشکل نمایش می‌دهند.
-
-# بهبودهای دیگر در Next.js 15
-
-## پشتیبانی از `next.config.ts`
-Next.js 15 از فایل پیکربندی TypeScript پشتیبانی می‌کند:
-
-```typescript
-// next.config.ts
-import type { NextConfig } from 'next';
-
-const nextConfig: NextConfig = {
-  /* گزینه‌های پیکربندی */
-};
-
-export default nextConfig;
-```
-
-## امنیت Server Actions
-Next.js 15 امنیت Server Actions را با دو ویژگی بهبود بخشیده است:
-- نقاط پایانی غیرقابل حدس
-- حذف اکشن‌های استفاده نشده
-
-## بهبودهای میزبانی خودی (Self-hosting)
-Next.js 15 کنترل بیشتری روی هدرهای `Cache-Control` ارائه می‌دهد:
-- امکان پیکربندی مقدار `expireTime` در `next.config`
-- به‌روزرسانی مقدار پیش‌فرض به یک سال
-- عدم بازنویسی مقادیر سفارشی `Cache-Control` با مقادیر پیش‌فرض
-
-## Turbopack پایدار برای توسعه
-Next.js 15 شامل نسخه پایدار Turbopack برای محیط توسعه است که بهبودهای قابل توجهی در عملکرد ارائه می‌دهد:
-- راه‌اندازی سرور محلی 76.7% سریعتر
-- به‌روزرسانی‌های کد با Fast Refresh 96.3% سریعتر
-- کامپایل اولیه مسیر 45.8% سریعتر
-
-## پشتیبانی از ESLint 9
-Next.js 15 از ESLint 9 با حفظ سازگاری عقب‌گرد با ESLint 8 پشتیبانی می‌کند.
-
-# راهنمای ارتقا به Next.js 15
-
-برای ارتقا به Next.js 15، می‌توانید از CLI ارتقای خودکار استفاده کنید:
+To upgrade to Next.js 15, you can use the automated upgrade CLI:
 
 ```bash
-# استفاده از CLI ارتقای خودکار
+# Use the automated upgrade CLI
 npx @next/codemod@canary upgrade latest
 
-# یا ارتقای دستی
+# Or upgrade manually
 npm install next@latest react@latest react-dom@latest
 ```
 
-## نکات مهم برای ارتقا
+### Important Upgrade Notes
 
-1. **بررسی تغییرات کش‌کردن**: کد خود را برای تغییرات در استراتژی کش‌کردن بررسی کنید و در صورت نیاز، کش را به صورت صریح فعال کنید.
+1. **Check Caching Changes**: Review your code for caching strategy changes and explicitly enable caching if needed.
 
-2. **بررسی API‌های درخواست ناهمگام**: از کدمود `next-async-request-api` برای تبدیل خودکار API‌های درخواست همگام به ناهمگام استفاده کنید.
+2. **Check Async Request APIs**: Use the `next-async-request-api` codemod to automatically convert synchronous request APIs to asynchronous.
 
-3. **به‌روزرسانی تست‌ها**: اطمینان حاصل کنید که تست‌های شما با تغییرات اعمال شده سازگار هستند.
+3. **Update Tests**: Make sure your tests are compatible with the changes.
 
-4. **بررسی تغییرات React 19**: اگر از ویژگی‌های خاص React استفاده می‌کنید، راهنمای ارتقای React 19 را مطالعه کنید.
+4. **Review React 19 Changes**: If you use specific React features, check the React 19 upgrade guide.
+
+5. **Self-hosting Considerations**: If you self-host, review the improvements to `Cache-Control` headers.
+
+For more detailed information, visit the [official Next.js documentation](https://nextjs.org/docs).
+
+
+
+
+px-4 py-1 bg-gradient-to-r from-teal-500 to-emerald-500 rounded-full text-sm hover:from-teal-600 hover:to-emerald-600 transition-colors
