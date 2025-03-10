@@ -19,10 +19,9 @@ export const CourseCard = ({ course, isPremiumUser = false }: CourseCardProps) =
     price,
     discountPrice,
     duration,
-    category,
     imageUrl,
     rating,
-    tags,
+    categories,
     isFree,
     isFreePremium,
     sessionsCount = 0,
@@ -81,11 +80,6 @@ export const CourseCard = ({ course, isPremiumUser = false }: CourseCardProps) =
               {title}
             </h3>
             
-            {/* Category */}
-            <div className="mb-3 rounded-full bg-gray-100 px-3 py-1 text-center text-xs font-medium dark:bg-gray-800 w-fit">
-              {category}
-            </div>
-            
             {/* Short description */}
             <p className="mb-4 line-clamp-2 text-sm text-gray-600 dark:text-gray-400">
               {description}
@@ -107,19 +101,17 @@ export const CourseCard = ({ course, isPremiumUser = false }: CourseCardProps) =
                     )}
                   </div>
                 ) : discountPrice ? (
-                  <>
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-gray-900 dark:text-white">
-                        {formattedPrice(discountPrice)} تومان
-                      </span>
-                      <span className="rounded-md bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
-                        {Math.round(((price - discountPrice) / price) * 100)}%
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg font-bold text-gray-900 dark:text-white">
+                      {formattedPrice(discountPrice)} تومان
+                    </span>
                     <span className="text-xs line-through text-gray-500">
                       {formattedPrice(price)} تومان
                     </span>
-                  </>
+                    <span className="rounded-md bg-red-100 px-1.5 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                      {Math.round(((price - discountPrice) / price) * 100)}%
+                    </span>
+                  </div>
                 ) : (
                   <span className="text-lg font-bold text-gray-900 dark:text-white">
                     {formattedPrice(price)} تومان
@@ -136,21 +128,16 @@ export const CourseCard = ({ course, isPremiumUser = false }: CourseCardProps) =
               </div>
             </div>
             
-            {/* Tags */}
+            {/* Categories */}
             <div className="mb-4 flex flex-wrap justify-center gap-1.5">
-              {tags.slice(0, 3).map((tag, index) => (
+              {categories.map((category, index) => (
                 <span 
                   key={index}
                   className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                 >
-                  {tag}
+                  {category}
                 </span>
               ))}
-              {tags.length > 3 && (
-                <span className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300">
-                  +{tags.length - 3}
-                </span>
-              )}
             </div>
             
             {/* Course details - Duration and Sessions Count */}

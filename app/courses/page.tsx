@@ -1,78 +1,71 @@
 'use client';
 
-import { useState } from 'react';
-import CourseGrid from '@/components/course/CourseGrid';
+import { useState, Suspense } from 'react';
 import { courses } from '@/components/data/course';
+import FilteredCourseList from '@/components/course/FilteredCourseList';
+import CourseSearch from '@/components/course/CourseSearch';
+import CourseFilterSidebar from '@/components/course/CourseFilterSidebar';
+import { useSearchParams } from 'next/navigation';
+
+// Definimos los cursos aquí como una constante para evitar recreaciones
+const COURSES = courses;
 
 export default function CoursesPage() {
   const [isPremiumUser, setIsPremiumUser] = useState(false);
+  const searchParams = useSearchParams();
   
-  const featuredCourses = courses.filter(course => course.isFeatured);
-  const freeCourses = courses.filter(course => course.isFree);
-  const premiumFreeCourses = courses.filter(course => course.isFreePremium);
+  // پارامترهای جستجو و فیلتر فعلی
+  const typeFilter = searchParams.get('type') || '';
+  const categoryFilters = searchParams.get('categories')?.split(',').filter(Boolean) || [];
+  const searchQuery = searchParams.get('query') || '';
   
-  const togglePremiumStatus = () => {
-    setIsPremiumUser(prev => !prev);
+  // عنوان صفحه را بر اساس فیلترها و جستجو تنظیم می‌کنیم
+  const getPageTitle = () => {
+    if (searchQuery) {
+      return `نتایج جستجو برای "${searchQuery}"`;
+    }
+    
+    if (typeFilter === 'free') {
+      return 'دوره‌های رایگان';
+    } else if (typeFilter === 'paid') {
+      return 'دوره‌های نقدی';
+    } else if (typeFilter === 'premium') {
+      return 'دوره‌های ویژه اعضا';
+    }
+    
+    return 'همه دوره‌ها';
   };
   
   return (
-    <div className="container mx-auto px-4">
-      <div className="py-10">
-        <h1 className="mb-2 text-center text-4xl font-extrabold">دوره‌های آموزشی</h1>
-        <p className="mx-auto mb-6 max-w-2xl text-center text-gray-600 dark:text-gray-400">
-          مجموعه کاملی از دوره‌های آموزشی مرتبط با برنامه‌نویسی و طراحی وب با بهترین کیفیت و قیمت مناسب
-        </p>
-        
-        <div className="mb-10 flex items-center justify-center">
-          <button
-            onClick={togglePremiumStatus}
-            className={`flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              isPremiumUser 
-                ? 'bg-amber-500 text-white hover:bg-amber-600' 
-                : 'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
-            }`}
-          >
-            <span className="relative flex h-3 w-3">
-              <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${isPremiumUser ? 'bg-white/75' : 'bg-amber-400/75'} opacity-75`}></span>
-              <span className={`relative inline-flex h-3 w-3 rounded-full ${isPremiumUser ? 'bg-white' : 'bg-amber-500'}`}></span>
-            </span>
-            <span>
-              {isPremiumUser ? 'شما عضو ویژه هستید' : 'ارتقا به عضویت ویژه'}
-            </span>
-          </button>
-        </div>
+    <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+      {/* سایدبار فیلتر - در موبایل، بالای محتوا قرار می‌گیرد */}
+      <div className="lg:sticky lg:top-24 lg:h-fit lg:w-64 lg:shrink-0">
+        <Suspense fallback={<div className="h-60 w-full animate-pulse rounded-lg bg-gray-200 dark:bg-gray-800"></div>}>
+          <CourseFilterSidebar courses={COURSES} />
+        </Suspense>
       </div>
-
-      {freeCourses.length > 0 && (
-        <CourseGrid 
-          title="دوره‌های رایگان" 
-          description="دوره‌های آموزشی رایگان برای همه کاربران"
-          courses={freeCourses}
-          isPremiumUser={isPremiumUser}
-        />
-      )}
       
-      {isPremiumUser && premiumFreeCourses.length > 0 && (
-        <CourseGrid 
-          title="دوره‌های ویژه رایگان برای شما" 
-          description="به عنوان عضو ویژه، به این دوره‌ها به صورت رایگان دسترسی دارید"
-          courses={premiumFreeCourses}
-          isPremiumUser={isPremiumUser}
-        />
-      )}
-      
-      <CourseGrid 
-        title="دوره‌های ویژه" 
-        description="دوره‌های منتخب و پرطرفدار با تخفیف ویژه"
-        courses={featuredCourses}
-        isPremiumUser={isPremiumUser}
-      />
-      
-      <CourseGrid 
-        title="همه دوره‌ها"
-        courses={courses}
-        isPremiumUser={isPremiumUser}
-      />
+      {/* محتوای اصلی */}
+      <div className="flex-1">
+        {/* جستجو */}
+        <div className="mb-6">
+          <CourseSearch />
+        </div>
+        
+        {/* عنوان صفحه */}
+        <div className="mb-6">
+          <h2 className="text-xl font-bold">{getPageTitle()}</h2>
+          {/* نمایش تعداد نتایج در صورت وجود فیلتر یا جستجو */}
+          {(typeFilter || categoryFilters.length > 0 || searchQuery) && (
+            <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+              برای دیدن همه دوره‌ها، فیلترها را حذف کنید
+            </p>
+          )}
+        </div>
+        
+        {/* لیست دوره‌های فیلتر شده */}
+        <FilteredCourseList courses={COURSES} isPremiumUser={isPremiumUser} />
+      </div>
     </div>
   );
 } 
