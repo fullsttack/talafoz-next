@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import HeroJson1 from "@/components/tools/HeroJson1";
 import Link from "next/link";
-import { ChevronLeft, BadgeCheck, ArrowRight, User } from "lucide-react";
+import { ChevronLeft, BadgeCheck, User, ArrowLeft } from "lucide-react";
 
 export default function HeroTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -58,7 +58,7 @@ export default function HeroTop() {
             </div>
 
             {/* Animation in mobile view - appears after h1 */}
-            <div className="block lg:hidden mt-8 mb-8">
+            <div className="block lg:hidden mt-8 mb-8 scale-110 transform origin-center">
               <HeroJson1 />
             </div>
 
@@ -77,10 +77,10 @@ export default function HeroTop() {
               <div className="w-full flex gap-3 sm:gap-4 mt-6 sm:mt-8">
                 <Link
                   href="/courses"
-                  className="w-full md:w-auto px-6 sm:px-8 py-3 bg-gradient-to-r from-green to-green-500 hover:from-green-600 hover:to-green-500 text-white rounded-xl shadow-lg shadow-green/20 transition-all duration-300 hover:shadow-xl hover:shadow-green/30 hover:-translate-y-0.5 text-sm sm:text-base font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
+                  className="w-full md:w-auto px-6 sm:px-8 py-3 bg-green text-black rounded-xl shadow-lg shadow-green/20 transition-all duration-300 hover:shadow-xl hover:shadow-green/30 hover:-translate-y-0.5 text-sm sm:text-base font-medium flex items-center justify-center gap-2 relative overflow-hidden group"
                 >
                   <span className="relative z-10">شروع یادگیری</span>
-                  <ArrowRight className="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
+                  <ArrowLeft className="h-5 w-5 relative z-10 group-hover:translate-x-1 transition-transform duration-300" />
                   <span className="absolute right-0 top-0 h-full w-0 bg-white/10 transition-all duration-300 group-hover:w-full"></span>
                 </Link>
                 <Link
@@ -141,8 +141,10 @@ export default function HeroTop() {
           </div>
 
           {/* Animation Side - Only on desktop */}
-          <div className="hidden lg:block lg:w-1/2">
-            <HeroJson1 />
+          <div className="hidden lg:block lg:w-1/2 scale-110 transform origin-center">
+            <div className="max-w-[600px] mx-auto">
+              <HeroJson1 />
+            </div>
           </div>
         </div>
       </div>
