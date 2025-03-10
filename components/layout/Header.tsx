@@ -68,10 +68,11 @@ export const Header = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-0 space-x-reverse space-y-0 relative">
-            <nav className="flex items-center gap-8 px-6">
+            <nav className="flex items-center gap-8 px-6 ">
               {[
                 { href: "/", label: "خانه" },
                 { href: "/courses", label: "دوره‌ها" },
+                { href: "/roadmap", label: "مسیر آموزشی" },
                 { href: "/blog", label: "وبلاگ" },
                 { href: "/about", label: "درباره ما" },
                 { href: "/contact", label: "تماس با ما" },
@@ -84,8 +85,8 @@ export const Header = () => {
                     className={`relative py-2 transition-colors duration-200 text-sm font-medium 
                     ${
                       isActive
-                        ? "text-primary font-bold"
-                        : "text-foreground/70 hover:text-primary"
+                        ? "font-bold"
+                        : "text-foreground hover:text-primary"
                     }`}
                   >
                     {link.label}
