@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { UserProvider } from "@/contexts/user-context";
 import { ThemeProvider } from "@/components/ui/theme-provider";
+import { CourseProvider } from "@/contexts/CourseContext";
 
 const vazir = localFont({
   src: "./fonts/Yekan.woff",
@@ -52,8 +53,10 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <Toaster position="top-center" richColors />
-            {children}
+            <CourseProvider>
+              <Toaster position="top-center" richColors />
+              {children}
+            </CourseProvider>
           </ThemeProvider>
         </UserProvider>
       </body>

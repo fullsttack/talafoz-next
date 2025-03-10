@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
@@ -8,7 +7,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { CourseType } from "./CourseCart";
+
 
 interface CoursesSidebarProps {
   searchQuery: string;
@@ -29,13 +28,11 @@ export function CoursesSidebar({
   searchQuery,
   filterLevel,
   selectedTags,
-  showDiscount,
   sortBy,
   allTags,
   onSearchChange,
   onLevelToggle,
   onTagToggle,
-  onDiscountChange,
   onSortChange,
   onResetFilters,
 }: CoursesSidebarProps) {
@@ -77,44 +74,29 @@ export function CoursesSidebar({
         </div>
       </div>
       
-      {/* Discount filter */}
-      <div className="mb-6">
-        <div className="flex items-center">
-          <Checkbox 
-            id="discount-only" 
-            checked={showDiscount}
-            onCheckedChange={(checked: boolean) => onDiscountChange(checked)}
-          />
-          <Label 
-            htmlFor="discount-only"
-            className="mr-2 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-          >
-            فقط دوره‌های تخفیف‌دار
-          </Label>
-        </div>
-      </div>
+      
       
       {/* Sort options */}
       <div className="mb-6">
         <h3 className="text-lg font-medium mb-3">مرتب‌سازی بر اساس</h3>
         <RadioGroup value={sortBy} onValueChange={onSortChange}>
-          <div className="flex items-center space-x-2 space-x-reverse">
+          <div className="flex items-center gap-2">
             <RadioGroupItem value="newest" id="newest" />
             <Label htmlFor="newest">جدیدترین</Label>
           </div>
-          <div className="flex items-center space-x-2 space-x-reverse">
+          <div className="flex items-center gap-2">
             <RadioGroupItem value="popular" id="popular" />
             <Label htmlFor="popular">محبوب‌ترین</Label>
           </div>
-          <div className="flex items-center space-x-2 space-x-reverse">
+          <div className="flex items-center gap-2">
             <RadioGroupItem value="rating" id="rating" />
             <Label htmlFor="rating">بیشترین امتیاز</Label>
           </div>
-          <div className="flex items-center space-x-2 space-x-reverse">
+          <div className="flex items-center gap-2">
             <RadioGroupItem value="price-low" id="price-low" />
             <Label htmlFor="price-low">ارزان‌ترین</Label>
           </div>
-          <div className="flex items-center space-x-2 space-x-reverse">
+          <div className="flex items-center gap-2">
             <RadioGroupItem value="price-high" id="price-high" />
             <Label htmlFor="price-high">گران‌ترین</Label>
           </div>
