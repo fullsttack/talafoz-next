@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import HeroJson1 from "@/components/tools/HeroJson1";
+import Link from "next/link";
 
 export default function HeroTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -36,40 +37,75 @@ export default function HeroTop() {
             {/* Badge */}
             <div className="inline-flex items-center px-3 py-1 rounded-full bg-gradient-to-r from-green/10 to-green/5 border border-green/20">
               <span className="w-2 h-2 rounded-full bg-green ml-2"></span>
-              <span className="text-sm font-medium text-green">وبسایت آموزشی تلفظ</span>
+              <span className="text-sm font-medium text-green">پلتفرم تخصصی آموزش تلفظ</span>
             </div>
             
             {/* Main heading */}
-            <h1 className="text-4xl sm:text-2xl lg:text-3xl font-bold leading-tight ">
-              یادگیری <span className="relative inline-block">
-                <span className="relative z-10 text-green">برنامه‌نویسی حرفه‌ای</span>
+            <h1 className="text-2xl sm:text-xl lg:text-2xl font-bold leading-tight ">
+              تسلط بر <span className="relative inline-block">
+                <span className="relative z-10 text-green">مهارت‌های دیجیتال</span>
                 <span className="absolute -bottom-2 left-0 right-0 h-3 bg-green/10 rounded-lg"></span>
-              </span> را با ما شروع کنید
+              </span> با آموزش‌های کاربردی
             </h1>
             
             {/* Description with enhanced typography */}
-            <p className="text-base text-gray-500 leading-relaxed">
-              دوره‌های جامع و کاربردی برنامه‌نویسی وب، موبایل، هوش مصنوعی و دیگر تکنولوژی‌های روز دنیا. 
-              با تدریس اساتید مجرب و پروژه‌های واقعی، مسیر شغلی خود را متحول کنید.
+            <p className="text-sm text-gray-500 dark:text-gray-300  leading-relaxed">
+              دوره‌های جامع و پیشرفته در زمینه‌های برنامه‌نویسی وب، موبایل، هوش مصنوعی و فناوری‌های نوین.
+              با متدهای آموزشی منحصربفرد، بیش از ۵۰ دوره تخصصی و پشتیبانی ۲۴/۷ از متخصصین، مسیر شغلی خود را متحول کنید.
             </p>
             
+            {/* Features */}
+            <div className="grid grid-cols-2 gap-4 mt-6">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-green/10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-sm text-gray-500 dark:text-gray-300">بیش از ۵۰ دوره تخصصی</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-green/10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-sm text-gray-500 dark:text-gray-300">گواهینامه معتبر بین‌المللی</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-green/10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-sm text-gray-500 dark:text-gray-300">پشتیبانی ۲۴/۷</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-green/10 flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-green" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-sm text-gray-500 dark:text-gray-300">پروژه‌های عملی و واقعی</span>
+              </div>
+            </div>
+            
             {/* CTA Buttons with enhanced design */}
-            <div className="flex flex-wrap gap-4">
-              <button className="px-8 py-4 bg-gradient-to-r from-green to-green/90 text-white rounded-lg shadow-lg shadow-green/20 transition-all hover:shadow-xl hover:shadow-green/30 hover:-translate-y-0.5 text-base font-medium flex items-center gap-2">
-                <span>مشاهده دوره‌ها</span>
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z" clipRule="evenodd" />
-                </svg>
-              </button>
-              <button className="px-8 py-4 bg-white text-gray-700 border border-gray-200 rounded-lg shadow-sm transition-all hover:shadow-md hover:border-gray-300 hover:-translate-y-0.5 text-base font-medium">
-                مسیر یادگیری
-              </button>
+            <div className="flex flex-wrap gap-4 mt-8">
+              <Link href="/courses" className="px-8 py-2 border border-green rounded-lg shadow-lg shadow-green/20 transition-all hover:shadow-xl hover:shadow-green/30 hover:-translate-y-0.5 text-base  flex items-center gap-2">
+                <span>شروع یادگیری</span>
+                
+              </Link>
+              <Link href="/roadmap" className="px-8 py-2 bg-green text-white rounded-lg transition-all text-base  flex items-center gap-2">
+                <span>مسیر آموزشی</span>
+                
+              </Link>
             </div>
             
 
             
             {/* Trust indicators */}
-            <div className="pt-6 border-t border-gray-100">
+            <div className="pt-6 ">
               <p className="text-sm text-gray-500 mb-3">مورد اعتماد بیش از ۱۰,۰۰۰ دانشجو</p>
               <div className="flex items-center gap-6">
                 <div className="h-8 w-auto opacity-70">
