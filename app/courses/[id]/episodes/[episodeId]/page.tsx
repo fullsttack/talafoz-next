@@ -32,6 +32,31 @@ export async function generateStaticParams() {
 // Set dynamic mode to force-static for static export
 export const dynamic = 'force-static';
 
+// Add metadata for the episode page
+export function generateMetadata({ params }: EpisodePageProps) {
+  const courseId = params.id;
+  const episodeId = params.episodeId;
+  
+  const course = courses.find(course => course.id === courseId);
+  if (!course) return { title: 'اپیزود یافت نشد' };
+  
+  let episodeTitle = 'اپیزود';
+  if (course.chapters) {
+    for (const chapter of course.chapters) {
+      const episode = chapter.episodes.find(ep => ep.id === episodeId);
+      if (episode) {
+        episodeTitle = episode.title;
+        break;
+      }
+    }
+  }
+  
+  return {
+    title: `${episodeTitle} | ${course.title}`,
+    description: `تماشای اپیزود ${episodeTitle} از دوره ${course.title}`
+  };
+}
+
 export default async function EpisodePage({ params }: EpisodePageProps) {
   // Access params directly
   const courseId = params.id;
@@ -66,13 +91,10 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
   }
   
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* مسیر ناوبری و محتوای اصلی توسط کامپوننت کلاینت مدیریت می‌شود */}
-      <CourseEpisodePage 
-        course={course} 
-        episode={targetEpisode} 
-        chapter={targetChapter} 
-      />
-    </div>
+    <CourseEpisodePage 
+      course={course} 
+      episode={targetEpisode} 
+      chapter={targetChapter} 
+    />
   );
 } 

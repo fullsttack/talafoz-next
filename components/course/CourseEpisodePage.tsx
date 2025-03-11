@@ -2,10 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Lock, Play, Check, ChevronDown, ChevronUp, Clock, BookOpen, Award, ArrowLeft } from 'lucide-react';
+import { ChevronLeft, Lock, Play, Check, ChevronDown, ChevronUp, Clock, BookOpen, Award, ArrowLeft, FileText, Paperclip, MessageSquare, PenLine } from 'lucide-react';
 import { Course, Episode, Chapter } from '@/components/data/course';
 import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
 import EpisodeFeaturesTabs from '@/components/episode/EpisodeFeaturesTabs';
+import EpisodeNotes from '@/components/episode/EpisodeNotes';
+import EpisodeAssignments from '@/components/episode/EpisodeAssignments';
+import EpisodeAttachments from '@/components/episode/EpisodeAttachments';
+import EpisodeComments from '@/components/episode/EpisodeComments';
 
 interface CourseEpisodePageProps {
   course: Course;
@@ -18,6 +22,8 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   const [hasPurchasedCourse, setHasPurchasedCourse] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null);
   const [currentPlayerTime, setCurrentPlayerTime] = useState(0);
+  const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
+  const [activeTab, setActiveTab] = useState<'chapters' | 'notes' | 'assignments' | 'attachments' | 'comments'>('chapters');
   
   // مدیریت پیشرفت تماشای اپیزودها - با مقادیر ثابت به جای تصادفی
   const [watchedProgress, setWatchedProgress] = useState<Record<string, number>>(() => {
@@ -48,27 +54,15 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   const [completedEpisodes, setCompletedEpisodes] = useState<string[]>(() => {
     const completed: string[] = [];
     // اپیزودهایی که پیشرفت 95% یا بیشتر دارند را به عنوان تکمیل شده علامت‌گذاری می‌کنیم
-    Object.entries(watchedProgress).forEach(([episodeId, progress]) => {
+    Object.entries(watchedProgress).forEach(([epId, progress]) => {
       if (progress >= 95) {
-        completed.push(episodeId);
+        completed.push(epId);
       }
     });
     return completed;
   });
   
-  // مدیریت باز و بسته کردن فصل‌ها
-  const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>(() => {
-    // فقط فصل فعلی باز باشد
-    const expanded: Record<string, boolean> = {};
-    if (course.chapters) {
-      course.chapters.forEach(ch => {
-        expanded[ch.id] = ch.id === chapter.id;
-      });
-    }
-    return expanded;
-  });
-  
-  // تغییر حالت باز/بسته بودن فصل
+  // توسعه/بستن فصل‌ها
   const toggleChapter = (chapterId: string) => {
     setExpandedChapters(prev => ({
       ...prev,
@@ -76,83 +70,105 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
     }));
   };
   
-  // هنگام تغییر پیشرفت ویدیو
+  // مدیریت پیشرفت ویدیو
   const handleVideoProgress = (progressPercent: number, currentTime?: number) => {
-    setWatchedProgress(prev => {
-      // بروزرسانی فقط اگر پیشرفت بیشتر شده باشد
-      if (!prev[episode.id] || progressPercent > prev[episode.id]) {
-        return { ...prev, [episode.id]: progressPercent };
-      }
-      return prev;
-    });
+    setWatchedProgress(prev => ({
+      ...prev,
+      [episode.id]: progressPercent
+    }));
     
-    // اگر به انتهای ویدیو رسیده، به لیست تکمیل شده‌ها اضافه شود
-    if (progressPercent >= 95 && !completedEpisodes.includes(episode.id)) {
-      setCompletedEpisodes(prev => [...prev, episode.id]);
-      setShowSuccessMessage('تبریک! این اپیزود را کامل کردید.');
-    }
-    
-    // Update current player time for the notes tab
+    // ذخیره موقعیت فعلی ویدیو
     if (currentTime !== undefined) {
       setCurrentPlayerTime(currentTime);
     }
-  };
-  
-  // محاسبه درصد تکمیل یک فصل
-  const calculateChapterProgress = (ch: Chapter) => {
-    const totalEpisodes = ch.episodes.length;
-    if (totalEpisodes === 0) return 0;
     
-    const completedInChapter = ch.episodes.filter(ep => 
-      completedEpisodes.includes(ep.id) || 
-      (watchedProgress[ep.id] && watchedProgress[ep.id] >= 95)
-    ).length;
-    
-    return Math.round((completedInChapter / totalEpisodes) * 100);
-  };
-  
-  // محاسبه درصد تکمیل کل دوره
-  const calculateCourseProgress = () => {
-    let totalEpisodes = 0;
-    let completedCount = 0;
-    
-    if (course.chapters) {
-      course.chapters.forEach(ch => {
-        totalEpisodes += ch.episodes.length;
-        completedCount += ch.episodes.filter(ep => 
-          completedEpisodes.includes(ep.id) || 
-          (watchedProgress[ep.id] && watchedProgress[ep.id] >= 95)
-        ).length;
+    // تغییر وضعیت تکمیل اپیزود
+    if (progressPercent >= 95) {
+      setCompletedEpisodes(prev => {
+        if (!prev.includes(episode.id)) {
+          return [...prev, episode.id];
+        }
+        return prev;
       });
     }
-    
-    return totalEpisodes > 0 ? Math.round((completedCount / totalEpisodes) * 100) : 0;
   };
   
-  // بررسی دسترسی کاربر به اپیزود
+  // محاسبه پیشرفت فصل
+  const calculateChapterProgress = (ch: Chapter) => {
+    if (!ch.episodes || ch.episodes.length === 0) return 0;
+    
+    let totalProgress = 0;
+    ch.episodes.forEach(ep => {
+      // اپیزودهای تکمیل شده 100%، بقیه بر اساس پیشرفت
+      if (completedEpisodes.includes(ep.id)) {
+        totalProgress += 100;
+      } else {
+        totalProgress += watchedProgress[ep.id] || 0;
+      }
+    });
+    
+    return Math.round(totalProgress / ch.episodes.length);
+  };
+  
+  // محاسبه پیشرفت کل دوره
+  const calculateCourseProgress = () => {
+    if (!course.chapters || course.chapters.length === 0) return 0;
+    
+    let totalEpisodes = 0;
+    let totalProgress = 0;
+    
+    course.chapters.forEach(ch => {
+      if (ch.episodes && ch.episodes.length > 0) {
+        ch.episodes.forEach(ep => {
+          totalEpisodes++;
+          // اپیزودهای تکمیل شده 100%، بقیه بر اساس پیشرفت
+          if (completedEpisodes.includes(ep.id)) {
+            totalProgress += 100;
+          } else {
+            totalProgress += watchedProgress[ep.id] || 0;
+          }
+        });
+      }
+    });
+    
+    return totalEpisodes > 0 ? Math.round(totalProgress / totalEpisodes) : 0;
+  };
+  
+  // تغییر وضعیت کاربر به عضو ویژه
+  const togglePremiumStatus = () => {
+    setIsPremiumUser(prev => {
+      const newStatus = !prev;
+      if (newStatus) {
+        setShowSuccessMessage('عضویت ویژه با موفقیت فعال شد');
+      }
+      return newStatus;
+    });
+  };
+  
+  // تغییر وضعیت خرید دوره
+  const togglePurchaseStatus = () => {
+    setHasPurchasedCourse(prev => {
+      const newStatus = !prev;
+      if (newStatus) {
+        setShowSuccessMessage('دوره با موفقیت خریداری شد');
+      }
+      return newStatus;
+    });
+  };
+  
+  // بررسی دسترسی کاربر به محتوا
   const hasAccess = episode.isFree || hasPurchasedCourse || (isPremiumUser && course.isFreePremium);
   
-  // تغییر وضعیت عضویت ویژه (برای نمایش)
-  const togglePremiumStatus = () => {
-    setIsPremiumUser(!isPremiumUser);
-    // نمایش پیام
-    setShowSuccessMessage(isPremiumUser 
-      ? 'عضویت ویژه غیرفعال شد.' 
-      : 'عضویت ویژه فعال شد! حالا می‌توانید به دوره‌های ویژه دسترسی داشته باشید.'
-    );
-  };
+  // نمایش فصل فعلی به صورت باز
+  useEffect(() => {
+    if (chapter) {
+      setExpandedChapters(prev => ({
+        ...prev,
+        [chapter.id]: true
+      }));
+    }
+  }, [chapter]);
   
-  // تغییر وضعیت خرید دوره (برای نمایش)
-  const togglePurchaseStatus = () => {
-    setHasPurchasedCourse(!hasPurchasedCourse);
-    // نمایش پیام
-    setShowSuccessMessage(hasPurchasedCourse 
-      ? 'وضعیت خرید دوره غیرفعال شد.' 
-      : 'تبریک! دوره خریداری شد و اکنون به تمام محتوای آن دسترسی دارید.'
-    );
-  };
-  
-  // پیام موفقیت که پس از مدتی ناپدید می‌شود
   useEffect(() => {
     if (showSuccessMessage) {
       const timer = setTimeout(() => {
@@ -166,6 +182,15 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   // محاسبه پیشرفت کل دوره
   const courseProgress = calculateCourseProgress();
   
+  // آرایه تب‌ها برای نمایش در ساید‌بار
+  const tabs = [
+    { id: 'chapters', label: 'فصل‌ها', icon: <BookOpen className="h-4 w-4" /> },
+    { id: 'notes', label: 'یادداشت‌ها', icon: <PenLine className="h-4 w-4" /> },
+    { id: 'assignments', label: 'تمرین‌ها', icon: <FileText className="h-4 w-4" /> },
+    { id: 'attachments', label: 'ضمیمه', icon: <Paperclip className="h-4 w-4" /> },
+    { id: 'comments', label: 'نظرات', icon: <MessageSquare className="h-4 w-4" /> },
+  ];
+
   return (
     <>
       {/* پیام موفقیت */}
@@ -175,246 +200,234 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
         </div>
       )}
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-        {/* هدر دوره */}
-        <div className="bg-gradient-to-r from-primary/90 to-primary text-white">
-          <div className="container mx-auto px-4 py-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <div className="flex items-center gap-2 text-white/80 mb-2">
-                  <Link href="/courses" className="hover:text-white flex items-center gap-1">
-                    <ArrowLeft className="h-4 w-4" />
-                    <span>دوره‌ها</span>
-                  </Link>
-                  <span>/</span>
-                  <Link href={`/courses/${course.id}`} className="hover:text-white">{course.title}</Link>
-                </div>
-                <h1 className="text-xl md:text-2xl font-bold">{episode.title}</h1>
-                <div className="flex items-center gap-4 mt-2">
-                  <div className="flex items-center gap-1 text-white/90">
-                    <Clock className="h-4 w-4" />
-                    <span className="text-sm">{episode.duration}</span>
-                  </div>
-                  {episode.isFree && (
-                    <span className="bg-green-500/20 text-white px-2 py-0.5 rounded-full text-xs">
-                      رایگان
-                    </span>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex flex-col items-end">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-sm text-white/90">پیشرفت دوره:</span>
-                  <span className="font-bold">{courseProgress}%</span>
-                </div>
-                <div className="w-full md:w-48 h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div 
-                    className="h-full bg-white rounded-full"
-                    style={{ width: `${courseProgress}%` }}
-                  />
-                </div>
-              </div>
+      {/* لینک بازگشت به صفحه دوره در موبایل */}
+      <div className="fixed top-4 left-4 z-50 md:hidden">
+        <Link
+          href={`/courses/${course.id}`}
+          className="flex h-10 w-10 items-center justify-center rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/30"
+        >
+          <ArrowLeft className="h-5 w-5" />
+        </Link>
+      </div>
+
+      <div className="h-screen w-full flex overflow-hidden bg-gray-900">
+        {/* بخش ویدیو پلیر - سمت راست */}
+        <div className="flex-1 h-full overflow-hidden flex flex-col">
+          {/* هدر کوچک در بالای ویدیو پلیر - فقط در نمایش دسکتاپ */}
+          <div className="hidden md:flex items-center justify-between p-4 bg-gray-800 text-white">
+            <div className="flex items-center gap-2">
+              <Link href={`/courses/${course.id}`} className="hover:text-primary flex items-center gap-1">
+                <ArrowLeft className="h-4 w-4" />
+                <span>بازگشت به دوره</span>
+              </Link>
+              <span className="text-gray-400 mx-2">|</span>
+              <h1 className="text-lg font-medium line-clamp-1">{episode.title}</h1>
             </div>
-          </div>
-        </div>
-        
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex flex-col lg:flex-row gap-6">
-            {/* ستون اصلی - ویدیو و محتوا */}
-            <div className="w-full lg:w-3/4 space-y-6">
-              {/* ویدیو پلیر */}
-              <div className="bg-gray-900 rounded-xl overflow-hidden shadow-lg">
-                {hasAccess ? (
-                  <CourseEpisodePlayer 
-                    episode={episode} 
-                    onProgressChange={handleVideoProgress}
-                    initialProgress={watchedProgress[episode.id] || 0}
-                  />
-                ) : (
-                  <div className="flex h-[250px] sm:h-[300px] md:h-[400px] flex-col items-center justify-center p-6 text-center">
-                    <div className="mb-4 rounded-full bg-gray-800 p-4">
-                      <Lock className="h-10 w-10 text-amber-500" />
-                    </div>
-                    <h3 className="mb-2 text-xl font-bold text-white">این محتوا قفل شده است</h3>
-                    <p className="mb-6 text-gray-400 max-w-md">
-                      برای مشاهده این قسمت، باید دوره را خریداری کنید یا عضو ویژه باشید.
-                    </p>
-                    <div className="flex flex-wrap gap-3 justify-center">
-                      <button 
-                        onClick={togglePurchaseStatus}
-                        className="rounded-md bg-primary px-6 py-2.5 text-white hover:bg-primary/90 transition-colors"
-                      >
-                        خرید دوره
-                      </button>
-                      {course.isFreePremium && (
-                        <button 
-                          onClick={togglePremiumStatus}
-                          className="rounded-md border border-amber-500 bg-transparent px-6 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors"
-                        >
-                          فعال‌سازی عضویت ویژه
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
-              
-              {/* کارت اطلاعات اپیزود */}
-              {episode.description && (
-                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
-                  <h3 className="font-bold text-lg mb-3 flex items-center gap-2">
-                    <BookOpen className="h-5 w-5 text-primary" />
-                    توضیحات این اپیزود
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed">
-                    {episode.description}
-                  </p>
-                </div>
-              )}
-              
-              {/* تب‌های امکانات */}
-              <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-6 shadow-sm">
-                <EpisodeFeaturesTabs 
-                  episodeId={episode.id} 
-                  courseId={course.id}
-                  currentTime={currentPlayerTime}
+            <div className="flex items-center gap-4">
+              <div className="text-sm text-gray-300">پیشرفت دوره: {courseProgress}%</div>
+              <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-primary rounded-full"
+                  style={{ width: `${courseProgress}%` }}
                 />
               </div>
             </div>
-            
-            {/* ستون کناری - لیست اپیزودها */}
-            <div className="w-full lg:w-1/4">
-              <div className="sticky top-6">
-                <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-                  <div className="bg-gray-100 dark:bg-gray-800 p-4 border-b border-gray-200 dark:border-gray-700">
-                    <h2 className="font-bold text-lg flex items-center gap-2">
-                      <Award className="h-5 w-5 text-primary" />
-                      محتوای دوره
-                    </h2>
-                  </div>
-                  
-                  <div className="divide-y divide-gray-200 dark:divide-gray-800 max-h-[calc(100vh-200px)] overflow-y-auto">
-                    {course.chapters && course.chapters.map(ch => {
-                      const chapterProgress = calculateChapterProgress(ch);
-                      return (
-                        <div key={ch.id} className="border-b border-gray-200 last:border-b-0 dark:border-gray-800">
-                          {/* سرفصل */}
-                          <button
-                            onClick={() => toggleChapter(ch.id)}
-                            className="flex w-full items-center justify-between p-4 text-right hover:bg-gray-50 dark:hover:bg-gray-800/60"
-                          >
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
-                                <h3 className="font-bold">{ch.title}</h3>
-                                <div className="flex items-center">
-                                  {expandedChapters[ch.id] ? 
-                                    <ChevronUp className="h-5 w-5" /> : 
-                                    <ChevronDown className="h-5 w-5" />
-                                  }
-                                </div>
-                              </div>
-                              
-                              <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
-                                <span>{ch.episodes.length} قسمت</span>
-                                <span>{chapterProgress}% تکمیل شده</span>
-                              </div>
-                              
-                              {/* نوار پیشرفت فصل */}
-                              <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                <div 
-                                  className="h-full rounded-full bg-primary"
-                                  style={{ width: `${chapterProgress}%` }}
-                                />
-                              </div>
-                            </div>
-                          </button>
-                          
-                          {/* اپیزودهای فصل */}
-                          {expandedChapters[ch.id] && (
-                            <div className="border-t border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-900/30">
-                              {ch.episodes.map(ep => {
-                                // بررسی دسترسی به هر اپیزود
-                                const episodeAccess = 
-                                  ep.isFree || 
-                                  hasPurchasedCourse || 
-                                  (isPremiumUser && course.isFreePremium);
-                                
-                                // آیا اپیزود فعلی است؟
-                                const isActive = ep.id === episode.id;
-                                const progressPercent = watchedProgress[ep.id] || 0;
-                                const isCompleted = completedEpisodes.includes(ep.id) || progressPercent >= 95;
-                                
-                                return (
-                                  <Link
-                                    href={`/courses/${course.id}/episodes/${ep.id}`}
-                                    key={ep.id}
-                                    className={`flex items-start gap-3 p-3 border-b border-gray-100 dark:border-gray-800/50 last:border-b-0 transition-colors ${
-                                      isActive 
-                                        ? 'bg-primary/5 dark:bg-primary/10' 
-                                        : episodeAccess
-                                          ? 'hover:bg-gray-100 dark:hover:bg-gray-800/60'
-                                          : 'opacity-70'
-                                    }`}
-                                  >
-                                    <div className="shrink-0 mt-0.5">
-                                      {!episodeAccess ? (
-                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
-                                          <Lock className="h-3 w-3 text-gray-500 dark:text-gray-400" />
-                                        </div>
-                                      ) : isCompleted ? (
-                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-100 dark:bg-green-800/30">
-                                          <Check className="h-3 w-3 text-green-600 dark:text-green-400" />
-                                        </div>
-                                      ) : isActive ? (
-                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/20">
-                                          <Play className="h-3 w-3 text-primary" />
-                                        </div>
-                                      ) : (
-                                        <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
-                                          <Play className="h-3 w-3 text-gray-700 dark:text-gray-300" />
-                                        </div>
-                                      )}
-                                    </div>
-                                    
-                                    <div className="min-w-0 flex-1">
-                                      <p className={`truncate font-medium text-sm ${
-                                        isActive ? 'text-primary' : ''
-                                      }`}>
-                                        {ep.title}
-                                      </p>
-                                      
-                                      <div className="flex items-center justify-between mt-1">
-                                        <span className="text-xs text-gray-500 dark:text-gray-400">{ep.duration}</span>
-                                        {isCompleted && (
-                                          <span className="text-xs text-green-600 dark:text-green-400">تکمیل شده</span>
-                                        )}
-                                      </div>
-                                      
-                                      {/* نوار پیشرفت - با مقدار ثابت برای پیشگیری از خطای hydration */}
-                                      {episodeAccess && progressPercent > 0 && !isCompleted && (
-                                        <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
-                                          <div 
-                                            className="h-full rounded-full bg-primary"
-                                            style={{ width: `${progressPercent}%` }}
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
-                                  </Link>
-                                );
-                              })}
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
+          </div>
+          
+          {/* ویدیو پلیر */}
+          <div className="flex-1 flex items-center justify-center bg-black overflow-hidden">
+            {hasAccess ? (
+              <CourseEpisodePlayer 
+                episode={episode} 
+                onProgressChange={handleVideoProgress}
+                initialProgress={watchedProgress[episode.id] || 0}
+              />
+            ) : (
+              <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
+                <div className="mb-4 rounded-full bg-gray-800 p-4">
+                  <Lock className="h-10 w-10 text-amber-400" />
                 </div>
+                <h3 className="mb-2 text-xl font-bold text-white">این محتوا قفل شده است</h3>
+                <p className="mb-6 text-gray-400 max-w-md">
+                  برای مشاهده این قسمت، باید دوره را خریداری کنید یا عضو ویژه باشید.
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <button 
+                    onClick={togglePurchaseStatus}
+                    className="rounded-md bg-primary px-6 py-2.5 text-white hover:bg-primary/90 transition-colors"
+                  >
+                    خرید دوره
+                  </button>
+                  {course.isFreePremium && (
+                    <button 
+                      onClick={togglePremiumStatus}
+                      className="rounded-md border border-amber-500 bg-transparent px-6 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors"
+                    >
+                      فعال‌سازی عضویت ویژه
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* سایدبار - سمت چپ */}
+        <div className="w-full md:w-[450px] lg:w-[500px] xl:w-[550px] h-screen flex flex-col bg-gray-800 border-r border-gray-700 overflow-hidden">
+          {/* نام دوره و عنوان اپیزود در موبایل */}
+          <div className="md:hidden p-4 border-b border-gray-700 bg-gray-800 text-white">
+            <h2 className="font-bold text-lg mb-1">{course.title}</h2>
+            <h3 className="text-sm text-gray-300">{episode.title}</h3>
+          </div>
+          
+          {/* تب‌های سایدبار */}
+          <div className="bg-gray-900/40 border-b border-gray-700">
+            <div className="flex justify-between overflow-x-auto px-0.5 pt-0.5">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`flex flex-1 flex-col items-center gap-0.5 px-1 py-1.5 text-sm font-medium transition-all rounded-t-lg relative ${
+                    activeTab === tab.id
+                      ? 'bg-gray-800 text-primary shadow-sm'
+                      : 'text-gray-400 hover:bg-gray-700/40 hover:text-gray-200'
+                  }`}
+                >
+                  {activeTab === tab.id && (
+                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
+                  )}
+                  <div className={`${activeTab === tab.id ? 'text-primary' : 'text-gray-400'}`}>
+                    {tab.icon}
+                  </div>
+                  <span className="text-[10px]">{tab.label}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* محتوای تب‌ها */}
+          <div className="flex-1 overflow-y-auto py-5 px-4 bg-gray-800">
+            {/* تب فصل‌ها */}
+            {activeTab === 'chapters' && (
+              <div className="divide-y divide-gray-700">
+                {course.chapters && course.chapters.map(ch => {
+                  const chapterProgress = calculateChapterProgress(ch);
+                  return (
+                    <div key={ch.id} className="border-b border-gray-700 last:border-b-0">
+                      {/* سرفصل */}
+                      <button
+                        onClick={() => toggleChapter(ch.id)}
+                        className="flex w-full items-center justify-between p-4 text-right hover:bg-gray-700/60"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between mb-1">
+                            <h3 className="font-bold text-white">{ch.title}</h3>
+                            <div className="flex items-center">
+                              {expandedChapters[ch.id] ? 
+                                <ChevronUp className="h-5 w-5 text-gray-400" /> : 
+                                <ChevronDown className="h-5 w-5 text-gray-400" />
+                              }
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center justify-between text-xs text-gray-400">
+                            <span>{ch.episodes.length} قسمت</span>
+                            <span>{chapterProgress}% تکمیل شده</span>
+                          </div>
+                          
+                          {/* نوار پیشرفت فصل */}
+                          <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-gray-700">
+                            <div 
+                              className="h-full rounded-full bg-primary"
+                              style={{ width: `${chapterProgress}%` }}
+                            />
+                          </div>
+                        </div>
+                      </button>
+                      
+                      {/* اپیزودهای فصل */}
+                      {expandedChapters[ch.id] && (
+                        <div className="border-t border-gray-700 bg-gray-800/50">
+                          {ch.episodes.map(ep => {
+                            // بررسی دسترسی به هر اپیزود
+                            const episodeAccess = 
+                              ep.isFree || 
+                              hasPurchasedCourse || 
+                              (isPremiumUser && course.isFreePremium);
+                            
+                            // آیا اپیزود فعلی است؟
+                            const isActive = ep.id === episode.id;
+                            const progressPercent = watchedProgress[ep.id] || 0;
+                            const isCompleted = completedEpisodes.includes(ep.id) || progressPercent >= 95;
+                            
+                            return (
+                              <Link
+                                href={`/courses/${course.id}/episodes/${ep.id}`}
+                                key={ep.id}
+                                className={`flex items-start gap-3 p-3 border-b border-gray-700 last:border-b-0 transition-colors ${
+                                  isActive 
+                                    ? 'bg-primary/20' 
+                                    : episodeAccess
+                                      ? 'hover:bg-gray-700/40'
+                                      : 'opacity-70'
+                                }`}
+                              >
+                                <div className="shrink-0 mt-0.5">
+                                  {!episodeAccess ? (
+                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-700">
+                                      <Lock className="h-3 w-3 text-amber-400" />
+                                    </div>
+                                  ) : isCompleted ? (
+                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-800/30">
+                                      <Check className="h-3 w-3 text-green-400" />
+                                    </div>
+                                  ) : isActive ? (
+                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/30">
+                                      <Play className="h-3 w-3 text-primary" />
+                                    </div>
+                                  ) : (
+                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-700">
+                                      <Play className="h-3 w-3 text-gray-300" />
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                <div className="min-w-0 flex-1">
+                                  <p className={`truncate font-medium text-sm ${
+                                    isActive ? 'text-primary' : 'text-gray-200'
+                                  }`}>
+                                    {ep.title}
+                                  </p>
+                                  
+                                  <div className="flex items-center justify-between mt-1">
+                                    <span className="text-xs text-gray-400">{ep.duration}</span>
+                                    {isCompleted && (
+                                      <span className="text-xs text-green-400">تکمیل شده</span>
+                                    )}
+                                  </div>
+                                  
+                                  {/* نوار پیشرفت */}
+                                  {episodeAccess && progressPercent > 0 && !isCompleted && (
+                                    <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-gray-700">
+                                      <div 
+                                        className="h-full rounded-full bg-primary"
+                                        style={{ width: `${progressPercent}%` }}
+                                      />
+                                    </div>
+                                  )}
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
                 
-                {/* دکمه‌های دسترسی */}
+                {/* دکمه‌های دسترسی - فقط در تب فصل‌ها و در صورت نداشتن دسترسی */}
                 {!hasAccess && (
-                  <div className="mt-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 p-4 shadow-sm">
+                  <div className="p-4 bg-gray-800">
                     <div className="flex flex-col gap-2">
                       <button 
                         onClick={togglePurchaseStatus}
@@ -434,7 +447,77 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                   </div>
                 )}
               </div>
-            </div>
+            )}
+            
+            {/* تب یادداشت‌ها */}
+            {activeTab === 'notes' && hasAccess && (
+              <div className="p-3 bg-gray-900/60 rounded-lg">
+                <EpisodeNotes 
+                  episodeId={episode.id} 
+                  courseId={course.id} 
+                  currentTime={currentPlayerTime} 
+                />
+              </div>
+            )}
+            
+            {/* تب تمرین‌ها */}
+            {activeTab === 'assignments' && hasAccess && (
+              <div className="p-3 bg-gray-900/60 rounded-lg">
+                <EpisodeAssignments 
+                  episodeId={episode.id} 
+                  courseId={course.id} 
+                />
+              </div>
+            )}
+            
+            {/* تب فایل‌های ضمیمه */}
+            {activeTab === 'attachments' && hasAccess && (
+              <div className="p-3 bg-gray-900/60 rounded-lg">
+                <EpisodeAttachments 
+                  episodeId={episode.id} 
+                  courseId={course.id} 
+                />
+              </div>
+            )}
+            
+            {/* تب نظرات */}
+            {activeTab === 'comments' && hasAccess && (
+              <div className="p-3 bg-gray-900/60 rounded-lg">
+                <EpisodeComments 
+                  episodeId={episode.id} 
+                  courseId={course.id} 
+                />
+              </div>
+            )}
+            
+            {/* حالت عدم دسترسی برای تب‌های دیگر */}
+            {activeTab !== 'chapters' && !hasAccess && (
+              <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
+                <div className="mb-4 rounded-full bg-gray-700 p-4">
+                  <Lock className="h-8 w-8 text-amber-400" />
+                </div>
+                <h3 className="mb-2 text-lg font-bold text-white">این محتوا قفل شده است</h3>
+                <p className="mb-6 text-gray-400 max-w-md">
+                  برای دسترسی به این بخش، باید دوره را خریداری کنید یا عضو ویژه باشید.
+                </p>
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <button 
+                    onClick={togglePurchaseStatus}
+                    className="rounded-md bg-primary px-6 py-2.5 text-white hover:bg-primary/90 transition-colors"
+                  >
+                    خرید دوره
+                  </button>
+                  {course.isFreePremium && (
+                    <button 
+                      onClick={togglePremiumStatus}
+                      className="rounded-md border border-amber-500 bg-transparent px-6 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors"
+                    >
+                      فعال‌سازی عضویت ویژه
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

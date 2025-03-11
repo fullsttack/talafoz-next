@@ -16,13 +16,18 @@ export default function CoursesLayout({
 }) {
   const pathname = usePathname();
   
-  // چک کردن آیا در صفحه جزئیات دوره هستیم یا خیر با یک الگوی تطبیق دقیق‌تر
-  // فقط /courses صفحه اصلی است، هر چیز دیگری صفحه جزئیات است
+  // چک کردن مسیر URL برای شناسایی صفحات مختلف
   const isMainCoursePage = pathname === '/courses' || pathname === '/courses/';
   
-  console.log('Current pathname:', pathname);
-  console.log('Is main course page:', isMainCoursePage);
+  // چک کردن آیا در صفحه اپیزود هستیم یا خیر
+  const isEpisodePage = pathname.includes('/episodes/');
   
+  // اگر در صفحه اپیزود هستیم، بدون هیچ قالب‌بندی اضافی محتوا را نمایش می‌دهیم
+  if (isEpisodePage) {
+    return children;
+  }
+  
+  // برای سایر صفحات، قالب‌بندی معمولی را اعمال می‌کنیم
   return (
     <div>
       <Header />
