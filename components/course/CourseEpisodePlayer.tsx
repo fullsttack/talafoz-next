@@ -6,7 +6,7 @@ import { Episode } from '@/components/data/course';
 
 interface CourseEpisodePlayerProps {
   episode: Episode;
-  onProgressChange?: (progressPercent: number) => void;
+  onProgressChange?: (progressPercent: number, currentTime?: number) => void;
   initialProgress?: number;
 }
 
@@ -124,7 +124,7 @@ export default function CourseEpisodePlayer({
           
           // ایجاد تایمر جدید - ارسال پیشرفت هر 5 ثانیه
           progressUpdateTimerRef.current = setTimeout(() => {
-            onProgressChange(progressPercent);
+            onProgressChange(progressPercent, current);
           }, 5000);
           
           // ارسال فوری برای نقاط کلیدی (25%، 50%، 75%، 95%، 100%)
@@ -132,7 +132,7 @@ export default function CourseEpisodePlayer({
           const roundedProgress = Math.round(progressPercent);
           
           if (keyPoints.includes(roundedProgress)) {
-            onProgressChange(progressPercent);
+            onProgressChange(progressPercent, current);
           }
         }
       }

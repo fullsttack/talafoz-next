@@ -48,11 +48,11 @@ export const Header = () => {
         <div className="absolute inset-x-0 -z-10 -mt-24 py-20">
           <div className="mt-12 grid grid-cols-2 -space-x-52 opacity-60 2xl:mx-auto 2xl:max-w-6xl dark:opacity-50">
             <div
-              className="bg-linear-to-r from-indigo-500 via-cyan-500 to-cyan-500 blur-3xl "
+              className="bg-linear-to-r from-yellow via-cyan-500 to-cyan-500 blur-3xl "
               data-v-257aca76=""
             ></div>
             <div
-              className="dark:to-primary-600 h-24 bg-linear-to-r from-indigo-400 to-indigo-700 blur-3xl"
+              className="dark:to-primary-600 h-24 bg-linear-to-r from-yellow to-yellow-300 blur-3xl"
               data-v-257aca76=""
             ></div>
           </div>
