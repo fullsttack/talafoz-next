@@ -9,12 +9,14 @@ interface CourseEpisodePlayerProps {
   episode: Episode;
   onProgressChange?: (progressPercent: number, currentTime?: number) => void;
   initialProgress?: number;
+  showNavigationControls?: boolean;
 }
 
 export default function CourseEpisodePlayer({ 
   episode, 
   onProgressChange,
-  initialProgress = 0 
+  initialProgress = 0,
+  showNavigationControls = true
 }: CourseEpisodePlayerProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -466,25 +468,23 @@ export default function CourseEpisodePlayer({
                 </div>
               </button>
               
-              {/* پرش به عقب */}
-              <button
-                onClick={handleSkipBackward}
-                className="text-white hover:text-green-400 focus:outline-none transition-colors"
-              >
-                <div className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors">
-                  <SkipBack className="w-4 h-4" />
-                </div>
-              </button>
-              
-              {/* پرش به جلو */}
-              <button
-                onClick={handleSkipForward}
-                className="text-white hover:text-green-400 focus:outline-none transition-colors"
-              >
-                <div className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors">
-                  <SkipForward className="w-4 h-4" />
-                </div>
-              </button>
+              {/* دکمه‌های پرش به عقب و جلو */}
+              {showNavigationControls && (
+                <>
+                  <button 
+                    onClick={handleSkipBackward}
+                    className="mr-2 hidden sm:flex items-center justify-center text-white rounded-full hover:text-primary transition-colors"
+                  >
+                    <SkipBack className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={handleSkipForward}
+                    className="ml-2 hidden sm:flex items-center justify-center text-white rounded-full hover:text-primary transition-colors"
+                  >
+                    <SkipForward className="w-4 h-4" />
+                  </button>
+                </>
+              )}
               
               {/* کنترل صدا */}
               <div className="relative flex items-center">

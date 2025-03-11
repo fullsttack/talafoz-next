@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Lock } from 'lucide-react';
 import type { Course } from '@/components/data/course';
-import CoursePlayer from '@/components/course/CoursePlayer';
+import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
 import CourseInfo from '@/components/course/CourseInfo';
 import CourseChapters from '@/components/course/CourseChapters';
 import CourseEnrollCard from '@/components/course/CourseEnrollCard';
@@ -19,6 +19,12 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [hasPurchasedCourse, setHasPurchasedCourse] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null);
+  const [currentPlayerTime, setCurrentPlayerTime] = useState(0);
+  const [watchedProgress, setWatchedProgress] = useState<Record<string, number>>({});
+  const [activeEpisode, setActiveEpisode] = useState<any>(null);
+
+  // بررسی دسترسی کاربر به محتوا
+  const hasAccess = hasPurchasedCourse || (isPremiumUser && course.isFreePremium);
   
   // مدیریت انتخاب قسمت
   const handleEpisodeSelect = (episodeId: string) => {
@@ -29,6 +35,51 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
     url.searchParams.set('episodeId', episodeId);
     window.history.pushState({}, '', url.toString());
   };
+  
+  // پیدا کردن قسمت فعال بر اساس ID
+  useEffect(() => {
+    if (!course.chapters || course.chapters.length === 0) {
+      // برای دوره‌های بدون فصل یا ویدیو، یک اپیزود پیش‌فرض قرار می‌دهیم
+      setActiveEpisode({
+        id: 'demo',
+        title: 'پیش‌نمایش دوره',
+        duration: '۱۰:۰۰',
+        isFree: true,
+        description: 'این ویدیو پیش‌نمایش دوره است. به زودی محتوای دوره بارگذاری خواهد شد.',
+        videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
+      });
+      return;
+    }
+    
+    let episode = null;
+    
+    if (activeEpisodeId) {
+      // جستجو بر اساس ID
+      for (const chapter of course.chapters) {
+        const found = chapter.episodes.find(ep => ep.id === activeEpisodeId);
+        if (found) {
+          episode = found;
+          break;
+        }
+      }
+    }
+    
+    // اگر هیچ قسمتی انتخاب نشده، اولین قسمت رایگان یا پیش‌نمایش را انتخاب کن
+    if (!episode) {
+      episode = course.chapters
+        .flatMap(ch => ch.episodes)
+        .find(ep => ep.isFree || ep.isPreview);
+      
+      // اگر هیچ قسمت رایگانی پیدا نشد، اولین قسمت را انتخاب کن
+      if (!episode && course.chapters[0]?.episodes[0]) {
+        episode = course.chapters[0].episodes[0];
+      }
+    }
+    
+    if (episode) {
+      setActiveEpisode(episode);
+    }
+  }, [course, activeEpisodeId]);
   
   // نمایش پیام موفقیت و حذف آن پس از چند ثانیه
   useEffect(() => {
@@ -56,16 +107,60 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
   const togglePurchaseStatus = () => {
     setHasPurchasedCourse(prev => !prev);
   };
+
+  // مدیریت پیشرفت ویدیو
+  const handleVideoProgress = (progressPercent: number, currentTime?: number) => {
+    if (!activeEpisode) return;
+    
+    setWatchedProgress(prev => ({
+      ...prev,
+      [activeEpisode.id]: progressPercent
+    }));
+    
+    // ذخیره موقعیت فعلی ویدیو
+    if (currentTime !== undefined) {
+      setCurrentPlayerTime(currentTime);
+    }
+  };
   
   return (
     <>
       {/* پیام موفقیت */}
       {showSuccessMessage && (
-        <div className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">
-          <div className="flex items-center gap-2">
-            <Check className="h-5 w-5" />
-            <span>{showSuccessMessage}</span>
+        <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in rounded-lg p-4 text-center shadow-lg w-[90%] sm:w-[450px] max-w-md
+          ${showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید') 
+            ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40' 
+            : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/40'
+          }`}>
+          
+          <div className="flex items-center justify-center gap-2 mb-1">
+            {showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید') ? (
+              <Lock className="h-5 w-5 flex-shrink-0" />
+            ) : (
+              <Check className="h-5 w-5 flex-shrink-0" />
+            )}
+            <span className="font-medium">{showSuccessMessage}</span>
           </div>
+          
+          {/* دکمه‌های خرید فقط برای پیام‌های مربوط به عدم دسترسی */}
+          {(showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید')) && (
+            <div className="flex gap-2 justify-center mt-3">
+              <button 
+                onClick={togglePurchaseStatus}
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs py-1.5 px-3 rounded transition-colors"
+              >
+                خرید دوره
+              </button>
+              {course.isFreePremium && (
+                <button 
+                  onClick={togglePremiumStatus}
+                  className="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded transition-colors"
+                >
+                  تهیه اشتراک ویژه
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
       
@@ -125,12 +220,54 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
         <div className="lg:col-span-2">
           {/* پخش‌کننده ویدیو */}
           <div className="mb-10">
-            <CoursePlayer 
-              course={course} 
-              activeEpisodeId={activeEpisodeId} 
-              isPremiumUser={isPremiumUser}
-              hasPurchasedCourse={hasPurchasedCourse}
-            />
+            {activeEpisode ? (
+              <div className="space-y-4">
+                {/* عنوان قسمت فعال */}
+                <h2 className="text-xl font-bold">{activeEpisode.title}</h2>
+                
+                {/* کامپوننت پخش‌کننده */}
+                <div className="aspect-video relative w-full bg-black rounded-lg overflow-hidden">
+                  {hasAccess || activeEpisode.isFree || activeEpisode.isPreview ? (
+                    <CourseEpisodePlayer 
+                      episode={activeEpisode} 
+                      onProgressChange={handleVideoProgress}
+                      initialProgress={watchedProgress[activeEpisode.id] || 0}
+                      showNavigationControls={false}
+                    />
+                  ) : (
+                    <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
+                      <div className="mb-4 rounded-full bg-gray-800 p-4">
+                        <Lock className="h-10 w-10 text-amber-400" />
+                      </div>
+                      <h3 className="mb-2 text-xl font-bold text-white">این محتوا قفل شده است</h3>
+                      <p className="mb-6 text-gray-400 max-w-md">
+                        برای مشاهده این قسمت، باید دوره را خریداری کنید یا عضو ویژه باشید.
+                      </p>
+                      <div className="flex flex-wrap gap-3 justify-center">
+                        <button 
+                          onClick={togglePurchaseStatus}
+                          className="rounded-md bg-primary px-6 py-2.5 text-white hover:bg-primary/90 transition-colors"
+                        >
+                          خرید دوره
+                        </button>
+                        {course.isFreePremium && (
+                          <button 
+                            onClick={togglePremiumStatus}
+                            className="rounded-md border border-amber-500 bg-transparent px-6 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors"
+                          >
+                            فعال‌سازی عضویت ویژه
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="rounded-lg border border-gray-200 bg-gray-100 p-12 text-center dark:border-gray-800 dark:bg-gray-900">
+                <p className="text-gray-600 dark:text-gray-400">لطفاً یک قسمت را برای پخش انتخاب کنید.</p>
+              </div>
+            )}
           </div>
           
           {/* اطلاعات دوره - توضیحات، پیش‌نیازها و اهداف */}
