@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react';
+import ReactPlayer from 'react-player';
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react';
 import { Episode } from '@/components/data/course';
 
 interface CourseEpisodePlayerProps {
@@ -25,13 +26,14 @@ export default function CourseEpisodePlayer({
   const [volume, setVolume] = useState(1);
   const [showVolumeControl, setShowVolumeControl] = useState(false);
   const [hasInitializedProgress, setHasInitializedProgress] = useState(false);
-  const [previousVolume, setPreviousVolume] = useState(1);
+  const [showControls, setShowControls] = useState(true);
   
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const playerRef = useRef<ReactPlayer>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const volumeControlTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const progressUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const videoContainerRef = useRef<HTMLDivElement>(null);
+  const playerWrapperRef = useRef<HTMLDivElement>(null);
+  const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // تنظیم URL ویدیو
   useEffect(() => {
@@ -42,50 +44,34 @@ export default function CourseEpisodePlayer({
   
   // تنظیم موقعیت اولیه ویدیو بر اساس پیشرفت قبلی
   useEffect(() => {
-    if (videoRef.current && !hasInitializedProgress && initialProgress > 0 && initialProgress < 95 && duration > 0) {
+    if (playerRef.current && !hasInitializedProgress && initialProgress > 0 && initialProgress < 95 && duration > 0) {
       const targetTime = (initialProgress / 100) * duration;
-      videoRef.current.currentTime = targetTime;
+      playerRef.current.seekTo(targetTime, 'seconds');
       setHasInitializedProgress(true);
     }
   }, [initialProgress, duration, hasInitializedProgress]);
   
   // Toggle play/pause
   const togglePlay = useCallback(() => {
-    if (!videoRef.current) return;
-    
-    if (videoRef.current.paused) {
-      videoRef.current.play();
-      setIsPlaying(true);
-    } else {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
-  }, []);
+    setIsPlaying(!isPlaying);
+  }, [isPlaying]);
   
   // Toggle mute/unmute
   const toggleMute = useCallback(() => {
-    if (!videoRef.current) return;
+    setIsMuted(!isMuted);
     
-    videoRef.current.muted = !videoRef.current.muted;
-    setIsMuted(videoRef.current.muted);
-    
-    if (videoRef.current.muted) {
-      setPreviousVolume(volume);
+    if (!isMuted) {
       setVolume(0);
     } else {
-      setVolume(previousVolume);
+      setVolume(1);
     }
-  }, [volume, previousVolume]);
+  }, [isMuted]);
   
   // تنظیم حجم صدا
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newVolume = parseFloat(e.target.value);
     setVolume(newVolume);
-    
-    if (videoRef.current) {
-      videoRef.current.volume = newVolume;
-      setIsMuted(newVolume === 0);
-    }
+    setIsMuted(newVolume === 0);
   };
   
   // نمایش/پنهان‌سازی کنترل حجم صدا
@@ -105,39 +91,70 @@ export default function CourseEpisodePlayer({
   };
   
   // تنظیم پیشرفت ویدیو
-  const handleTimeUpdate = () => {
-    if (videoRef.current) {
-      const current = videoRef.current.currentTime;
-      const videoDuration = videoRef.current.duration;
+  const handleProgress = (state: { played: number; playedSeconds: number; loaded: number; loadedSeconds: number }) => {
+    if (!playerRef.current) return;
+    
+    const current = state.playedSeconds;
+    setCurrentTime(current);
+    
+    const progressPercent = state.played * 100;
+    setProgress(progressPercent);
+    
+    // ارسال پیشرفت به کامپوننت والد با محدودیت فراخوانی (throttling)
+    if (onProgressChange) {
+      // پاکسازی تایمر قبلی
+      if (progressUpdateTimerRef.current) {
+        clearTimeout(progressUpdateTimerRef.current);
+      }
       
-      if (videoDuration > 0) {
-        setCurrentTime(current);
-        const progressPercent = (current / videoDuration) * 100;
-        setProgress(progressPercent);
-        
-        // ارسال پیشرفت به کامپوننت والد با محدودیت فراخوانی (throttling)
-        if (onProgressChange) {
-          // پاکسازی تایمر قبلی
-          if (progressUpdateTimerRef.current) {
-            clearTimeout(progressUpdateTimerRef.current);
-          }
-          
-          // ایجاد تایمر جدید - ارسال پیشرفت هر 5 ثانیه
-          progressUpdateTimerRef.current = setTimeout(() => {
-            onProgressChange(progressPercent, current);
-          }, 5000);
-          
-          // ارسال فوری برای نقاط کلیدی (25%، 50%، 75%، 95%، 100%)
-          const keyPoints = [25, 50, 75, 95, 100];
-          const roundedProgress = Math.round(progressPercent);
-          
-          if (keyPoints.includes(roundedProgress)) {
-            onProgressChange(progressPercent, current);
-          }
-        }
+      // ایجاد تایمر جدید - ارسال پیشرفت هر 5 ثانیه
+      progressUpdateTimerRef.current = setTimeout(() => {
+        onProgressChange(progressPercent, current);
+      }, 5000);
+      
+      // ارسال فوری برای نقاط کلیدی (25%، 50%، 75%، 95%، 100%)
+      const keyPoints = [25, 50, 75, 95, 100];
+      const roundedProgress = Math.round(progressPercent);
+      
+      if (keyPoints.includes(roundedProgress)) {
+        onProgressChange(progressPercent, current);
       }
     }
   };
+  
+  // مدیریت نمایش/مخفی سازی کنترل‌ها
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setShowControls(true);
+      
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+      
+      if (isPlaying) {
+        controlsTimeoutRef.current = setTimeout(() => {
+          setShowControls(false);
+        }, 3000);
+      }
+    };
+    
+    const container = playerWrapperRef.current;
+    if (container) {
+      container.addEventListener('mousemove', handleMouseMove);
+      container.addEventListener('mouseenter', handleMouseMove);
+    }
+    
+    return () => {
+      if (container) {
+        container.removeEventListener('mousemove', handleMouseMove);
+        container.removeEventListener('mouseenter', handleMouseMove);
+      }
+      
+      if (controlsTimeoutRef.current) {
+        clearTimeout(controlsTimeoutRef.current);
+      }
+    };
+  }, [isPlaying]);
   
   // پاکسازی تایمرها هنگام خروج از کامپوننت
   useEffect(() => {
@@ -161,10 +178,11 @@ export default function CourseEpisodePlayer({
   
   // تغییر موقعیت پخش با کلیک روی نوار پیشرفت
   const handleProgressClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (progressRef.current && videoRef.current) {
+    if (progressRef.current && playerRef.current) {
       const rect = progressRef.current.getBoundingClientRect();
       const pos = (e.clientX - rect.left) / rect.width;
-      videoRef.current.currentTime = pos * videoRef.current.duration;
+      
+      playerRef.current.seekTo(pos);
       
       // ارسال پیشرفت پس از تغییر دستی موقعیت
       if (onProgressChange) {
@@ -176,10 +194,10 @@ export default function CourseEpisodePlayer({
   
   // Toggle fullscreen
   const toggleFullScreen = useCallback(() => {
-    if (!videoContainerRef.current) return;
+    if (!playerWrapperRef.current) return;
     
     if (!document.fullscreenElement) {
-      videoContainerRef.current.requestFullscreen().catch(err => {
+      playerWrapperRef.current.requestFullscreen().catch(err => {
         console.error(`Error attempting to enable fullscreen: ${err.message}`);
       });
     } else {
@@ -195,10 +213,8 @@ export default function CourseEpisodePlayer({
   };
   
   // رویداد لود ویدیو
-  const handleLoadedMetadata = () => {
-    if (videoRef.current) {
-      setDuration(videoRef.current.duration);
-    }
+  const handleDuration = (duration: number) => {
+    setDuration(duration);
   };
   
   // کلیدهای میانبر
@@ -246,114 +262,143 @@ export default function CourseEpisodePlayer({
     };
   }, []);
   
+  // کلیک روی ویدیو برای توگل پخش/توقف
+  const handleVideoClick = () => {
+    togglePlay();
+  };
+  
   return (
     <div 
-      ref={videoContainerRef}
-      className={`relative overflow-hidden rounded-lg bg-black ${isFullScreen ? 'fixed inset-0 z-50' : ''}`}
+      ref={playerWrapperRef}
+      className="w-full h-full relative bg-black flex items-center justify-center"
+      dir="ltr"
     >
-      {/* ویدیو - فقط زمانی که videoUrl وجود داشته باشد */}
-      {videoUrl && (
-        <video
-          ref={videoRef}
-          src={videoUrl}
-          className="h-full w-full"
-          onClick={togglePlay}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-          onEnded={handleVideoEnded}
-        />
-      )}
-      
-      {/* نمایش حالت بارگذاری اگر هنوز URL ویدیو تنظیم نشده باشد */}
-      {!videoUrl && (
-        <div className="flex h-full w-full items-center justify-center bg-black">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-600 border-t-primary"></div>
+      {/* ویدیو پلیر */}
+      {videoUrl ? (
+        <div className="w-full h-full" onClick={handleVideoClick}>
+          <ReactPlayer
+            ref={playerRef}
+            url={videoUrl}
+            width="100%"
+            height="100%"
+            playing={isPlaying}
+            volume={volume}
+            muted={isMuted}
+            progressInterval={200}
+            onProgress={handleProgress}
+            onDuration={handleDuration}
+            onEnded={handleVideoEnded}
+            config={{
+              file: {
+                attributes: {
+                  controlsList: 'nodownload',
+                  disablePictureInPicture: true,
+                },
+              },
+            }}
+          />
+        </div>
+      ) : (
+        <div className="flex items-center justify-center">
+          <div className="w-12 h-12 border-4 border-gray-700 border-t-green-500 rounded-full animate-spin"></div>
         </div>
       )}
       
-      {/* اورلی وسط برای پخش/توقف */}
-      <div 
-        className={`absolute inset-0 flex items-center justify-center transition-opacity duration-300 ${isPlaying ? 'opacity-0' : 'opacity-100'}`}
-        onClick={togglePlay}
-      >
-        <div className="flex h-16 w-16 items-center justify-center rounded-full bg-black/30 text-white backdrop-blur-sm transition-transform hover:scale-110">
-          {isPlaying ? (
-            <Pause className="h-8 w-8" />
-          ) : (
-            <Play className="h-8 w-8 translate-x-0.5" />
-          )}
+      {/* لایه کلیک برای پخش/توقف */}
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center backdrop-blur-sm">
+            <Play className="w-10 h-10 text-white" />
+          </div>
         </div>
-      </div>
+      )}
       
       {/* کنترل‌های پخش */}
       <div 
-        className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity duration-300 ${isPlaying ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}
+        className={`absolute left-0 right-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 transition-all ${
+          showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
+        }`}
       >
         {/* نوار پیشرفت */}
         <div 
           ref={progressRef}
-          className="mb-2 h-1.5 cursor-pointer rounded-full bg-gray-600"
+          className="w-full h-2 bg-gray-600/60 rounded cursor-pointer"
           onClick={handleProgressClick}
         >
-          <div 
-            className="h-full rounded-full bg-primary"
-            style={{ width: `${progress}%` }}
-          ></div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            {/* پخش/توقف */}
-            <button 
-              onClick={togglePlay}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+          <div className="relative h-full">
+            <div 
+              className="absolute top-0 left-0 h-full bg-green-500 rounded"
+              style={{ width: `${progress}%` }}
             >
-              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-0.5" />}
-            </button>
-            
-            {/* زمان */}
-            <div className="text-sm text-white">
-              {formatTime(currentTime)} / {formatTime(duration)}
+              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 w-3 h-3 bg-green-500 rounded-full shadow"></div>
             </div>
           </div>
-          
-          <div className="flex items-center gap-3">
-            {/* تنظیم صدا */}
+        </div>
+        
+        {/* کنترل‌های اصلی */}
+        <div className="flex justify-between items-center mt-2">
+          <div className="flex items-center space-x-4">
+            {/* دکمه پخش/توقف */}
+            <button
+              onClick={togglePlay}
+              className="text-white hover:text-green-400 focus:outline-none transition-colors"
+            >
+              {isPlaying ? (
+                <Pause className="w-7 h-7" />
+              ) : (
+                <Play className="w-7 h-7" />
+              )}
+            </button>
+            
+            {/* کنترل صدا */}
             <div className="relative">
-              <button 
-                onClick={toggleVolumeControl}
-                onMouseEnter={() => setShowVolumeControl(true)}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+              <button
+                onClick={toggleMute}
+                onMouseEnter={toggleVolumeControl}
+                className="text-white hover:text-green-400 focus:outline-none transition-colors"
               >
-                {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+                {isMuted || volume === 0 ? (
+                  <VolumeX className="w-6 h-6" />
+                ) : (
+                  <Volume2 className="w-6 h-6" />
+                )}
               </button>
               
               {showVolumeControl && (
                 <div 
-                  className="absolute bottom-full right-0 mb-2 rounded-lg bg-black/80 p-2 backdrop-blur-sm"
+                  className="absolute left-0 bottom-full mb-2 p-2 bg-gray-800/90 backdrop-blur-sm rounded shadow-lg"
                   onMouseLeave={() => setShowVolumeControl(false)}
                 >
                   <input
                     type="range"
                     min="0"
                     max="1"
-                    step="0.01"
+                    step="0.05"
                     value={volume}
                     onChange={handleVolumeChange}
-                    className="h-1 w-20 cursor-pointer appearance-none rounded-full bg-gray-600 accent-primary"
+                    className="w-24 accent-green-500"
                   />
                 </div>
               )}
             </div>
+          </div>
+          
+          <div className="flex items-center space-x-4">
+            {/* زمان پخش */}
+            <div className="text-white text-sm font-medium">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </div>
             
-            {/* تمام صفحه */}
-            <button 
+            {/* دکمه تمام صفحه */}
+            <button
               onClick={toggleFullScreen}
-              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+              className="text-white hover:text-green-400 focus:outline-none transition-colors"
             >
-              <Maximize className="h-4 w-4" />
+              {isFullScreen ? (
+                <Minimize className="w-5 h-5" />
+              ) : (
+                <Maximize className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>

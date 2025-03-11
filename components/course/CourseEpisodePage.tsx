@@ -235,7 +235,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           </div>
           
           {/* ویدیو پلیر */}
-          <div className="flex-1 flex items-center justify-center bg-black overflow-hidden">
+          <div className="flex-1 flex bg-black overflow-hidden">
             {hasAccess ? (
               <CourseEpisodePlayer 
                 episode={episode} 
@@ -289,14 +289,11 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                   onClick={() => setActiveTab(tab.id as any)}
                   className={`flex flex-1 flex-col items-center gap-1 px-1.5 py-2 text-sm font-medium transition-all rounded-t-lg relative ${
                     activeTab === tab.id
-                      ? 'bg-gray-800 text-primary shadow-sm'
+                      ? 'bg-gray-800 text-green-400 shadow-sm'
                       : 'text-gray-400 hover:bg-gray-700/40 hover:text-gray-200'
                   }`}
                 >
-                  {activeTab === tab.id && (
-                    <div className="absolute top-0 left-0 right-0 h-0.5 bg-primary rounded-full" />
-                  )}
-                  <div className={`${activeTab === tab.id ? 'text-primary' : 'text-gray-400'}`}>
+                  <div className={`${activeTab === tab.id ? 'text-green-400' : 'text-gray-400'}`}>
                     {tab.icon}
                   </div>
                   <span className="text-xs font-medium">{tab.label}</span>
