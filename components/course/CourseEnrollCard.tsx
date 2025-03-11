@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { CheckCircle, ShoppingCart, Gift, Crown } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { CheckCircle, UserPlus, Gift, Crown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Course } from '@/components/data/course';
 
@@ -19,14 +20,31 @@ export default function CourseEnrollCard({
   hasPurchasedCourse = false,
   onPurchase 
 }: CourseEnrollCardProps) {
+  const router = useRouter();
   const [isEnrolled, setIsEnrolled] = useState(hasPurchasedCourse);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessToast, setShowSuccessToast] = useState(false);
   
   // به‌روزرسانی وضعیت ثبت‌نام با تغییر prop
   useEffect(() => {
-    setIsEnrolled(hasPurchasedCourse);
-  }, [hasPurchasedCourse]);
+    if (!isLoading) {
+      setIsEnrolled(hasPurchasedCourse);
+    }
+  }, [hasPurchasedCourse, isLoading]);
+  
+  // مدیریت نمایش پیام موفقیت
+  useEffect(() => {
+    if (showSuccessToast) {
+      const timer = setTimeout(() => {
+        setShowSuccessToast(false);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessToast]);
   
   const {
+    id,
     price,
     discountPrice,
     isFree,
@@ -57,13 +75,73 @@ export default function CourseEnrollCard({
   
   // عملیات ثبت‌نام/خرید
   const handleEnroll = () => {
-    // در یک پروژه واقعی، اینجا به API درخواست ارسال می‌شود
-    setIsEnrolled(true);
-    onPurchase?.();
+    if (isLoading) return; // جلوگیری از کلیک‌های مکرر
+
+    // نمایش حالت لودینگ
+    setIsLoading(true);
+    
+    // شبیه‌سازی ارسال درخواست به سرور
+    setTimeout(() => {
+      // نمایش پیام موفقیت
+      setShowSuccessToast(true);
+      
+      // تغییر وضعیت به ثبت‌نام شده
+      setIsEnrolled(true);
+      
+      // فراخوانی callback پس از انجام عملیات
+      onPurchase?.();
+      
+      // حالت لودینگ را همچنان فعال نگه می‌داریم
+      // زیرا در حال هدایت به صفحه دیگر هستیم
+      
+      // هدایت به صفحه اپیزودها بعد از 3 ثانیه
+      if (id) {
+        // پیدا کردن اولین اپیزود رایگان برای نمایش
+        let firstEpisodeId = '';
+        
+        if (course.chapters && course.chapters.length > 0) {
+          // ابتدا دنبال اپیزود رایگان می‌گردیم
+          for (const chapter of course.chapters) {
+            const freeEpisode = chapter.episodes.find(ep => ep.isFree);
+            if (freeEpisode) {
+              firstEpisodeId = freeEpisode.id;
+              break;
+            }
+          }
+          
+          // اگر اپیزود رایگان پیدا نشد، اولین اپیزود را انتخاب می‌کنیم
+          if (!firstEpisodeId && course.chapters[0]?.episodes.length > 0) {
+            firstEpisodeId = course.chapters[0].episodes[0].id;
+          }
+        }
+        
+        // هدایت با تأخیر 3 ثانیه
+        setTimeout(() => {
+          if (firstEpisodeId) {
+            router.push(`/courses/${id}/episodes/${firstEpisodeId}`);
+          } else {
+            router.push(`/courses/${id}`);
+          }
+        }, 3000);
+      }
+    }, 1000); // شبیه‌سازی زمان پاسخ سرور
   };
+  
+  // آیا باید دکمه ثبت‌نام را نمایش دهیم؟
+  const shouldShowEnrollButton = !isEnrolled && !hasPurchasedCourse;
   
   return (
     <div className="sticky top-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-gray-900">
+      {/* نمایش پیام موفقیت */}
+      {showSuccessToast && (
+        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-5 w-5" />
+            <span>ثبت‌نام با موفقیت انجام شد</span>
+          </div>
+        </div>
+      )}
+      
       {/* تصویر دوره */}
       <div className="mb-6 overflow-hidden rounded-lg">
         <Image
@@ -123,23 +201,26 @@ export default function CourseEnrollCard({
       
       {/* دکمه ثبت‌نام/خرید */}
       <div className="mb-6">
-        {isEnrolled || hasPurchasedCourse ? (
+        {isLoading ? (
+          <Button 
+            className="w-full" 
+            disabled
+          >
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            <span>در حال ثبت‌نام...</span>
+          </Button>
+        ) : shouldShowEnrollButton ? (
+          <Button 
+            className="w-full" 
+            onClick={handleEnroll}
+          >
+            <UserPlus className="mr-1 h-5 w-5" />
+            <span>ثبت‌نام در دوره</span>
+          </Button>
+        ) : (
           <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
             <CheckCircle className="mr-1 h-5 w-5" />
             <span>شما در این دوره ثبت‌نام کرده‌اید</span>
-          </Button>
-        ) : (
-          <Button className="w-full" onClick={handleEnroll}>
-            {isFreeForUser ? (
-              <>
-                <span>ثبت‌نام رایگان در دوره</span>
-              </>
-            ) : (
-              <>
-                <ShoppingCart className="mr-1 h-5 w-5" />
-                <span>خرید دوره</span>
-              </>
-            )}
           </Button>
         )}
       </div>

@@ -7,6 +7,7 @@ import CoursePlayer from '@/components/course/CoursePlayer';
 import CourseInfo from '@/components/course/CourseInfo';
 import CourseChapters from '@/components/course/CourseChapters';
 import CourseEnrollCard from '@/components/course/CourseEnrollCard';
+import CourseReviews from '@/components/course/CourseReviews';
 
 interface CourseContentProps {
   course: Course;
@@ -51,15 +52,9 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
     });
   };
   
-  // تغییر وضعیت خرید دوره
+  // تغییر وضعیت خرید دوره (بدون نمایش پیام موفقیت)
   const togglePurchaseStatus = () => {
-    setHasPurchasedCourse(prev => {
-      const newStatus = !prev;
-      if (newStatus) {
-        setShowSuccessMessage('دوره با موفقیت خریداری شد');
-      }
-      return newStatus;
-    });
+    setHasPurchasedCourse(prev => !prev);
   };
   
   return (
@@ -153,6 +148,15 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
               onSelectEpisode={handleEpisodeSelect}
               courseId={course.id}
               useLinks={true}
+            />
+          </div>
+          
+          {/* نظرات و امتیاز‌ها */}
+          <div className="mb-10">
+            <CourseReviews 
+              courseId={course.id} 
+              courseRating={course.rating}
+              reviewsCount={course.studentsCount > 200 ? Math.floor(course.studentsCount * 0.4) : 0}
             />
           </div>
         </div>

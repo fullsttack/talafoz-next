@@ -6,23 +6,31 @@ import { Episode } from '@/components/data/course';
 
 interface CourseEpisodePlayerProps {
   episode: Episode;
+  onProgressChange?: (progressPercent: number) => void;
+  initialProgress?: number;
 }
 
-export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProps) {
+export default function CourseEpisodePlayer({ 
+  episode, 
+  onProgressChange,
+  initialProgress = 0 
+}: CourseEpisodePlayerProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
-  const [progress, setProgress] = useState(0);
+  const [progress, setProgress] = useState(initialProgress);
   const [isFullScreen, setIsFullScreen] = useState(false);
   const [volume, setVolume] = useState(1);
   const [showVolumeControl, setShowVolumeControl] = useState(false);
+  const [hasInitializedProgress, setHasInitializedProgress] = useState(false);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const playerRef = useRef<HTMLDivElement>(null);
   const volumeControlTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const progressUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // تنظیم URL ویدیو
   useEffect(() => {
@@ -30,6 +38,15 @@ export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProp
     const defaultVideoUrl = 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
     setVideoUrl(episode.videoUrl || defaultVideoUrl);
   }, [episode]);
+  
+  // تنظیم موقعیت اولیه ویدیو بر اساس پیشرفت قبلی
+  useEffect(() => {
+    if (videoRef.current && !hasInitializedProgress && initialProgress > 0 && initialProgress < 95 && duration > 0) {
+      const targetTime = (initialProgress / 100) * duration;
+      videoRef.current.currentTime = targetTime;
+      setHasInitializedProgress(true);
+    }
+  }, [initialProgress, duration, hasInitializedProgress]);
   
   // کنترل پخش ویدیو
   const togglePlay = () => {
@@ -82,12 +99,54 @@ export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProp
   const handleTimeUpdate = () => {
     if (videoRef.current) {
       const current = videoRef.current.currentTime;
-      const duration = videoRef.current.duration;
+      const videoDuration = videoRef.current.duration;
       
-      if (duration > 0) {
+      if (videoDuration > 0) {
         setCurrentTime(current);
-        setProgress((current / duration) * 100);
+        const progressPercent = (current / videoDuration) * 100;
+        setProgress(progressPercent);
+        
+        // ارسال پیشرفت به کامپوننت والد با محدودیت فراخوانی (throttling)
+        if (onProgressChange) {
+          // پاکسازی تایمر قبلی
+          if (progressUpdateTimerRef.current) {
+            clearTimeout(progressUpdateTimerRef.current);
+          }
+          
+          // ایجاد تایمر جدید - ارسال پیشرفت هر 5 ثانیه
+          progressUpdateTimerRef.current = setTimeout(() => {
+            onProgressChange(progressPercent);
+          }, 5000);
+          
+          // ارسال فوری برای نقاط کلیدی (25%، 50%، 75%، 95%، 100%)
+          const keyPoints = [25, 50, 75, 95, 100];
+          const roundedProgress = Math.round(progressPercent);
+          
+          if (keyPoints.includes(roundedProgress)) {
+            onProgressChange(progressPercent);
+          }
+        }
       }
+    }
+  };
+  
+  // پاکسازی تایمرها هنگام خروج از کامپوننت
+  useEffect(() => {
+    return () => {
+      if (volumeControlTimeoutRef.current) {
+        clearTimeout(volumeControlTimeoutRef.current);
+      }
+      if (progressUpdateTimerRef.current) {
+        clearTimeout(progressUpdateTimerRef.current);
+      }
+    };
+  }, []);
+  
+  // ارسال پیشرفت هنگام اتمام ویدیو
+  const handleVideoEnded = () => {
+    setIsPlaying(false);
+    if (onProgressChange) {
+      onProgressChange(100);
     }
   };
   
@@ -97,6 +156,12 @@ export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProp
       const rect = progressRef.current.getBoundingClientRect();
       const pos = (e.clientX - rect.left) / rect.width;
       videoRef.current.currentTime = pos * videoRef.current.duration;
+      
+      // ارسال پیشرفت پس از تغییر دستی موقعیت
+      if (onProgressChange) {
+        const progressPercent = pos * 100;
+        onProgressChange(progressPercent);
+      }
     }
   };
   
@@ -202,7 +267,7 @@ export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProp
           onLoadedMetadata={handleLoadedMetadata}
           onPlay={() => setIsPlaying(true)}
           onPause={() => setIsPlaying(false)}
-          onEnded={() => setIsPlaying(false)}
+          onEnded={handleVideoEnded}
         />
       )}
       
@@ -248,24 +313,33 @@ export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProp
             {/* پخش/توقف */}
             <button 
               onClick={togglePlay}
-              className="text-white opacity-90 transition-opacity hover:opacity-100"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
             >
-              {isPlaying ? <Pause className="h-5 w-5" /> : <Play className="h-5 w-5" />}
+              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4 translate-x-0.5" />}
             </button>
             
-            {/* کنترل صدا */}
+            {/* زمان */}
+            <div className="text-sm text-white">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {/* تنظیم صدا */}
             <div className="relative">
               <button 
-                onClick={toggleMute}
-                onMouseEnter={toggleVolumeControl}
-                className="text-white opacity-90 transition-opacity hover:opacity-100"
+                onClick={toggleVolumeControl}
+                onMouseEnter={() => setShowVolumeControl(true)}
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
               >
-                {isMuted ? <VolumeX className="h-5 w-5" /> : <Volume2 className="h-5 w-5" />}
+                {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
               </button>
               
-              {/* اسلایدر صدا */}
               {showVolumeControl && (
-                <div className="absolute bottom-full left-0 mb-2 h-24 w-8 bg-gray-900/90 p-2">
+                <div 
+                  className="absolute bottom-full right-0 mb-2 rounded-lg bg-black/80 p-2 backdrop-blur-sm"
+                  onMouseLeave={() => setShowVolumeControl(false)}
+                >
                   <input
                     type="range"
                     min="0"
@@ -273,34 +347,18 @@ export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProp
                     step="0.01"
                     value={volume}
                     onChange={handleVolumeChange}
-                    className="h-full w-1 cursor-pointer appearance-none rounded-full bg-gray-600 outline-none"
-                    style={{
-                      writingMode: 'bt-lr',
-                      WebkitAppearance: 'slider-vertical',
-                      padding: '0 8px'
-                    }}
+                    className="h-1 w-20 cursor-pointer appearance-none rounded-full bg-gray-600 accent-primary"
                   />
                 </div>
               )}
             </div>
             
-            {/* زمان */}
-            <div className="text-sm text-white">
-              <span>{formatTime(currentTime)}</span>
-              {' / '}
-              <span>{formatTime(duration)}</span>
-            </div>
-          </div>
-          
-          <div className="flex items-center gap-3">
-            {/* تنظیمات */}
-            <button className="text-white opacity-70 hover:opacity-100">
-              <Settings className="h-5 w-5" />
-            </button>
-            
             {/* تمام صفحه */}
-            <button onClick={toggleFullScreen} className="text-white opacity-70 hover:opacity-100">
-              <Maximize className="h-5 w-5" />
+            <button 
+              onClick={toggleFullScreen}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur-sm transition-colors hover:bg-white/20"
+            >
+              <Maximize className="h-4 w-4" />
             </button>
           </div>
         </div>

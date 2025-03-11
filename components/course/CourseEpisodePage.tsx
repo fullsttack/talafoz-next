@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Lock, Play, AlertTriangle, Check } from 'lucide-react';
+import { ChevronLeft, Lock, Play, AlertTriangle, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { Course, Episode, Chapter } from '@/components/data/course';
 import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
 
@@ -18,6 +18,86 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [hasPurchasedCourse, setHasPurchasedCourse] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null);
+  
+  // مدیریت پیشرفت تماشای اپیزودها
+  const [watchedProgress, setWatchedProgress] = useState<Record<string, number>>(() => {
+    // ساخت مقادیر تصادفی برای نمایش (در پروژه واقعی از API دریافت می‌شود)
+    const progress: Record<string, number> = {};
+    if (course.chapters) {
+      course.chapters.forEach(chapter => {
+        chapter.episodes.forEach((ep, index) => {
+          // ایجاد مقادیر تصادفی
+          if (index % 4 === 0) progress[ep.id] = 100; // اپیزود کامل شده
+          else if (index % 4 === 1) progress[ep.id] = Math.floor(Math.random() * 50 + 30); // بین 30% تا 80%
+          else if (index % 4 === 2) progress[ep.id] = Math.floor(Math.random() * 30); // کمتر از 30%
+        });
+      });
+    }
+    
+    // اپیزود فعلی را به صورت تصادفی تنظیم می‌کنیم اگر قبلاً تنظیم نشده
+    if (!progress[episode.id]) {
+      progress[episode.id] = Math.floor(Math.random() * 100);
+    }
+    
+    return progress;
+  });
+  
+  // لیست اپیزودهایی که به طور کامل دیده شده‌اند
+  const [completedEpisodes, setCompletedEpisodes] = useState<string[]>(() => {
+    return Object.entries(watchedProgress)
+      .filter(([_, progress]) => progress >= 95)
+      .map(([episodeId]) => episodeId);
+  });
+  
+  // مدیریت باز و بسته کردن فصل‌ها
+  const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>(() => {
+    // فقط فصل فعلی باز باشد
+    const expanded: Record<string, boolean> = {};
+    if (course.chapters) {
+      course.chapters.forEach(ch => {
+        expanded[ch.id] = ch.id === chapter.id;
+      });
+    }
+    return expanded;
+  });
+  
+  // تغییر حالت باز/بسته بودن فصل
+  const toggleChapter = (chapterId: string) => {
+    setExpandedChapters(prev => ({
+      ...prev,
+      [chapterId]: !prev[chapterId]
+    }));
+  };
+  
+  // هنگام تغییر پیشرفت ویدیو
+  const handleVideoProgress = (progressPercent: number) => {
+    setWatchedProgress(prev => {
+      // بروزرسانی فقط اگر پیشرفت بیشتر شده باشد
+      if (!prev[episode.id] || progressPercent > prev[episode.id]) {
+        return { ...prev, [episode.id]: progressPercent };
+      }
+      return prev;
+    });
+    
+    // اگر به انتهای ویدیو رسیده، به لیست تکمیل شده‌ها اضافه شود
+    if (progressPercent >= 95 && !completedEpisodes.includes(episode.id)) {
+      setCompletedEpisodes(prev => [...prev, episode.id]);
+      setShowSuccessMessage('تبریک! این اپیزود را کامل کردید.');
+    }
+  };
+  
+  // محاسبه درصد تکمیل یک فصل
+  const calculateChapterProgress = (ch: Chapter) => {
+    const totalEpisodes = ch.episodes.length;
+    if (totalEpisodes === 0) return 0;
+    
+    const completedInChapter = ch.episodes.filter(ep => 
+      completedEpisodes.includes(ep.id) || 
+      (watchedProgress[ep.id] && watchedProgress[ep.id] >= 95)
+    ).length;
+    
+    return Math.round((completedInChapter / totalEpisodes) * 100);
+  };
   
   // بررسی دسترسی کاربر به اپیزود
   const hasAccess = 
@@ -77,6 +157,24 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           <span>از فصل: {chapter.title}</span>
           <span>•</span>
           <span>مدت زمان: {episode.duration}</span>
+          {watchedProgress[episode.id] > 0 && watchedProgress[episode.id] < 95 && (
+            <>
+              <span>•</span>
+              <span className="flex items-center gap-1 text-primary">
+                <span>{Math.round(watchedProgress[episode.id])}%</span>
+                <span>تماشا شده</span>
+              </span>
+            </>
+          )}
+          {completedEpisodes.includes(episode.id) && (
+            <>
+              <span>•</span>
+              <span className="flex items-center gap-1 text-green-600">
+                <Check className="h-3 w-3" />
+                <span>تکمیل شده</span>
+              </span>
+            </>
+          )}
         </div>
       </div>
       
@@ -87,7 +185,11 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           {/* پخش‌کننده ویدیو */}
           <div className="mb-8 overflow-hidden rounded-xl bg-gray-900">
             {hasAccess ? (
-              <CourseEpisodePlayer episode={episode} />
+              <CourseEpisodePlayer 
+                episode={episode} 
+                onProgressChange={handleVideoProgress}
+                initialProgress={watchedProgress[episode.id] || 0}
+              />
             ) : (
               <div className="flex h-[300px] flex-col items-center justify-center p-6 text-center">
                 <div className="mb-4 rounded-full bg-gray-800 p-4">
@@ -159,63 +261,109 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
             </div>
             
             <div className="divide-y divide-gray-200 dark:divide-gray-800">
-              {course.chapters && course.chapters.map(ch => (
-                <div key={ch.id} className="p-4">
-                  <h3 className="mb-3 font-bold">{ch.title}</h3>
-                  <div className="space-y-2">
-                    {ch.episodes.map(ep => {
-                      // بررسی دسترسی به هر اپیزود
-                      const episodeAccess = 
-                        ep.isFree || 
-                        hasPurchasedCourse || 
-                        (isPremiumUser && course.isFreePremium);
-                      
-                      // آیا اپیزود فعلی است؟
-                      const isActive = ep.id === episode.id;
-                      
-                      return (
-                        <Link
-                          href={`/courses/${course.id}/episodes/${ep.id}`}
-                          key={ep.id}
-                          className={`flex items-center gap-3 rounded-lg p-2 transition-colors ${
-                            isActive 
-                              ? 'bg-primary/10 text-primary' 
-                              : 'hover:bg-gray-100 dark:hover:bg-gray-800'
-                          }`}
-                        >
-                          <div className="shrink-0">
-                            {episodeAccess ? (
-                              <div className={`flex h-9 w-9 items-center justify-center rounded-full ${
-                                isActive ? 'bg-primary/20' : 'bg-gray-200 dark:bg-gray-700'
-                              }`}>
-                                <Play className={`h-4 w-4 ${
-                                  isActive ? 'text-primary' : 'text-gray-700 dark:text-gray-300'
-                                }`} />
-                              </div>
-                            ) : (
-                              <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
-                                <Lock className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                              </div>
-                            )}
-                          </div>
+              {course.chapters && course.chapters.map(ch => {
+                const chapterProgress = calculateChapterProgress(ch);
+                return (
+                  <div key={ch.id} className="border-b border-gray-200 last:border-b-0 dark:border-gray-800">
+                    {/* سرفصل */}
+                    <button
+                      onClick={() => toggleChapter(ch.id)}
+                      className="flex w-full items-center justify-between p-4 text-right hover:bg-gray-50 dark:hover:bg-gray-800/60"
+                    >
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold">{ch.title}</h3>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">
+                          {ch.episodes.length} قسمت
+                        </span>
+                      </div>
+                      <div className="flex items-center">
+                        {expandedChapters[ch.id] ? 
+                          <ChevronUp className="h-5 w-5" /> : 
+                          <ChevronDown className="h-5 w-5" />
+                        }
+                      </div>
+                    </button>
+                    
+                    {/* اپیزودهای فصل */}
+                    {expandedChapters[ch.id] && (
+                      <div className="space-y-2 border-t border-gray-100 bg-gray-50 p-4 dark:border-gray-800 dark:bg-gray-900/30">
+                        {ch.episodes.map(ep => {
+                          // بررسی دسترسی به هر اپیزود
+                          const episodeAccess = 
+                            ep.isFree || 
+                            hasPurchasedCourse || 
+                            (isPremiumUser && course.isFreePremium);
                           
-                          <div className="min-w-0 flex-1">
-                            <p className={`truncate font-medium ${
-                              isActive ? 'text-primary' : ''
-                            }`}>
-                              {ep.title}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">
-                              {ep.duration}
-                              {ep.isFree && <span className="mr-2 text-green-600">• رایگان</span>}
-                            </p>
-                          </div>
-                        </Link>
-                      );
-                    })}
+                          // آیا اپیزود فعلی است؟
+                          const isActive = ep.id === episode.id;
+                          const progressPercent = watchedProgress[ep.id] || 0;
+                          const isCompleted = completedEpisodes.includes(ep.id) || progressPercent >= 95;
+                          
+                          return (
+                            <Link
+                              href={`/courses/${course.id}/episodes/${ep.id}`}
+                              key={ep.id}
+                              className={`flex flex-col rounded-lg p-3 transition-colors ${
+                                isActive 
+                                  ? 'bg-primary/10 text-primary' 
+                                  : episodeAccess
+                                    ? 'hover:bg-gray-100 dark:hover:bg-gray-800'
+                                    : 'opacity-70'
+                              }`}
+                            >
+                              <div className="flex items-center gap-3">
+                                <div className="shrink-0">
+                                  {!episodeAccess ? (
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
+                                      <Lock className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                    </div>
+                                  ) : isCompleted ? (
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-green-100 dark:bg-green-800/30">
+                                      <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+                                    </div>
+                                  ) : isActive ? (
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/20">
+                                      <Play className="h-4 w-4 text-primary" />
+                                    </div>
+                                  ) : (
+                                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gray-200 dark:bg-gray-700">
+                                      <Play className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                                    </div>
+                                  )}
+                                </div>
+                                
+                                <div className="min-w-0 flex-1">
+                                  <p className={`truncate font-medium ${
+                                    isActive ? 'text-primary' : ''
+                                  }`}>
+                                    {ep.title}
+                                  </p>
+                                  <p className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                    <span>{ep.duration}</span>
+                                    {isCompleted && <span className="text-green-600 dark:text-green-400">تکمیل شده</span>}
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {/* نوار پیشرفت */}
+                              {episodeAccess && progressPercent > 0 && (
+                                <div className="mt-2 h-1 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+                                  <div 
+                                    className={`h-full rounded-full ${
+                                      isCompleted ? 'bg-green-500' : 'bg-primary'
+                                    }`}
+                                    style={{ width: `${progressPercent}%` }}
+                                  />
+                                </div>
+                              )}
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
           
