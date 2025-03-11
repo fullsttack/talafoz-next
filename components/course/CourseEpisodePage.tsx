@@ -184,11 +184,11 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   
   // آرایه تب‌ها برای نمایش در ساید‌بار
   const tabs = [
-    { id: 'chapters', label: 'فصل‌ها', icon: <BookOpen className="h-4 w-4" /> },
-    { id: 'notes', label: 'یادداشت‌ها', icon: <PenLine className="h-4 w-4" /> },
-    { id: 'assignments', label: 'تمرین‌ها', icon: <FileText className="h-4 w-4" /> },
-    { id: 'attachments', label: 'ضمیمه', icon: <Paperclip className="h-4 w-4" /> },
-    { id: 'comments', label: 'نظرات', icon: <MessageSquare className="h-4 w-4" /> },
+    { id: 'chapters', label: 'فصل‌ها', icon: <BookOpen className="h-5 w-5" /> },
+    { id: 'notes', label: 'یادداشت‌ها', icon: <PenLine className="h-5 w-5" /> },
+    { id: 'assignments', label: 'تمرین‌ها', icon: <FileText className="h-5 w-5" /> },
+    { id: 'attachments', label: 'ضمیمه', icon: <Paperclip className="h-5 w-5" /> },
+    { id: 'comments', label: 'نظرات', icon: <MessageSquare className="h-5 w-5" /> },
   ];
 
   return (
@@ -273,7 +273,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
         </div>
         
         {/* سایدبار - سمت چپ */}
-        <div className="w-full md:w-[450px] lg:w-[500px] xl:w-[550px] h-screen flex flex-col bg-gray-800 border-r border-gray-700 overflow-hidden">
+        <div className="w-full md:w-[380px] lg:w-[400px] xl:w-[450px] h-screen flex flex-col bg-gray-800 border-r border-gray-700 overflow-hidden">
           {/* نام دوره و عنوان اپیزود در موبایل */}
           <div className="md:hidden p-4 border-b border-gray-700 bg-gray-800 text-white">
             <h2 className="font-bold text-lg mb-1">{course.title}</h2>
@@ -282,12 +282,12 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           
           {/* تب‌های سایدبار */}
           <div className="bg-gray-900/40 border-b border-gray-700">
-            <div className="flex justify-between overflow-x-auto px-0.5 pt-0.5">
+            <div className="flex justify-between overflow-x-auto px-0.5 pt-1">
               {tabs.map(tab => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex flex-1 flex-col items-center gap-0.5 px-1 py-1.5 text-sm font-medium transition-all rounded-t-lg relative ${
+                  className={`flex flex-1 flex-col items-center gap-1 px-1.5 py-2 text-sm font-medium transition-all rounded-t-lg relative ${
                     activeTab === tab.id
                       ? 'bg-gray-800 text-primary shadow-sm'
                       : 'text-gray-400 hover:bg-gray-700/40 hover:text-gray-200'
@@ -299,7 +299,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                   <div className={`${activeTab === tab.id ? 'text-primary' : 'text-gray-400'}`}>
                     {tab.icon}
                   </div>
-                  <span className="text-[10px]">{tab.label}</span>
+                  <span className="text-xs font-medium">{tab.label}</span>
                 </button>
               ))}
             </div>
