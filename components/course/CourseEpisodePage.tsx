@@ -157,6 +157,12 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
     }
     
     // اگر فصل بعدی وجود داشت
+    if (!course.chapters) {
+      setShowSuccessMessage("شما به پایان دوره رسیدید!");
+      setShowCompletionDialog(false);
+      return;
+    }
+    
     const currentChapterIndex = course.chapters.findIndex(ch => ch.id === chapter.id);
     if (currentChapterIndex < course.chapters.length - 1) {
       const nextChapter = course.chapters[currentChapterIndex + 1];
@@ -195,30 +201,6 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
     });
     
     return Math.round(totalProgress / ch.episodes.length);
-  };
-  
-  // محاسبه پیشرفت کل دوره
-  const calculateCourseProgress = () => {
-    if (!course.chapters || course.chapters.length === 0) return 0;
-    
-    let totalEpisodes = 0;
-    let totalProgress = 0;
-    
-    course.chapters.forEach(ch => {
-      if (ch.episodes && ch.episodes.length > 0) {
-        ch.episodes.forEach(ep => {
-          totalEpisodes++;
-          // اپیزودهای تکمیل شده 100%، بقیه بر اساس پیشرفت
-          if (completedEpisodes.includes(ep.id)) {
-            totalProgress += 100;
-          } else {
-            totalProgress += watchedProgress[ep.id] || 0;
-          }
-        });
-      }
-    });
-    
-    return totalEpisodes > 0 ? Math.round(totalProgress / totalEpisodes) : 0;
   };
   
   // تغییر وضعیت کاربر به عضو ویژه
@@ -266,9 +248,6 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
     }
   }, [showSuccessMessage]);
 
-  // محاسبه پیشرفت کل دوره
-  const courseProgress = calculateCourseProgress();
-  
   // آرایه تب‌ها برای نمایش در ساید‌بار
   const tabs = [
     { id: 'chapters', label: 'فصل‌ها', icon: <BookOpen className="h-5 w-5" /> },
@@ -295,22 +274,6 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
       setActiveTab(tabId);
     }
   };
-
-  // در تب‌های سمت راست، پارامتر isLocked را به همه کامپوننت‌ها اضافه می‌کنیم
-  function renderSidebarTabContent() {
-    switch (activeTab) {
-      case 'notes':
-        return <EpisodeNotes episodeId={episode.id} courseId={course.id} isLocked={!hasAccess} />;
-      case 'assignments':
-        return <EpisodeAssignments episodeId={episode.id} courseId={course.id} isLocked={!hasAccess} />;
-      case 'attachments':
-        return <EpisodeAttachments episodeId={episode.id} courseId={course.id} isLocked={!hasAccess} />;
-      case 'comments':
-        return <EpisodeComments episodeId={episode.id} courseId={course.id} isLocked={!hasAccess} />;
-      default:
-        return <div>Not found</div>;
-    }
-  }
 
   return (
     <>
@@ -391,9 +354,9 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
               
               <div className="hidden lg:flex items-center gap-2 text-xs text-gray-400">
                 <div className="h-4 w-px bg-gray-700 mx-1"></div>
-                <span>فصل {chapter.index}</span>
+                <span>فصل {(chapter as { index?: string | number }).index || '1'}</span>
                 <span>•</span>
-                <span>قسمت {episode.index}/{chapter.episodes.length}</span>
+                <span>قسمت {(episode as { index?: string | number }).index || '1'}/{chapter.episodes.length}</span>
               </div>
             </div>
             
@@ -608,7 +571,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => handleTabChange(tab.id as any)}
+                    onClick={() => handleTabChange(tab.id as 'chapters' | 'notes' | 'assignments' | 'attachments' | 'comments')}
                     className={`flex flex-1 flex-col items-center gap-1 px-1.5 py-2 text-sm font-medium transition-all rounded-t-lg relative ${
                       activeTab === tab.id
                         ? 'bg-gray-800 text-green-400 shadow-sm'
