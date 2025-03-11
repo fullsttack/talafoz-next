@@ -307,98 +307,124 @@ export default function CourseEpisodePlayer({
       {/* لایه کلیک برای پخش/توقف */}
       {!isPlaying && (
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
-          <div className="w-20 h-20 rounded-full bg-green-500/20 flex items-center justify-center backdrop-blur-sm">
-            <Play className="w-10 h-10 text-white" />
+          <div className="w-20 h-20 rounded-full bg-green-500/30 flex items-center justify-center backdrop-blur-md shadow-lg">
+            <Play className="w-10 h-10 text-white" fill="white" />
           </div>
         </div>
       )}
       
       {/* کنترل‌های پخش */}
       <div 
-        className={`absolute left-0 right-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 transition-all ${
+        className={`absolute left-0 right-0 bottom-0 transition-opacity duration-300 ${
           showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
         }`}
       >
-        {/* نوار پیشرفت */}
-        <div 
-          ref={progressRef}
-          className="w-full h-2 bg-gray-600/60 rounded cursor-pointer"
-          onClick={handleProgressClick}
-        >
-          <div className="relative h-full">
-            <div 
-              className="absolute top-0 left-0 h-full bg-green-500 rounded"
-              style={{ width: `${progress}%` }}
-            >
-              <div className="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-1/2 w-3 h-3 bg-green-500 rounded-full shadow"></div>
-            </div>
-          </div>
-        </div>
+        {/* پس‌زمینه تیره برای کنترل‌ها */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none"></div>
         
-        {/* کنترل‌های اصلی */}
-        <div className="flex justify-between items-center mt-2">
-          <div className="flex items-center space-x-4">
-            {/* دکمه پخش/توقف */}
-            <button
-              onClick={togglePlay}
-              className="text-white hover:text-green-400 focus:outline-none transition-colors"
+        <div className="relative p-4 space-y-4">
+          {/* نوار پیشرفت */}
+          <div className="relative px-1">
+            <div 
+              ref={progressRef}
+              className="w-full h-1.5 bg-gray-600/40 rounded-full cursor-pointer overflow-hidden"
+              onClick={handleProgressClick}
             >
-              {isPlaying ? (
-                <Pause className="w-7 h-7" />
-              ) : (
-                <Play className="w-7 h-7" />
-              )}
-            </button>
-            
-            {/* کنترل صدا */}
-            <div className="relative">
-              <button
-                onClick={toggleMute}
-                onMouseEnter={toggleVolumeControl}
-                className="text-white hover:text-green-400 focus:outline-none transition-colors"
-              >
-                {isMuted || volume === 0 ? (
-                  <VolumeX className="w-6 h-6" />
-                ) : (
-                  <Volume2 className="w-6 h-6" />
-                )}
-              </button>
+              {/* بخش بارگذاری شده */}
+              <div 
+                className="absolute top-0 left-0 h-full bg-gray-500/50 rounded-full"
+                style={{ width: `100%` }}
+              ></div>
               
-              {showVolumeControl && (
-                <div 
-                  className="absolute left-0 bottom-full mb-2 p-2 bg-gray-800/90 backdrop-blur-sm rounded shadow-lg"
-                  onMouseLeave={() => setShowVolumeControl(false)}
-                >
-                  <input
-                    type="range"
-                    min="0"
-                    max="1"
-                    step="0.05"
-                    value={volume}
-                    onChange={handleVolumeChange}
-                    className="w-24 accent-green-500"
-                  />
-                </div>
-              )}
+              {/* بخش پخش شده */}
+              <div 
+                className="absolute top-0 left-0 h-full bg-green-500 rounded-full"
+                style={{ width: `${progress}%` }}
+              ></div>
             </div>
+            
+            {/* دکمه کشیدن */}
+            <div 
+              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-green-500 rounded-full shadow-sm"
+              style={{ left: `${progress}%`, transform: 'translate(-50%, -50%)' }}
+            ></div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            {/* زمان پخش */}
-            <div className="text-white text-sm font-medium">
-              {formatTime(currentTime)} / {formatTime(duration)}
+          {/* کنترل‌های اصلی */}
+          <div className="flex items-center justify-between">
+            {/* دکمه‌های سمت چپ */}
+            <div className="flex items-center space-x-4">
+              {/* پخش/توقف */}
+              <button
+                onClick={togglePlay}
+                className="text-white hover:text-green-400 focus:outline-none transition-colors group"
+              >
+                <div className="bg-white/10 rounded-full p-2 group-hover:bg-white/20 transition-colors">
+                  {isPlaying ? (
+                    <Pause className="w-5 h-5" />
+                  ) : (
+                    <Play className="w-5 h-5 ml-0.5" />
+                  )}
+                </div>
+              </button>
+              
+              {/* کنترل صدا */}
+              <div className="relative flex items-center">
+                <button
+                  onClick={toggleMute}
+                  onMouseEnter={toggleVolumeControl}
+                  className="text-white hover:text-green-400 focus:outline-none transition-colors"
+                >
+                  <div className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors">
+                    {isMuted || volume === 0 ? (
+                      <VolumeX className="w-5 h-5" />
+                    ) : (
+                      <Volume2 className="w-5 h-5" />
+                    )}
+                  </div>
+                </button>
+                
+                {showVolumeControl && (
+                  <div 
+                    className="absolute left-0 bottom-full mb-3 bg-gray-800/90 backdrop-blur-md rounded shadow-lg py-2 px-3"
+                    onMouseLeave={() => setShowVolumeControl(false)}
+                  >
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={volume}
+                      onChange={handleVolumeChange}
+                      className="w-24 accent-green-500"
+                    />
+                  </div>
+                )}
+              </div>
+              
+              {/* زمان پخش - کوچک */}
+              <div className="text-white/90 text-xs font-medium tracking-wide hidden sm:block">
+                {formatTime(currentTime)} <span className="text-gray-400 mx-0.5">/</span> {formatTime(duration)}
+              </div>
             </div>
             
-            {/* دکمه تمام صفحه */}
+            {/* زمان پخش - موبایل */}
+            <div className="text-white/90 text-xs font-medium sm:hidden">
+              {formatTime(currentTime)} <span className="text-gray-400 mx-0.5">/</span> {formatTime(duration)}
+            </div>
+            
+            {/* دکمه سمت راست */}
             <button
               onClick={toggleFullScreen}
               className="text-white hover:text-green-400 focus:outline-none transition-colors"
             >
-              {isFullScreen ? (
-                <Minimize className="w-5 h-5" />
-              ) : (
-                <Maximize className="w-5 h-5" />
-              )}
+              <div className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors">
+                {isFullScreen ? (
+                  <Minimize className="w-4 h-4" />
+                ) : (
+                  <Maximize className="w-4 h-4" />
+                )}
+              </div>
             </button>
           </div>
         </div>
