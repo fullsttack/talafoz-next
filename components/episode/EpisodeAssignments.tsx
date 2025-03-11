@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { PlusCircle, FileText, Upload, ArrowUp, Check, X, Paperclip } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { PlusCircle, FileText, Upload, ArrowUp, Check, X, Paperclip, FileUp, Mic, StopCircle, Send, Clock, Download, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,19 +10,20 @@ interface Assignment {
   id: string;
   title: string;
   description: string;
-  dueDate?: string;
-  episodeId: string;
-  courseId: string;
+  deadline: string;
+  status: 'pending' | 'submitted' | 'graded' | 'rejected';
+  grade?: number;
+  feedback?: string;
+  submittedAt?: string;
 }
 
 interface Submission {
   id: string;
   assignmentId: string;
-  content: string;
-  fileNames: string[];
-  status: 'draft' | 'submitted' | 'reviewed';
+  type: 'file' | 'audio';
+  filename?: string;
+  duration?: string;
   submittedAt: string;
-  feedback?: string;
 }
 
 interface EpisodeAssignmentsProps {
@@ -31,186 +32,172 @@ interface EpisodeAssignmentsProps {
 }
 
 export default function EpisodeAssignments({ episodeId, courseId }: EpisodeAssignmentsProps) {
-  // Mock assignments for this episode
-  const [assignments, setAssignments] = useState<Assignment[]>([]);
-  // User submissions
-  const [submissions, setSubmissions] = useState<Record<string, Submission>>({});
-  // Current submission draft
-  const [currentSubmission, setCurrentSubmission] = useState<{
-    assignmentId: string;
-    content: string;
-    fileNames: string[];
-  }>({
-    assignmentId: '',
-    content: '',
-    fileNames: [],
-  });
+  const [assignments, setAssignments] = useState<Assignment[]>([
+    {
+      id: '1',
+      title: 'پیاده‌سازی کلاس‌های مورد نیاز',
+      description: 'با توجه به مفاهیم آموزش داده شده در این قسمت، کلاس‌های مورد نیاز برای پروژه را پیاده‌سازی کنید.',
+      deadline: '1402/12/15',
+      status: 'pending'
+    },
+    {
+      id: '2',
+      title: 'رفع اشکالات کد نمونه',
+      description: 'اشکالات موجود در کد نمونه را پیدا کرده و آن‌ها را برطرف کنید.',
+      deadline: '1402/12/10',
+      status: 'submitted',
+      submittedAt: '1402/12/08'
+    },
+    {
+      id: '3',
+      title: 'پیاده‌سازی الگوریتم مرتب‌سازی',
+      description: 'الگوریتم مرتب‌سازی توضیح داده شده در این قسمت را پیاده‌سازی کنید.',
+      deadline: '1402/11/25',
+      status: 'graded',
+      grade: 18,
+      feedback: 'عالی بود! فقط در بخش پیچیدگی زمانی می‌توانست بهتر باشد.',
+      submittedAt: '1402/11/20'
+    },
+    {
+      id: '4',
+      title: 'بهینه‌سازی کد قبلی',
+      description: 'کد قبلی خود را با استفاده از تکنیک‌های بهینه‌سازی بهبود دهید.',
+      deadline: '1402/11/15',
+      status: 'rejected',
+      feedback: 'لطفاً مجدداً تلاش کنید. کد ارسالی با الزامات تمرین مطابقت ندارد.',
+      submittedAt: '1402/11/10'
+    }
+  ]);
   
-  // Managing UI state
-  const [expandedAssignment, setExpandedAssignment] = useState<string | null>(null);
-  const [submittingAssignment, setSubmittingAssignment] = useState<string | null>(null);
-  const [showAddAssignment, setShowAddAssignment] = useState(false);
-  const [newAssignment, setNewAssignment] = useState<Omit<Assignment, 'id'>>({
-    title: '',
-    description: '',
-    dueDate: '',
-    episodeId,
-    courseId,
-  });
-
-  // Load assignments and submissions from localStorage on component mount
-  useEffect(() => {
-    const savedAssignments = localStorage.getItem(`course_${courseId}_episode_${episodeId}_assignments`);
-    if (savedAssignments) {
-      try {
-        setAssignments(JSON.parse(savedAssignments));
-      } catch (error) {
-        console.error('Error parsing saved assignments:', error);
-      }
-    } else {
-      // If no saved assignments, create a default one for demonstration
-      const defaultAssignment: Assignment = {
-        id: '1',
-        title: 'تمرین عملی اپیزود',
-        description: 'لطفا موارد آموخته شده در این اپیزود را به صورت عملی پیاده‌سازی کنید و نتیجه را آپلود نمایید.',
-        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-        episodeId,
-        courseId,
-      };
-      setAssignments([defaultAssignment]);
-      localStorage.setItem(
-        `course_${courseId}_episode_${episodeId}_assignments`,
-        JSON.stringify([defaultAssignment])
-      );
+  const [submissions, setSubmissions] = useState<Submission[]>([
+    {
+      id: '1',
+      assignmentId: '2',
+      type: 'file',
+      filename: 'assignment_solution.zip',
+      submittedAt: '1402/12/08'
+    },
+    {
+      id: '2',
+      assignmentId: '3',
+      type: 'file',
+      filename: 'sorting_algorithm.js',
+      submittedAt: '1402/11/20'
+    },
+    {
+      id: '3',
+      assignmentId: '4',
+      type: 'audio',
+      duration: '01:45',
+      submittedAt: '1402/11/10'
     }
-
-    const savedSubmissions = localStorage.getItem(`course_${courseId}_episode_${episodeId}_submissions`);
-    if (savedSubmissions) {
-      try {
-        setSubmissions(JSON.parse(savedSubmissions));
-      } catch (error) {
-        console.error('Error parsing saved submissions:', error);
-      }
-    }
-  }, [courseId, episodeId]);
-
-  // Save assignments and submissions to localStorage whenever they change
-  useEffect(() => {
-    if (assignments.length > 0) {
-      localStorage.setItem(
-        `course_${courseId}_episode_${episodeId}_assignments`,
-        JSON.stringify(assignments)
-      );
-    }
-  }, [assignments, courseId, episodeId]);
-
-  useEffect(() => {
-    if (Object.keys(submissions).length > 0) {
-      localStorage.setItem(
-        `course_${courseId}_episode_${episodeId}_submissions`,
-        JSON.stringify(submissions)
-      );
-    }
-  }, [submissions, courseId, episodeId]);
-
-  // Toggle assignment expansion
-  const toggleAssignment = (assignmentId: string) => {
-    setExpandedAssignment(prev => prev === assignmentId ? null : assignmentId);
-  };
-
-  // Start submitting an assignment
-  const startSubmitting = (assignmentId: string) => {
-    setSubmittingAssignment(assignmentId);
-    setCurrentSubmission({
-      assignmentId,
-      content: submissions[assignmentId]?.content || '',
-      fileNames: submissions[assignmentId]?.fileNames || [],
-    });
-  };
-
-  // Cancel submission
-  const cancelSubmission = () => {
-    setSubmittingAssignment(null);
-    setCurrentSubmission({
-      assignmentId: '',
-      content: '',
-      fileNames: [],
-    });
-  };
-
-  // Add a file to current submission
-  const addFile = () => {
-    const fileName = prompt('نام فایل را وارد کنید');
-    if (fileName && fileName.trim()) {
-      setCurrentSubmission(prev => ({
-        ...prev,
-        fileNames: [...prev.fileNames, fileName.trim()]
-      }));
-    }
-  };
-
-  // Remove a file from current submission
-  const removeFile = (fileName: string) => {
-    setCurrentSubmission(prev => ({
-      ...prev,
-      fileNames: prev.fileNames.filter(name => name !== fileName)
-    }));
-  };
-
-  // Submit an assignment
-  const submitAssignment = () => {
-    if (!submittingAssignment || !currentSubmission.content.trim()) return;
+  ]);
+  
+  const [activeAssignment, setActiveAssignment] = useState<string | null>(null);
+  const [submissionType, setSubmissionType] = useState<'file' | 'audio'>('file');
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingTime, setRecordingTime] = useState(0);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // شروع ضبط صدا
+  const startRecording = () => {
+    setIsRecording(true);
+    setRecordingTime(0);
     
+    // شبیه‌سازی تایمر ضبط
+    timerRef.current = setInterval(() => {
+      setRecordingTime(prev => prev + 1);
+    }, 1000);
+  };
+  
+  // پایان ضبط صدا
+  const stopRecording = () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    setIsRecording(false);
+    
+    // در یک پروژه واقعی، اینجا فایل صوتی ضبط شده ذخیره می‌شود
+  };
+  
+  // انتخاب فایل
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setSelectedFile(e.target.files[0]);
+    }
+  };
+  
+  // ارسال تمرین
+  const submitAssignment = () => {
+    if (!activeAssignment) return;
+    
+    // ایجاد یک ارسال جدید
     const newSubmission: Submission = {
       id: Date.now().toString(),
-      assignmentId: submittingAssignment,
-      content: currentSubmission.content,
-      fileNames: currentSubmission.fileNames,
-      status: 'submitted',
-      submittedAt: new Date().toISOString(),
+      assignmentId: activeAssignment,
+      type: submissionType,
+      submittedAt: new Date().toLocaleDateString('fa-IR')
     };
-
-    setSubmissions(prev => ({
-      ...prev,
-      [submittingAssignment]: newSubmission
-    }));
-
-    setSubmittingAssignment(null);
-    setCurrentSubmission({
-      assignmentId: '',
-      content: '',
-      fileNames: [],
-    });
-  };
-
-  // Add a new assignment (admin only in real app)
-  const addAssignment = () => {
-    if (!newAssignment.title.trim() || !newAssignment.description.trim()) return;
     
-    const assignment: Assignment = {
-      ...newAssignment,
-      id: Date.now().toString(),
-    };
-
-    setAssignments(prev => [...prev, assignment]);
+    if (submissionType === 'file' && selectedFile) {
+      newSubmission.filename = selectedFile.name;
+    } else if (submissionType === 'audio') {
+      const minutes = Math.floor(recordingTime / 60);
+      const seconds = recordingTime % 60;
+      newSubmission.duration = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+    }
     
-    // Reset form
-    setNewAssignment({
-      title: '',
-      description: '',
-      dueDate: '',
-      episodeId,
-      courseId,
-    });
-    setShowAddAssignment(false);
+    // به‌روزرسانی وضعیت تمرین
+    setAssignments(assignments.map(assignment => 
+      assignment.id === activeAssignment 
+        ? { 
+            ...assignment, 
+            status: 'submitted', 
+            submittedAt: new Date().toLocaleDateString('fa-IR') 
+          } 
+        : assignment
+    ));
+    
+    // افزودن ارسال جدید
+    setSubmissions([...submissions, newSubmission]);
+    
+    // پاکسازی فرم
+    setActiveAssignment(null);
+    setSelectedFile(null);
+    setRecordingTime(0);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
   };
-
-  // Format date in Persian style
-  const formatDate = (dateString: string) => {
-    if (!dateString) return '';
-    const date = new Date(dateString);
-    // Simple formatting - in a real app would use a Persian date formatter
-    return date.toLocaleDateString('fa-IR');
+  
+  // تبدیل ثانیه به فرمت mm:ss
+  const formatTime = (seconds: number): string => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  // نمایش وضعیت تمرین
+  const renderStatus = (status: Assignment['status']) => {
+    switch (status) {
+      case 'pending':
+        return <span className="flex items-center text-yellow-400 text-xs"><Clock className="h-3 w-3 mr-1" /> در انتظار ارسال</span>;
+      case 'submitted':
+        return <span className="flex items-center text-blue-400 text-xs"><AlertCircle className="h-3 w-3 mr-1" /> در انتظار بررسی</span>;
+      case 'graded':
+        return <span className="flex items-center text-green-400 text-xs"><CheckCircle className="h-3 w-3 mr-1" /> تأیید شده</span>;
+      case 'rejected':
+        return <span className="flex items-center text-red-400 text-xs"><XCircle className="h-3 w-3 mr-1" /> نیاز به اصلاح</span>;
+      default:
+        return null;
+    }
+  };
+  
+  // یافتن ارسال برای یک تمرین خاص
+  const findSubmission = (assignmentId: string) => {
+    return submissions.find(sub => sub.assignmentId === assignmentId);
   };
 
   return (
@@ -222,7 +209,7 @@ export default function EpisodeAssignments({ episodeId, courseId }: EpisodeAssig
         <Button 
           variant="outline" 
           size="sm"
-          onClick={() => setShowAddAssignment(!showAddAssignment)}
+          onClick={() => setActiveAssignment(null)}
           className="flex items-center gap-1"
         >
           <PlusCircle className="h-4 w-4" />
@@ -231,23 +218,23 @@ export default function EpisodeAssignments({ episodeId, courseId }: EpisodeAssig
       </div>
       
       {/* Add new assignment form (instructor only) */}
-      {showAddAssignment && (
+      {activeAssignment === null && (
         <div className="p-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
           <h4 className="font-medium mb-3">تمرین جدید</h4>
           <div className="space-y-3">
             <div>
               <Input
                 placeholder="عنوان تمرین"
-                value={newAssignment.title}
-                onChange={(e) => setNewAssignment(prev => ({ ...prev, title: e.target.value }))}
+                value={assignments.find(a => a.id === activeAssignment)?.title || ''}
+                onChange={(e) => setAssignments(prev => prev.map(a => a.id === activeAssignment ? { ...a, title: e.target.value } : a))}
                 className="mb-2"
               />
             </div>
             <div>
               <Textarea
                 placeholder="توضیحات تمرین"
-                value={newAssignment.description}
-                onChange={(e) => setNewAssignment(prev => ({ ...prev, description: e.target.value }))}
+                value={assignments.find(a => a.id === activeAssignment)?.description || ''}
+                onChange={(e) => setAssignments(prev => prev.map(a => a.id === activeAssignment ? { ...a, description: e.target.value } : a))}
                 className="min-h-[100px] resize-y mb-2"
               />
             </div>
@@ -255,21 +242,21 @@ export default function EpisodeAssignments({ episodeId, courseId }: EpisodeAssig
               <div className="text-sm mb-1">مهلت تحویل:</div>
               <Input
                 type="date"
-                value={newAssignment.dueDate}
-                onChange={(e) => setNewAssignment(prev => ({ ...prev, dueDate: e.target.value }))}
+                value={assignments.find(a => a.id === activeAssignment)?.deadline || ''}
+                onChange={(e) => setAssignments(prev => prev.map(a => a.id === activeAssignment ? { ...a, deadline: e.target.value } : a))}
               />
             </div>
             <div className="flex justify-end gap-2">
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => setShowAddAssignment(false)}
+                onClick={() => setActiveAssignment(null)}
               >
                 انصراف
               </Button>
               <Button 
                 size="sm"
-                onClick={addAssignment}
+                onClick={() => setActiveAssignment(assignments[assignments.length - 1].id)}
                 className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
               >
                 افزودن تمرین
@@ -279,197 +266,240 @@ export default function EpisodeAssignments({ episodeId, courseId }: EpisodeAssig
         </div>
       )}
       
-      {assignments.length === 0 ? (
-        <p className="text-gray-500 text-center py-4">تمرینی برای این اپیزود تعریف نشده است.</p>
-      ) : (
-        <div className="space-y-4">
-          {assignments.map(assignment => (
+      {/* لیست تمرین‌ها */}
+      <div className="space-y-4 mb-6">
+        {assignments.length === 0 ? (
+          <div className="text-center py-8 text-gray-400 text-sm">
+            تمرینی برای این اپیزود تعریف نشده است.
+          </div>
+        ) : (
+          assignments.map(assignment => (
             <div 
               key={assignment.id} 
-              className="rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden"
+              className={`bg-gray-800/70 rounded-lg p-4 border ${
+                activeAssignment === assignment.id 
+                  ? 'border-green-500/50' 
+                  : 'border-gray-700'
+              }`}
             >
-              {/* Assignment header */}
-              <div 
-                className="p-4 bg-white dark:bg-gray-900 flex justify-between items-center cursor-pointer"
-                onClick={() => toggleAssignment(assignment.id)}
-              >
-                <div className="flex items-center gap-3">
-                  <FileText className="h-5 w-5 text-teal-500" />
-                  <div>
-                    <h4 className="font-medium">{assignment.title}</h4>
-                    {assignment.dueDate && (
-                      <p className="text-sm text-gray-500">
-                        مهلت تحویل: {formatDate(assignment.dueDate)}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  {submissions[assignment.id] && (
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      submissions[assignment.id].status === 'submitted' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-800/30 dark:text-green-400'
-                        : 'bg-amber-100 text-amber-800 dark:bg-amber-800/30 dark:text-amber-400'
-                    }`}>
-                      {submissions[assignment.id].status === 'submitted' ? 'ارسال شده' : 'پیش‌نویس'}
-                    </span>
-                  )}
-                </div>
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-medium text-white">{assignment.title}</h4>
+                {renderStatus(assignment.status)}
               </div>
               
-              {/* Assignment details */}
-              {expandedAssignment === assignment.id && (
-                <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-950">
-                  {/* Assignment description */}
-                  <div className="mb-4">
-                    <h5 className="font-medium mb-2">توضیحات:</h5>
-                    <p className="text-gray-700 dark:text-gray-300 whitespace-pre-wrap">
-                      {assignment.description}
-                    </p>
+              <p className="text-sm text-gray-300 mb-3">{assignment.description}</p>
+              
+              <div className="flex flex-wrap justify-between items-center text-xs text-gray-400 mb-3">
+                <span className="flex items-center">
+                  <Clock className="h-3.5 w-3.5 mr-1" />
+                  مهلت ارسال: {assignment.deadline}
+                </span>
+                
+                {assignment.submittedAt && (
+                  <span>
+                    تاریخ ارسال: {assignment.submittedAt}
+                  </span>
+                )}
+              </div>
+              
+              {/* نمایش نمره و بازخورد */}
+              {assignment.status === 'graded' && (
+                <div className="bg-green-900/20 border border-green-500/30 rounded-md p-2 mb-3">
+                  <div className="flex justify-between items-center mb-1">
+                    <span className="text-sm font-medium text-green-400">نمره دریافتی:</span>
+                    <span className="text-white font-bold">{assignment.grade} از 20</span>
+                  </div>
+                  {assignment.feedback && (
+                    <p className="text-xs text-gray-300">{assignment.feedback}</p>
+                  )}
+                </div>
+              )}
+              
+              {/* نمایش بازخورد برای تمرین‌های رد شده */}
+              {assignment.status === 'rejected' && (
+                <div className="bg-red-900/20 border border-red-500/30 rounded-md p-2 mb-3">
+                  <div className="flex items-center mb-1">
+                    <span className="text-sm font-medium text-red-400">بازخورد استاد:</span>
+                  </div>
+                  {assignment.feedback && (
+                    <p className="text-xs text-gray-300">{assignment.feedback}</p>
+                  )}
+                </div>
+              )}
+              
+              {/* نمایش فایل ارسالی */}
+              {(assignment.status === 'submitted' || assignment.status === 'graded' || assignment.status === 'rejected') && (
+                <div className="mb-3">
+                  <h5 className="text-xs font-medium text-gray-400 mb-1">فایل ارسالی:</h5>
+                  {(() => {
+                    const submission = findSubmission(assignment.id);
+                    if (submission) {
+                      if (submission.type === 'file') {
+                        return (
+                          <div className="flex items-center bg-gray-700/50 rounded-md p-2">
+                            <FileUp className="h-4 w-4 text-blue-400 mr-2" />
+                            <span className="text-xs text-gray-300 flex-1">{submission.filename}</span>
+                            <button className="text-gray-400 hover:text-white">
+                              <Download className="h-4 w-4" />
+                            </button>
+                          </div>
+                        );
+                      } else if (submission.type === 'audio') {
+                        return (
+                          <div className="flex items-center bg-gray-700/50 rounded-md p-2">
+                            <Mic className="h-4 w-4 text-blue-400 mr-2" />
+                            <span className="text-xs text-gray-300 flex-1">فایل صوتی ({submission.duration})</span>
+                            <button className="text-gray-400 hover:text-white">
+                              <Download className="h-4 w-4" />
+                            </button>
+                          </div>
+                        );
+                      }
+                    }
+                    return null;
+                  })()}
+                </div>
+              )}
+              
+              {/* دکمه‌های عملیات */}
+              <div className="flex justify-end">
+                {(assignment.status === 'pending' || assignment.status === 'rejected') && (
+                  activeAssignment === assignment.id ? (
+                    <button
+                      onClick={() => setActiveAssignment(null)}
+                      className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-md transition-colors"
+                    >
+                      انصراف
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => setActiveAssignment(assignment.id)}
+                      className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md transition-colors"
+                    >
+                      ارسال پاسخ
+                    </button>
+                  )
+                )}
+              </div>
+              
+              {/* فرم ارسال تمرین */}
+              {activeAssignment === assignment.id && (
+                <div className="mt-4 pt-4 border-t border-gray-700">
+                  <div className="flex gap-2 mb-3">
+                    <button
+                      onClick={() => setSubmissionType('file')}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm ${
+                        submissionType === 'file'
+                          ? 'bg-green-600/20 text-green-400 border border-green-500/30'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600'
+                      }`}
+                    >
+                      <FileUp className="h-4 w-4" />
+                      <span>آپلود فایل</span>
+                    </button>
+                    <button
+                      onClick={() => setSubmissionType('audio')}
+                      className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm ${
+                        submissionType === 'audio'
+                          ? 'bg-green-600/20 text-green-400 border border-green-500/30'
+                          : 'bg-gray-700 text-gray-300 hover:bg-gray-600 border border-gray-600'
+                      }`}
+                    >
+                      <Mic className="h-4 w-4" />
+                      <span>ضبط صدا</span>
+                    </button>
                   </div>
                   
-                  {/* Submission area */}
-                  {submittingAssignment === assignment.id ? (
-                    <div className="mt-4 space-y-3">
-                      <h5 className="font-medium">ارسال پاسخ:</h5>
-                      <Textarea
-                        placeholder="پاسخ خود را وارد کنید..."
-                        value={currentSubmission.content}
-                        onChange={(e) => setCurrentSubmission(prev => ({ ...prev, content: e.target.value }))}
-                        className="min-h-[120px] resize-y"
+                  {submissionType === 'file' ? (
+                    <div className="mb-3">
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        onChange={handleFileChange}
+                        className="hidden"
+                        accept=".pdf,.doc,.docx,.zip,.rar,.jpg,.png,.js,.html,.css,.ts,.jsx,.tsx"
                       />
                       
-                      {/* File attachments */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <h6 className="text-sm font-medium">فایل‌های پیوست:</h6>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={addFile}
-                            className="flex items-center gap-1"
+                      {selectedFile ? (
+                        <div className="flex items-center bg-gray-700/50 rounded-md p-3 mb-3">
+                          <FileUp className="h-5 w-5 text-blue-400 mr-2" />
+                          <div className="flex-1">
+                            <div className="text-sm text-white truncate">{selectedFile.name}</div>
+                            <div className="text-xs text-gray-400">{(selectedFile.size / 1024).toFixed(1)} KB</div>
+                          </div>
+                          <button 
+                            onClick={() => {
+                              setSelectedFile(null);
+                              if (fileInputRef.current) fileInputRef.current.value = '';
+                            }}
+                            className="text-gray-400 hover:text-red-400"
                           >
-                            <PlusCircle className="h-3 w-3" />
-                            افزودن فایل
-                          </Button>
-                        </div>
-                        
-                        {currentSubmission.fileNames.length === 0 ? (
-                          <p className="text-sm text-gray-500">هیچ فایلی پیوست نشده است.</p>
-                        ) : (
-                          <div className="space-y-2">
-                            {currentSubmission.fileNames.map(fileName => (
-                              <div 
-                                key={fileName} 
-                                className="flex items-center justify-between p-2 rounded bg-gray-100 dark:bg-gray-800"
-                              >
-                                <div className="flex items-center gap-2">
-                                  <Paperclip className="h-4 w-4 text-gray-500" />
-                                  <span className="text-sm">{fileName}</span>
-                                </div>
-                                <button 
-                                  onClick={() => removeFile(fileName)}
-                                  className="p-1 text-gray-500 hover:text-red-500 rounded-full"
-                                >
-                                  <X className="h-4 w-4" />
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Submission buttons */}
-                      <div className="flex justify-end gap-2 mt-4">
-                        <Button 
-                          variant="outline" 
-                          size="sm"
-                          onClick={cancelSubmission}
-                        >
-                          انصراف
-                        </Button>
-                        <Button 
-                          size="sm"
-                          onClick={submitAssignment}
-                          disabled={!currentSubmission.content.trim()}
-                          className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
-                        >
-                          <ArrowUp className="h-4 w-4 ml-1" />
-                          ارسال پاسخ
-                        </Button>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="mt-4">
-                      {submissions[assignment.id] ? (
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <h5 className="font-medium">پاسخ ارسالی شما:</h5>
-                            <span className="text-xs text-gray-500">
-                              ارسال شده در {new Date(submissions[assignment.id].submittedAt).toLocaleDateString('fa-IR')}
-                            </span>
-                          </div>
-                          <p className="p-3 rounded bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 whitespace-pre-wrap">
-                            {submissions[assignment.id].content}
-                          </p>
-                          
-                          {/* Attached files */}
-                          {submissions[assignment.id].fileNames.length > 0 && (
-                            <div className="mt-2">
-                              <h6 className="text-sm font-medium mb-2">فایل‌های پیوست:</h6>
-                              <div className="space-y-2">
-                                {submissions[assignment.id].fileNames.map(fileName => (
-                                  <div 
-                                    key={fileName} 
-                                    className="flex items-center gap-2 p-2 rounded bg-gray-100 dark:bg-gray-800"
-                                  >
-                                    <Paperclip className="h-4 w-4 text-gray-500" />
-                                    <span className="text-sm">{fileName}</span>
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          )}
-                          
-                          {/* Feedback from instructor (if any) */}
-                          {submissions[assignment.id].feedback && (
-                            <div className="mt-4">
-                              <h6 className="text-sm font-medium mb-2">بازخورد استاد:</h6>
-                              <p className="p-3 rounded bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 text-amber-800 dark:text-amber-300">
-                                {submissions[assignment.id].feedback}
-                              </p>
-                            </div>
-                          )}
-                          
-                          <div className="flex justify-end">
-                            <Button 
-                              variant="outline" 
-                              size="sm"
-                              onClick={() => startSubmitting(assignment.id)}
-                            >
-                              ویرایش پاسخ
-                            </Button>
-                          </div>
+                            <XCircle className="h-5 w-5" />
+                          </button>
                         </div>
                       ) : (
-                        <div className="flex justify-center">
-                          <Button 
-                            onClick={() => startSubmitting(assignment.id)}
-                            className="bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
+                        <div 
+                          onClick={() => fileInputRef.current?.click()}
+                          className="border-2 border-dashed border-gray-600 rounded-md p-6 text-center cursor-pointer hover:border-green-500/50 transition-colors"
+                        >
+                          <FileUp className="h-8 w-8 text-gray-500 mx-auto mb-2" />
+                          <p className="text-sm text-gray-400 mb-1">فایل خود را اینجا رها کنید یا کلیک کنید</p>
+                          <p className="text-xs text-gray-500">حداکثر اندازه: 10MB</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="mb-3">
+                      {isRecording ? (
+                        <div className="bg-red-900/20 border border-red-500/30 rounded-md p-4 text-center">
+                          <div className="animate-pulse mb-2">
+                            <Mic className="h-8 w-8 text-red-500 mx-auto" />
+                          </div>
+                          <p className="text-sm text-white mb-2">در حال ضبط صدا...</p>
+                          <p className="text-xl font-mono font-bold text-red-400 mb-3">{formatTime(recordingTime)}</p>
+                          <button
+                            onClick={stopRecording}
+                            className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md flex items-center justify-center gap-1.5 mx-auto"
                           >
-                            <Upload className="h-4 w-4 ml-1" />
-                            ارسال پاسخ
-                          </Button>
+                            <StopCircle className="h-4 w-4" />
+                            <span>پایان ضبط</span>
+                          </button>
+                        </div>
+                      ) : recordingTime > 0 ? (
+                        <div className="bg-gray-700/50 rounded-md p-4 text-center mb-3">
+                          <Mic className="h-6 w-6 text-green-400 mx-auto mb-2" />
+                          <p className="text-sm text-white mb-1">ضبط صدا با موفقیت انجام شد</p>
+                          <p className="text-xs text-gray-400">مدت زمان: {formatTime(recordingTime)}</p>
+                        </div>
+                      ) : (
+                        <div 
+                          onClick={startRecording}
+                          className="border-2 border-dashed border-gray-600 rounded-md p-6 text-center cursor-pointer hover:border-green-500/50 transition-colors"
+                        >
+                          <Mic className="h-8 w-8 text-gray-500 mx-auto mb-2" />
+                          <p className="text-sm text-gray-400 mb-1">برای شروع ضبط صدا کلیک کنید</p>
+                          <p className="text-xs text-gray-500">حداکثر زمان: 5 دقیقه</p>
                         </div>
                       )}
                     </div>
                   )}
+                  
+                  <div className="flex justify-end">
+                    <button
+                      onClick={submitAssignment}
+                      disabled={(submissionType === 'file' && !selectedFile) || (submissionType === 'audio' && recordingTime === 0)}
+                      className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <Send className="h-4 w-4" />
+                      <span>ارسال تمرین</span>
+                    </button>
+                  </div>
                 </div>
               )}
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 } 

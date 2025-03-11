@@ -427,16 +427,52 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                       <p className="text-gray-200 mb-5 text-lg">شما با موفقیت این قسمت را به پایان رساندید.</p>
                       
                       {/* نمایش امتیاز */}
-                      <div className={`mb-6 transform transition-all duration-500 ${showEarnedPoints ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
-                        <div className="bg-gradient-to-r from-amber-500/20 via-amber-600/20 to-amber-500/20 rounded-lg p-4 border border-amber-500/30">
-                          <div className="flex items-center justify-center gap-2">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-amber-400">
-                              <circle cx="12" cy="8" r="7" />
-                              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
-                            </svg>
-                            <span className="text-xl font-bold text-amber-400">شما ۱۰ امتیاز دریافت کردید</span>
+                      <div className={`mb-6 transform transition-all duration-700 ${showEarnedPoints ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-8 opacity-0 scale-95'}`}>
+                        <div className="relative py-6">
+                          {/* خطوط تزئینی */}
+                          <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
+                          
+                          {/* کارت امتیاز */}
+                          <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-green-500/30 shadow-[0_0_15px_rgba(74,222,128,0.15)] overflow-hidden">
+                            {/* افکت نور */}
+                            <div className="absolute -top-10 -right-10 w-20 h-20 bg-green-500/20 blur-2xl rounded-full"></div>
+                            <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-green-500/20 blur-2xl rounded-full"></div>
+                            
+                            {/* محتوای اصلی */}
+                            <div className="flex items-center gap-5">
+                              {/* دایره امتیاز */}
+                              <div className="relative flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-b from-green-500/20 to-green-600/10 flex items-center justify-center border border-green-500/50 shadow-[0_0_10px_rgba(74,222,128,0.3)]">
+                                <span className="text-2xl font-bold text-white">+۱۰</span>
+                                <div className="absolute inset-0 rounded-full border border-green-400/20 animate-ping"></div>
+                              </div>
+                              
+                              {/* متن امتیاز */}
+                              <div className="flex-1 text-right">
+                                <div className="flex items-center gap-2 mb-1">
+                                  <div className="flex space-x-1 rtl:space-x-reverse">
+                                    {[0, 1, 2, 3, 4].map((star) => (
+                                      <svg key={star} className="w-4 h-4 text-yellow-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 20">
+                                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z"/>
+                                      </svg>
+                                    ))}
+                                  </div>
+                                  <h4 className="text-xl font-bold text-green-400">امتیاز دریافت شد!</h4>
+                                </div>
+                                <p className="text-sm text-gray-300">تبریک! با تکمیل این درس <span className="text-green-400 font-bold">۱۰ امتیاز</span> به مجموع امتیازات شما اضافه شد.</p>
+                              </div>
+                            </div>
+                            
+                            {/* نوار پیشرفت کلی */}
+                            <div className="mt-4 pt-3 border-t border-gray-700">
+                              <div className="flex justify-between text-xs text-gray-400 mb-1.5">
+                                <span>پیشرفت امتیازات شما</span>
+                                <span className="text-green-400">۱۲۰ / ۵۰۰</span>
+                              </div>
+                              <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full w-[24%]"></div>
+                              </div>
+                            </div>
                           </div>
-                          <div className="text-sm text-amber-300/70 mt-1">امتیازات شما برای دریافت گواهی‌نامه محاسبه می‌شود</div>
                         </div>
                       </div>
                       
@@ -638,28 +674,6 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                     </div>
                   );
                 })}
-                
-                {/* دکمه‌های دسترسی - فقط در تب فصل‌ها و در صورت نداشتن دسترسی */}
-                {!hasAccess && (
-                  <div className="p-4 bg-gray-800">
-                    <div className="flex flex-col gap-2">
-                      <button 
-                        onClick={togglePurchaseStatus}
-                        className="w-full rounded-md bg-primary px-4 py-2.5 text-white hover:bg-primary/90 transition-colors"
-                      >
-                        خرید دوره
-                      </button>
-                      {course.isFreePremium && (
-                        <button 
-                          onClick={togglePremiumStatus}
-                          className="w-full rounded-md border border-amber-500 bg-transparent px-4 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors"
-                        >
-                          فعال‌سازی عضویت ویژه
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
               </div>
             )}
             
@@ -701,35 +715,6 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                   episodeId={episode.id} 
                   courseId={course.id} 
                 />
-              </div>
-            )}
-            
-            {/* حالت عدم دسترسی برای تب‌های دیگر */}
-            {activeTab !== 'chapters' && !hasAccess && (
-              <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
-                <div className="mb-4 rounded-full bg-gray-700 p-4">
-                  <Lock className="h-8 w-8 text-amber-400" />
-                </div>
-                <h3 className="mb-2 text-lg font-bold text-white">این محتوا قفل شده است</h3>
-                <p className="mb-6 text-gray-400 max-w-md">
-                  برای دسترسی به این بخش، باید دوره را خریداری کنید یا عضو ویژه باشید.
-                </p>
-                <div className="flex flex-wrap gap-3 justify-center">
-                  <button 
-                    onClick={togglePurchaseStatus}
-                    className="rounded-md bg-primary px-6 py-2.5 text-white hover:bg-primary/90 transition-colors"
-                  >
-                    خرید دوره
-                  </button>
-                  {course.isFreePremium && (
-                    <button 
-                      onClick={togglePremiumStatus}
-                      className="rounded-md border border-amber-500 bg-transparent px-6 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors"
-                    >
-                      فعال‌سازی عضویت ویژه
-                    </button>
-                  )}
-                </div>
               </div>
             )}
           </div>
