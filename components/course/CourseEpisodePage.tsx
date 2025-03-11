@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { ChevronLeft, Lock, Play, Check, ChevronDown, ChevronUp, Clock, BookOpen, Award, ArrowLeft, FileText, Paperclip, MessageSquare, PenLine, ChevronRight } from 'lucide-react';
 import { Course, Episode, Chapter } from '@/components/data/course';
@@ -10,6 +10,7 @@ import EpisodeNotes from '@/components/episode/EpisodeNotes';
 import EpisodeAssignments from '@/components/episode/EpisodeAssignments';
 import EpisodeAttachments from '@/components/episode/EpisodeAttachments';
 import EpisodeComments from '@/components/episode/EpisodeComments';
+import { useRouter } from 'next/navigation';
 
 interface CourseEpisodePageProps {
   course: Course;
@@ -24,6 +25,12 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   const [currentPlayerTime, setCurrentPlayerTime] = useState(0);
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
   const [activeTab, setActiveTab] = useState<'chapters' | 'notes' | 'assignments' | 'attachments' | 'comments'>('chapters');
+  const [showCompletionDialog, setShowCompletionDialog] = useState(false);
+  const [completionTimerProgress, setCompletionTimerProgress] = useState(0);
+  const [isVideoEnded, setIsVideoEnded] = useState(false);
+  
+  const router = useRouter();
+  const completionTimerRef = useRef<NodeJS.Timeout | null>(null);
   
   // مدیریت پیشرفت تماشای اپیزودها - با مقادیر ثابت به جای تصادفی
   const [watchedProgress, setWatchedProgress] = useState<Record<string, number>>(() => {
@@ -90,8 +97,82 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
         }
         return prev;
       });
+      
+      // نمایش دیالوگ اتمام ویدیو (فقط اگر ویدیو به پایان رسیده باشد)
+      if (progressPercent >= 99.5 && !isVideoEnded) {
+        setIsVideoEnded(true);
+        setShowCompletionDialog(true);
+        startCompletionTimer();
+      }
     }
   };
+  
+  // شروع تایمر برای رفتن به قسمت بعدی
+  const startCompletionTimer = () => {
+    // پاکسازی تایمر قبلی
+    if (completionTimerRef.current) {
+      clearInterval(completionTimerRef.current);
+    }
+    
+    setCompletionTimerProgress(0);
+    const startTime = Date.now();
+    const duration = 5000; // 5 ثانیه
+    
+    completionTimerRef.current = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min((elapsed / duration) * 100, 100);
+      setCompletionTimerProgress(progress);
+      
+      if (progress >= 100) {
+        clearInterval(completionTimerRef.current!);
+        navigateToNextEpisode();
+      }
+    }, 50);
+  };
+  
+  // لغو تایمر انتقال به قسمت بعد
+  const cancelCompletionTimer = () => {
+    if (completionTimerRef.current) {
+      clearInterval(completionTimerRef.current);
+      completionTimerRef.current = null;
+    }
+    setShowCompletionDialog(false);
+  };
+  
+  // پیدا کردن و انتقال به قسمت بعدی
+  const navigateToNextEpisode = () => {
+    const currentEpisodeIndex = chapter.episodes.findIndex(ep => ep.id === episode.id);
+    
+    // اگر اپیزود بعدی در این فصل وجود داشت
+    if (currentEpisodeIndex < chapter.episodes.length - 1) {
+      const nextEpisode = chapter.episodes[currentEpisodeIndex + 1];
+      router.push(`/courses/${course.id}/episodes/${nextEpisode.id}`);
+      return;
+    }
+    
+    // اگر فصل بعدی وجود داشت
+    const currentChapterIndex = course.chapters.findIndex(ch => ch.id === chapter.id);
+    if (currentChapterIndex < course.chapters.length - 1) {
+      const nextChapter = course.chapters[currentChapterIndex + 1];
+      if (nextChapter.episodes && nextChapter.episodes.length > 0) {
+        router.push(`/courses/${course.id}/episodes/${nextChapter.episodes[0].id}`);
+        return;
+      }
+    }
+    
+    // اگر اپیزود بعدی وجود نداشت
+    setShowSuccessMessage("شما به پایان دوره رسیدید!");
+    setShowCompletionDialog(false);
+  };
+  
+  // پاکسازی تایمر هنگام خروج از کامپوننت
+  useEffect(() => {
+    return () => {
+      if (completionTimerRef.current) {
+        clearInterval(completionTimerRef.current);
+      }
+    };
+  }, []);
   
   // محاسبه پیشرفت فصل
   const calculateChapterProgress = (ch: Chapter) => {
@@ -219,11 +300,11 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
             <div className="flex items-center gap-3">
               <Link 
                 href={`/courses/${course.id}`} 
-                className="flex items-center gap-1.5 text-gray-300 hover:text-green-400 transition-colors"
-                title="بازگشت به دوره"
+                className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg transition-all shadow-sm"
+                title="بازگشت به صفحه دوره"
               >
                 <ArrowLeft className="h-4 w-4" />
-                <span className="text-sm font-medium hidden lg:inline">بازگشت</span>
+                <span className="text-sm font-medium">بازگشت به دوره</span>
               </Link>
               
               <div className="h-4 w-px bg-gray-700"></div>
@@ -246,20 +327,22 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
             
             {/* بخش سمت چپ - وضعیت دسترسی و پیشرفت */}
             <div className="flex items-center gap-4">
-              {/* پیشرفت کل دوره - با طراحی واضح‌تر */}
-              <div className="flex items-center py-1 px-2 bg-gray-800/60 rounded-lg gap-2 border border-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-green-400">
-                  <path d="M18 6H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h13l4-3.5L18 6Z" />
-                  <path d="M12 13v8" />
-                  <path d="M5 13v6a2 2 0 0 0 2 2h8" />
+              {/* پیشرفت اپیزود فعلی - طرح ساده و گویا */}
+              <div 
+                className="flex items-center gap-2 px-2 py-1 bg-gray-800/50 rounded-lg border border-gray-700" 
+                title="پیشرفت پخش اپیزود فعلی"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-green-500">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <div title="پیشرفت کل دوره" className="w-20 h-2 bg-gray-700 rounded-full overflow-hidden">
+                <div className="w-16 h-1.5 bg-gray-700 rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-green-500 rounded-full"
-                    style={{ width: `${courseProgress}%` }}
+                    style={{ width: `${watchedProgress[episode.id] || 0}%` }}
                   />
                 </div>
-                <span className="text-xs font-medium text-green-400">{courseProgress}%</span>
+                <span className="text-xs text-green-400">{Math.round(watchedProgress[episode.id] || 0)}%</span>
               </div>
               
               {/* وضعیت دسترسی */}
@@ -286,13 +369,63 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           </div>
           
           {/* ویدیو پلیر */}
-          <div className="flex-1 flex bg-black overflow-hidden">
+          <div className="flex-1 flex bg-black overflow-hidden relative">
             {hasAccess ? (
-              <CourseEpisodePlayer 
-                episode={episode} 
-                onProgressChange={handleVideoProgress}
-                initialProgress={watchedProgress[episode.id] || 0}
-              />
+              <>
+                <CourseEpisodePlayer 
+                  episode={episode} 
+                  onProgressChange={handleVideoProgress}
+                  initialProgress={watchedProgress[episode.id] || 0}
+                />
+                
+                {/* دیالوگ اتمام ویدیو */}
+                {showCompletionDialog && (
+                  <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-30 backdrop-blur-sm">
+                    <div className="bg-gray-800 p-6 rounded-xl max-w-md text-center shadow-2xl border border-gray-700 animate-fade-in">
+                      <div className="w-20 h-20 mx-auto mb-4 relative">
+                        <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 100 100">
+                          <circle 
+                            cx="50" cy="50" r="45" 
+                            className="stroke-gray-700 fill-none" 
+                            strokeWidth="8"
+                          />
+                          <circle 
+                            cx="50" cy="50" r="45" 
+                            className="stroke-green-500 fill-none" 
+                            strokeWidth="8"
+                            strokeDasharray="283"
+                            strokeDashoffset={283 - (283 * completionTimerProgress / 100)}
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <span className="text-xl font-bold text-white">{Math.ceil(5 - (completionTimerProgress / 20))}</span>
+                        </div>
+                      </div>
+                      <div className="flex items-center justify-center gap-2 mb-3">
+                        <Check className="w-6 h-6 text-green-500" />
+                        <h3 className="text-xl font-bold text-white">تبریک!</h3>
+                      </div>
+                      <p className="text-gray-200 mb-6">شما با موفقیت این قسمت را به پایان رساندید.</p>
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                        <button
+                          onClick={navigateToNextEpisode}
+                          className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg flex items-center justify-center gap-1.5 transition-colors"
+                        >
+                          <span>رفتن به قسمت بعدی</span>
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={cancelCompletionTimer}
+                          className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-6 rounded-lg transition-colors"
+                        >
+                          ادامه همین قسمت
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </>
             ) : (
               <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
                 <div className="mb-4 rounded-full bg-gray-800 p-4">
@@ -422,20 +555,20 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                               >
                                 <div className="shrink-0 mt-0.5">
                                   {!episodeAccess ? (
-                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-700">
-                                      <Lock className="h-3 w-3 text-amber-400" />
+                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-700">
+                                      <Lock className="h-4 w-4 text-amber-400" />
                                     </div>
                                   ) : isCompleted ? (
-                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-green-800/30">
-                                      <Check className="h-3 w-3 text-green-400" />
+                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-800/30">
+                                      <Check className="h-4 w-4 text-green-400" />
                                     </div>
                                   ) : isActive ? (
-                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/30">
-                                      <Play className="h-3 w-3 text-primary" />
+                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/30">
+                                      <Play className="h-4 w-4 text-primary" />
                                     </div>
                                   ) : (
-                                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-700">
-                                      <Play className="h-3 w-3 text-gray-300" />
+                                    <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-700">
+                                      <Play className="h-4 w-4 text-gray-300" />
                                     </div>
                                   )}
                                 </div>
