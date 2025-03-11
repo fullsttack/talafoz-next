@@ -9,16 +9,12 @@ interface CourseEpisodePlayerProps {
   episode: Episode;
   onProgressChange?: (progressPercent: number, currentTime?: number) => void;
   initialProgress?: number;
-  isPremiumUser?: boolean;
-  hasPurchased?: boolean;
 }
 
 export default function CourseEpisodePlayer({ 
   episode, 
   onProgressChange,
-  initialProgress = 0,
-  isPremiumUser = false,
-  hasPurchased = false
+  initialProgress = 0 
 }: CourseEpisodePlayerProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -359,29 +355,6 @@ export default function CourseEpisodePlayer({
       className="w-full h-full relative bg-black flex items-center justify-center select-none"
       dir="ltr"
     >
-      {/* نوار اطلاع‌رسانی برای محتوای ویژه - فقط برای کاربرانی که دوره را نخریده‌اند */}
-      {!hasPurchased && (
-        <div className="absolute top-0 left-0 right-0 z-30 bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-md px-4 py-3 flex items-center justify-between">
-          <div className="flex items-center space-x-3 rtl:space-x-reverse">
-            <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-amber-400">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-              </svg>
-            </div>
-            <div className="text-white">
-              <h3 className="font-bold text-sm sm:text-base">این یک محتوای ویژه است</h3>
-              <p className="text-xs sm:text-sm text-gray-300 mt-0.5">برای دسترسی به این ویدیو، لطفاً دوره را خریداری کنید</p>
-            </div>
-          </div>
-          <a 
-            href={`/courses/${episode.courseId}/checkout`} 
-            className="hidden sm:flex items-center justify-center bg-green-500 hover:bg-green-600 text-black font-medium rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap"
-          >
-            خرید دوره
-          </a>
-        </div>
-      )}
-      
       {/* ویدیو پلیر */}
       {videoUrl ? (
         <div className="w-full h-full" onClick={handleVideoClick}>

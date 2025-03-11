@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Lock, Play, Check, ChevronDown, ChevronUp, Clock, BookOpen, Award, ArrowLeft, FileText, Paperclip, MessageSquare, PenLine } from 'lucide-react';
+import { ChevronLeft, Lock, Play, Check, ChevronDown, ChevronUp, Clock, BookOpen, Award, ArrowLeft, FileText, Paperclip, MessageSquare, PenLine, ChevronRight } from 'lucide-react';
 import { Course, Episode, Chapter } from '@/components/data/course';
 import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
 import EpisodeFeaturesTabs from '@/components/episode/EpisodeFeaturesTabs';
@@ -214,23 +214,74 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
         {/* بخش ویدیو پلیر - سمت راست */}
         <div className="flex-1 h-full overflow-hidden flex flex-col">
           {/* هدر کوچک در بالای ویدیو پلیر - فقط در نمایش دسکتاپ */}
-          <div className="hidden md:flex items-center justify-between p-4 bg-gray-800 text-white">
-            <div className="flex items-center gap-2">
-              <Link href={`/courses/${course.id}`} className="hover:text-primary flex items-center gap-1">
+          <div className="hidden md:flex items-center justify-between py-2 px-4 bg-gray-900 border-b border-gray-700 text-white">
+            {/* بخش سمت راست - بازگشت، عنوان و اطلاعات اپیزود */}
+            <div className="flex items-center gap-3">
+              <Link 
+                href={`/courses/${course.id}`} 
+                className="flex items-center gap-1.5 text-gray-300 hover:text-green-400 transition-colors"
+                title="بازگشت به دوره"
+              >
                 <ArrowLeft className="h-4 w-4" />
-                <span>بازگشت به دوره</span>
+                <span className="text-sm font-medium hidden lg:inline">بازگشت</span>
               </Link>
-              <span className="text-gray-400 mx-2">|</span>
-              <h1 className="text-lg font-medium line-clamp-1">{episode.title}</h1>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="text-sm text-gray-300">پیشرفت دوره: {courseProgress}%</div>
-              <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-primary rounded-full"
-                  style={{ width: `${courseProgress}%` }}
-                />
+              
+              <div className="h-4 w-px bg-gray-700"></div>
+              
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-medium line-clamp-1 text-white max-w-[300px]">{episode.title}</h2>
+                <div className="flex items-center text-gray-400 gap-1 text-xs">
+                  <Clock className="h-3 w-3" />
+                  <span>{episode.duration || '۲۵:۳۰'}</span>
+                </div>
               </div>
+              
+              <div className="hidden lg:flex items-center gap-2 text-xs text-gray-400">
+                <div className="h-4 w-px bg-gray-700 mx-1"></div>
+                <span>فصل {chapter.index}</span>
+                <span>•</span>
+                <span>قسمت {episode.index}/{chapter.episodes.length}</span>
+              </div>
+            </div>
+            
+            {/* بخش سمت چپ - وضعیت دسترسی و پیشرفت */}
+            <div className="flex items-center gap-4">
+              {/* پیشرفت کل دوره - با طراحی واضح‌تر */}
+              <div className="flex items-center py-1 px-2 bg-gray-800/60 rounded-lg gap-2 border border-gray-700">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-3 h-3 text-green-400">
+                  <path d="M18 6H5a2 2 0 0 0-2 2v3a2 2 0 0 0 2 2h13l4-3.5L18 6Z" />
+                  <path d="M12 13v8" />
+                  <path d="M5 13v6a2 2 0 0 0 2 2h8" />
+                </svg>
+                <div title="پیشرفت کل دوره" className="w-20 h-2 bg-gray-700 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-green-500 rounded-full"
+                    style={{ width: `${courseProgress}%` }}
+                  />
+                </div>
+                <span className="text-xs font-medium text-green-400">{courseProgress}%</span>
+              </div>
+              
+              {/* وضعیت دسترسی */}
+              {hasAccess ? (
+                <div className="flex items-center justify-center h-8 w-8 text-green-400 rounded-full" title="دسترسی فعال">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                  </svg>
+                </div>
+              ) : (
+                <Link 
+                  href={`/courses/${course.id}/checkout`}
+                  className="flex items-center justify-center h-8 w-8 text-amber-400 rounded-full hover:bg-gray-800/70 transition-colors"
+                  title="قفل شده - خرید دوره"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                    <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+                  </svg>
+                </Link>
+              )}
             </div>
           </div>
           
