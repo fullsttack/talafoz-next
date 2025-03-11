@@ -2,19 +2,23 @@
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import ReactPlayer from 'react-player';
-import { Play, Pause, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Maximize, Minimize, SkipForward, SkipBack, Settings } from 'lucide-react';
 import { Episode } from '@/components/data/course';
 
 interface CourseEpisodePlayerProps {
   episode: Episode;
   onProgressChange?: (progressPercent: number, currentTime?: number) => void;
   initialProgress?: number;
+  isPremiumUser?: boolean;
+  hasPurchased?: boolean;
 }
 
 export default function CourseEpisodePlayer({ 
   episode, 
   onProgressChange,
-  initialProgress = 0 
+  initialProgress = 0,
+  isPremiumUser = false,
+  hasPurchased = false
 }: CourseEpisodePlayerProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -27,13 +31,23 @@ export default function CourseEpisodePlayer({
   const [showVolumeControl, setShowVolumeControl] = useState(false);
   const [hasInitializedProgress, setHasInitializedProgress] = useState(false);
   const [showControls, setShowControls] = useState(true);
+  const [loadedProgress, setLoadedProgress] = useState(0);
+  const [timeTooltip, setTimeTooltip] = useState<{ visible: boolean; time: number; position: number }>({
+    visible: false,
+    time: 0,
+    position: 0
+  });
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [showSettings, setShowSettings] = useState(false);
   
   const playerRef = useRef<ReactPlayer>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const progressContainerRef = useRef<HTMLDivElement>(null);
   const volumeControlTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const progressUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
   const playerWrapperRef = useRef<HTMLDivElement>(null);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const settingsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // تنظیم URL ویدیو
   useEffect(() => {
@@ -100,6 +114,9 @@ export default function CourseEpisodePlayer({
     const progressPercent = state.played * 100;
     setProgress(progressPercent);
     
+    // ذخیره اطلاعات بافر
+    setLoadedProgress(state.loaded * 100);
+    
     // ارسال پیشرفت به کامپوننت والد با محدودیت فراخوانی (throttling)
     if (onProgressChange) {
       // پاکسازی تایمر قبلی
@@ -134,6 +151,8 @@ export default function CourseEpisodePlayer({
       if (isPlaying) {
         controlsTimeoutRef.current = setTimeout(() => {
           setShowControls(false);
+          // مخفی کردن منوی تنظیمات هنگام مخفی شدن کنترل‌ها
+          setShowSettings(false);
         }, 3000);
       }
     };
@@ -165,6 +184,9 @@ export default function CourseEpisodePlayer({
       if (progressUpdateTimerRef.current) {
         clearTimeout(progressUpdateTimerRef.current);
       }
+      if (settingsTimeoutRef.current) {
+        clearTimeout(settingsTimeoutRef.current);
+      }
     };
   }, []);
   
@@ -192,6 +214,42 @@ export default function CourseEpisodePlayer({
     }
   };
   
+  // پرش به جلو
+  const handleSkipForward = () => {
+    if (playerRef.current) {
+      const newTime = Math.min(currentTime + 10, duration);
+      playerRef.current.seekTo(newTime / duration);
+    }
+  };
+  
+  // پرش به عقب
+  const handleSkipBackward = () => {
+    if (playerRef.current) {
+      const newTime = Math.max(currentTime - 10, 0);
+      playerRef.current.seekTo(newTime / duration);
+    }
+  };
+  
+  // نمایش tooltip زمان هنگام حرکت موس روی نوار پیشرفت
+  const handleProgressMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (progressRef.current && duration) {
+      const rect = progressRef.current.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      const time = pos * duration;
+      
+      setTimeTooltip({
+        visible: true,
+        time,
+        position: pos * 100
+      });
+    }
+  };
+  
+  // مخفی کردن tooltip زمان هنگام خروج موس از نوار پیشرفت
+  const handleProgressMouseLeave = () => {
+    setTimeTooltip({ ...timeTooltip, visible: false });
+  };
+  
   // Toggle fullscreen
   const toggleFullScreen = useCallback(() => {
     if (!playerWrapperRef.current) return;
@@ -210,6 +268,28 @@ export default function CourseEpisodePlayer({
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+  
+  // تغییر سرعت پخش
+  const changePlaybackRate = (rate: number) => {
+    setPlaybackRate(rate);
+    setShowSettings(false);
+  };
+  
+  // توگل منوی تنظیمات
+  const toggleSettings = () => {
+    setShowSettings(prev => !prev);
+    
+    // پنهان کردن منوی تنظیمات پس از مدتی
+    if (settingsTimeoutRef.current) {
+      clearTimeout(settingsTimeoutRef.current);
+    }
+    
+    if (!showSettings) {
+      settingsTimeoutRef.current = setTimeout(() => {
+        setShowSettings(false);
+      }, 5000);
+    }
   };
   
   // رویداد لود ویدیو
@@ -239,6 +319,12 @@ export default function CourseEpisodePlayer({
         case 'KeyF':
           toggleFullScreen();
           break;
+        case 'ArrowRight':
+          handleSkipForward();
+          break;
+        case 'ArrowLeft':
+          handleSkipBackward();
+          break;
       }
     };
     
@@ -247,7 +333,7 @@ export default function CourseEpisodePlayer({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [togglePlay, toggleMute, toggleFullScreen]);
+  }, [togglePlay, toggleMute, toggleFullScreen, handleSkipForward, handleSkipBackward]);
   
   // رویداد تغییر حالت تمام صفحه
   useEffect(() => {
@@ -270,9 +356,32 @@ export default function CourseEpisodePlayer({
   return (
     <div 
       ref={playerWrapperRef}
-      className="w-full h-full relative bg-black flex items-center justify-center"
+      className="w-full h-full relative bg-black flex items-center justify-center select-none"
       dir="ltr"
     >
+      {/* نوار اطلاع‌رسانی برای محتوای ویژه - فقط برای کاربرانی که دوره را نخریده‌اند */}
+      {!hasPurchased && (
+        <div className="absolute top-0 left-0 right-0 z-30 bg-gradient-to-b from-black/90 to-black/70 backdrop-blur-md px-4 py-3 flex items-center justify-between">
+          <div className="flex items-center space-x-3 rtl:space-x-reverse">
+            <div className="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-5 h-5 text-amber-400">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+            </div>
+            <div className="text-white">
+              <h3 className="font-bold text-sm sm:text-base">این یک محتوای ویژه است</h3>
+              <p className="text-xs sm:text-sm text-gray-300 mt-0.5">برای دسترسی به این ویدیو، لطفاً دوره را خریداری کنید</p>
+            </div>
+          </div>
+          <a 
+            href={`/courses/${episode.courseId}/checkout`} 
+            className="hidden sm:flex items-center justify-center bg-green-500 hover:bg-green-600 text-black font-medium rounded-lg px-4 py-2 text-sm transition-colors whitespace-nowrap"
+          >
+            خرید دوره
+          </a>
+        </div>
+      )}
+      
       {/* ویدیو پلیر */}
       {videoUrl ? (
         <div className="w-full h-full" onClick={handleVideoClick}>
@@ -284,6 +393,7 @@ export default function CourseEpisodePlayer({
             playing={isPlaying}
             volume={volume}
             muted={isMuted}
+            playbackRate={playbackRate}
             progressInterval={200}
             onProgress={handleProgress}
             onDuration={handleDuration}
@@ -304,7 +414,7 @@ export default function CourseEpisodePlayer({
         </div>
       )}
       
-      {/* لایه کلیک برای پخش/توقف */}
+      {/* لایه کلیک برای پخش/توقف - نمایش فقط در حالت توقف */}
       {!isPlaying && (
         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
           <div className="w-20 h-20 rounded-full bg-green-500/30 flex items-center justify-center backdrop-blur-md shadow-lg">
@@ -315,25 +425,40 @@ export default function CourseEpisodePlayer({
       
       {/* کنترل‌های پخش */}
       <div 
-        className={`absolute left-0 right-0 bottom-0 transition-opacity duration-300 ${
+        className={`absolute left-0 right-0 bottom-0 transition-opacity duration-300 z-20 ${
           showControls || !isPlaying ? 'opacity-100' : 'opacity-0'
         }`}
       >
         {/* پس‌زمینه تیره برای کنترل‌ها */}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent pointer-events-none"></div>
         
-        <div className="relative p-4 space-y-4">
-          {/* نوار پیشرفت */}
-          <div className="relative px-1">
+        <div className="relative p-4 space-y-3">
+          {/* نوار پیشرفت و tooltip */}
+          <div 
+            ref={progressContainerRef}
+            className="relative px-1 group"
+            onMouseMove={handleProgressMouseMove}
+            onMouseLeave={handleProgressMouseLeave}
+          >
+            {/* tooltip زمان */}
+            {timeTooltip.visible && (
+              <div 
+                className="absolute bottom-full mb-2.5 bg-black/90 text-white text-xs py-1 px-2 rounded transform -translate-x-1/2 pointer-events-none"
+                style={{ left: `${timeTooltip.position}%` }}
+              >
+                {formatTime(timeTooltip.time)}
+              </div>
+            )}
+            
             <div 
               ref={progressRef}
-              className="w-full h-1.5 bg-gray-600/40 rounded-full cursor-pointer overflow-hidden"
+              className="w-full h-1.5 bg-gray-600/40 rounded-full cursor-pointer overflow-hidden group-hover:h-2.5 transition-all"
               onClick={handleProgressClick}
             >
               {/* بخش بارگذاری شده */}
               <div 
                 className="absolute top-0 left-0 h-full bg-gray-500/50 rounded-full"
-                style={{ width: `100%` }}
+                style={{ width: `${loadedProgress}%` }}
               ></div>
               
               {/* بخش پخش شده */}
@@ -343,9 +468,9 @@ export default function CourseEpisodePlayer({
               ></div>
             </div>
             
-            {/* دکمه کشیدن */}
+            {/* دکمه کشیدن - نمایش فقط در هاور */}
             <div 
-              className="absolute top-1/2 -translate-y-1/2 w-3 h-3 bg-green-500 rounded-full shadow-sm"
+              className="absolute top-1/2 opacity-0 group-hover:opacity-100 transition-opacity -translate-y-1/2 w-4 h-4 bg-green-500 rounded-full shadow-sm border-2 border-white"
               style={{ left: `${progress}%`, transform: 'translate(-50%, -50%)' }}
             ></div>
           </div>
@@ -353,7 +478,7 @@ export default function CourseEpisodePlayer({
           {/* کنترل‌های اصلی */}
           <div className="flex items-center justify-between">
             {/* دکمه‌های سمت چپ */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
               {/* پخش/توقف */}
               <button
                 onClick={togglePlay}
@@ -365,6 +490,26 @@ export default function CourseEpisodePlayer({
                   ) : (
                     <Play className="w-5 h-5 ml-0.5" />
                   )}
+                </div>
+              </button>
+              
+              {/* پرش به عقب */}
+              <button
+                onClick={handleSkipBackward}
+                className="text-white hover:text-green-400 focus:outline-none transition-colors"
+              >
+                <div className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors">
+                  <SkipBack className="w-4 h-4" />
+                </div>
+              </button>
+              
+              {/* پرش به جلو */}
+              <button
+                onClick={handleSkipForward}
+                className="text-white hover:text-green-400 focus:outline-none transition-colors"
+              >
+                <div className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors">
+                  <SkipForward className="w-4 h-4" />
                 </div>
               </button>
               
@@ -413,19 +558,59 @@ export default function CourseEpisodePlayer({
               {formatTime(currentTime)} <span className="text-gray-400 mx-0.5">/</span> {formatTime(duration)}
             </div>
             
-            {/* دکمه سمت راست */}
-            <button
-              onClick={toggleFullScreen}
-              className="text-white hover:text-green-400 focus:outline-none transition-colors"
-            >
-              <div className="bg-white/10 rounded-full p-2 hover:bg-white/20 transition-colors">
-                {isFullScreen ? (
-                  <Minimize className="w-4 h-4" />
-                ) : (
-                  <Maximize className="w-4 h-4" />
+            {/* دکمه‌های سمت راست */}
+            <div className="flex items-center space-x-3">
+              {/* تنظیمات سرعت پخش */}
+              <div className="relative">
+                <button
+                  onClick={toggleSettings}
+                  className="flex items-center justify-center bg-white/10 rounded-full p-2 hover:bg-white/20 text-white hover:text-green-400 focus:outline-none transition-colors"
+                >
+                  <Settings size={16} />
+                </button>
+                
+                {/* نمایش سرعت پخش کنار آیکون تنظیمات */}
+                {playbackRate !== 1 && (
+                  <div className="absolute -top-1 -right-1 text-xs font-bold bg-green-500 text-black px-1 rounded-md">
+                    {playbackRate}x
+                  </div>
+                )}
+                
+                {/* منوی تنظیمات */}
+                {showSettings && (
+                  <div className="absolute bottom-full right-0 mb-2 bg-black/90 backdrop-blur-md rounded shadow-lg overflow-hidden min-w-[100px]">
+                    <div className="py-1">
+                      {[0.5, 0.75, 1, 1.25, 1.5, 2].map(rate => (
+                        <button
+                          key={rate}
+                          onClick={() => changePlaybackRate(rate)}
+                          className={`flex items-center justify-between w-full px-4 py-1.5 text-sm hover:bg-white/10 ${
+                            playbackRate === rate ? 'text-green-400' : 'text-white'
+                          }`}
+                        >
+                          <span>{rate === 1 ? 'Normal' : `${rate}x`}</span>
+                          {playbackRate === rate && (
+                            <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                 )}
               </div>
-            </button>
+              
+              {/* تمام صفحه */}
+              <button
+                onClick={toggleFullScreen}
+                className="flex items-center justify-center bg-white/10 rounded-full p-2 hover:bg-white/20 text-white hover:text-green-400 focus:outline-none transition-colors"
+              >
+                {isFullScreen ? (
+                  <Minimize size={16} />
+                ) : (
+                  <Maximize size={16} />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>
