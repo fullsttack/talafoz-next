@@ -10,16 +10,18 @@ interface CourseEpisodePlayerProps {
   onProgressChange?: (progressPercent: number, currentTime?: number) => void;
   initialProgress?: number;
   showNavigationControls?: boolean;
+  autoPlay?: boolean;
 }
 
 export default function CourseEpisodePlayer({ 
   episode, 
   onProgressChange,
   initialProgress = 0,
-  showNavigationControls = true
+  showNavigationControls = true,
+  autoPlay = false
 }: CourseEpisodePlayerProps) {
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [isPlaying, setIsPlaying] = useState(autoPlay);
   const [isMuted, setIsMuted] = useState(false);
   const [duration, setDuration] = useState(0);
   const [currentTime, setCurrentTime] = useState(0);
@@ -350,6 +352,11 @@ export default function CourseEpisodePlayer({
   const handleVideoClick = () => {
     togglePlay();
   };
+  
+  // effect برای اعمال autoPlay در زمان تغییر اپیزود
+  useEffect(() => {
+    setIsPlaying(autoPlay);
+  }, [autoPlay, episode.id]);
   
   return (
     <div 

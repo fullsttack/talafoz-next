@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Check, Lock } from 'lucide-react';
 import type { Course } from '@/components/data/course';
 import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
@@ -22,6 +22,8 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
   const [currentPlayerTime, setCurrentPlayerTime] = useState(0);
   const [watchedProgress, setWatchedProgress] = useState<Record<string, number>>({});
   const [activeEpisode, setActiveEpisode] = useState<any>(null);
+  const [shouldAutoPlay, setShouldAutoPlay] = useState(false);
+  const playerRef = useRef<HTMLDivElement>(null);
 
   // بررسی دسترسی کاربر به محتوا
   const hasAccess = hasPurchasedCourse || (isPremiumUser && course.isFreePremium);
@@ -30,10 +32,29 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
   const handleEpisodeSelect = (episodeId: string) => {
     setActiveEpisodeId(episodeId);
     
+    // تنظیم پخش خودکار برای اپیزود انتخاب شده
+    setShouldAutoPlay(true);
+    
     // تغییر URL بدون بارگذاری مجدد صفحه
     const url = new URL(window.location.href);
     url.searchParams.set('episodeId', episodeId);
     window.history.pushState({}, '', url.toString());
+    
+    // اسکرول به سمت پلیر با یک تاخیر کوتاه برای اطمینان از رندر شدن کامپوننت
+    setTimeout(() => {
+      if (playerRef.current) {
+        playerRef.current.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      } else {
+        // پشتیبانی از مرورگرهای قدیمی‌تر
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        });
+      }
+    }, 100);
   };
   
   // پیدا کردن قسمت فعال بر اساس ID
@@ -48,6 +69,8 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
         description: 'این ویدیو پیش‌نمایش دوره است. به زودی محتوای دوره بارگذاری خواهد شد.',
         videoUrl: 'https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'
       });
+      // ریست کردن وضعیت پخش خودکار برای بارگذاری اولیه
+      setShouldAutoPlay(false);
       return;
     }
     
@@ -74,6 +97,9 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
       if (!episode && course.chapters[0]?.episodes[0]) {
         episode = course.chapters[0].episodes[0];
       }
+      
+      // ریست کردن وضعیت پخش خودکار برای بارگذاری اولیه
+      setShouldAutoPlay(false);
     }
     
     if (episode) {
@@ -219,7 +245,7 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
           {/* پخش‌کننده ویدیو */}
-          <div className="mb-10">
+          <div className="mb-10" ref={playerRef}>
             {activeEpisode ? (
               <div className="space-y-4">
                 {/* عنوان قسمت فعال */}
@@ -233,6 +259,7 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
                       onProgressChange={handleVideoProgress}
                       initialProgress={watchedProgress[activeEpisode.id] || 0}
                       showNavigationControls={false}
+                      autoPlay={shouldAutoPlay}
                     />
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
