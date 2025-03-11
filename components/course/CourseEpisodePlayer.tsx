@@ -9,7 +9,7 @@ interface CourseEpisodePlayerProps {
 }
 
 export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProps) {
-  const [videoUrl, setVideoUrl] = useState('');
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [duration, setDuration] = useState(0);
@@ -27,7 +27,8 @@ export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProp
   // تنظیم URL ویدیو
   useEffect(() => {
     // در یک پروژه واقعی، URL ویدیو از API دریافت می‌شود
-    setVideoUrl(episode.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
+    const defaultVideoUrl = 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
+    setVideoUrl(episode.videoUrl || defaultVideoUrl);
   }, [episode]);
   
   // کنترل پخش ویدیو
@@ -190,18 +191,27 @@ export default function CourseEpisodePlayer({ episode }: CourseEpisodePlayerProp
       ref={playerRef}
       className="relative aspect-video overflow-hidden bg-black"
     >
-      {/* ویدیو */}
-      <video
-        ref={videoRef}
-        src={videoUrl}
-        className="h-full w-full"
-        onClick={togglePlay}
-        onTimeUpdate={handleTimeUpdate}
-        onLoadedMetadata={handleLoadedMetadata}
-        onPlay={() => setIsPlaying(true)}
-        onPause={() => setIsPlaying(false)}
-        onEnded={() => setIsPlaying(false)}
-      />
+      {/* ویدیو - فقط زمانی که videoUrl وجود داشته باشد */}
+      {videoUrl && (
+        <video
+          ref={videoRef}
+          src={videoUrl}
+          className="h-full w-full"
+          onClick={togglePlay}
+          onTimeUpdate={handleTimeUpdate}
+          onLoadedMetadata={handleLoadedMetadata}
+          onPlay={() => setIsPlaying(true)}
+          onPause={() => setIsPlaying(false)}
+          onEnded={() => setIsPlaying(false)}
+        />
+      )}
+      
+      {/* نمایش حالت بارگذاری اگر هنوز URL ویدیو تنظیم نشده باشد */}
+      {!videoUrl && (
+        <div className="flex h-full w-full items-center justify-center bg-black">
+          <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-600 border-t-primary"></div>
+        </div>
+      )}
       
       {/* اورلی وسط برای پخش/توقف */}
       <div 

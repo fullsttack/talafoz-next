@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { CheckCircle, ShoppingCart, Gift, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,10 +9,22 @@ import { Course } from '@/components/data/course';
 interface CourseEnrollCardProps {
   course: Course;
   isPremiumUser?: boolean;
+  hasPurchasedCourse?: boolean;
+  onPurchase?: () => void;
 }
 
-export default function CourseEnrollCard({ course, isPremiumUser = false }: CourseEnrollCardProps) {
-  const [isEnrolled, setIsEnrolled] = useState(false);
+export default function CourseEnrollCard({ 
+  course, 
+  isPremiumUser = false, 
+  hasPurchasedCourse = false,
+  onPurchase 
+}: CourseEnrollCardProps) {
+  const [isEnrolled, setIsEnrolled] = useState(hasPurchasedCourse);
+  
+  // به‌روزرسانی وضعیت ثبت‌نام با تغییر prop
+  useEffect(() => {
+    setIsEnrolled(hasPurchasedCourse);
+  }, [hasPurchasedCourse]);
   
   const {
     price,
@@ -29,6 +41,9 @@ export default function CourseEnrollCard({ course, isPremiumUser = false }: Cour
   // آیا دوره برای کاربر رایگان است؟
   const isFreeForUser = isFree || (isPremiumUser && isFreePremium);
   
+  // آیا دوره برای کاربر دارای اشتراک ویژه رایگان است؟
+  const isPremiumFreeCourse = isPremiumUser && isFreePremium && !isFree;
+  
   // محاسبه قیمت نهایی
   const finalPrice = isFreeForUser ? 0 : (discountPrice || price);
   
@@ -44,6 +59,7 @@ export default function CourseEnrollCard({ course, isPremiumUser = false }: Cour
   const handleEnroll = () => {
     // در یک پروژه واقعی، اینجا به API درخواست ارسال می‌شود
     setIsEnrolled(true);
+    onPurchase?.();
   };
   
   return (
@@ -61,19 +77,19 @@ export default function CourseEnrollCard({ course, isPremiumUser = false }: Cour
       
       {/* قیمت و تخفیف */}
       <div className="mb-6 text-center">
-        {isFreeForUser ? (
+        {isFree ? (
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-2 text-green-600 dark:text-green-400">
               <Gift className="h-5 w-5" />
               <span className="text-2xl font-bold">رایگان</span>
             </div>
-            
-            {isPremiumUser && isFreePremium && !isFree && (
-              <div className="mt-2 flex items-center gap-1 rounded-full bg-amber-100 px-3 py-1 text-sm font-medium text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
-                <Crown className="h-4 w-4" />
-                <span>ویژه اعضای طلایی</span>
-              </div>
-            )}
+          </div>
+        ) : isPremiumFreeCourse ? (
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400">
+              <Crown className="h-5 w-5" />
+              <span className="text-2xl font-bold">شما عضو ویژه هستید</span>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col items-center">
@@ -98,7 +114,7 @@ export default function CourseEnrollCard({ course, isPremiumUser = false }: Cour
             {isFreePremium && !isPremiumUser && (
               <div className="mt-3 flex items-center gap-1 text-sm text-amber-600 dark:text-amber-400">
                 <Crown className="h-4 w-4" />
-                <span>رایگان برای اعضای طلایی</span>
+                <span>رایگان برای اعضای ویژه</span>
               </div>
             )}
           </div>
@@ -107,7 +123,7 @@ export default function CourseEnrollCard({ course, isPremiumUser = false }: Cour
       
       {/* دکمه ثبت‌نام/خرید */}
       <div className="mb-6">
-        {isEnrolled ? (
+        {isEnrolled || hasPurchasedCourse ? (
           <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
             <CheckCircle className="mr-1 h-5 w-5" />
             <span>شما در این دوره ثبت‌نام کرده‌اید</span>

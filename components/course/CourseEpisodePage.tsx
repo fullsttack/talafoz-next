@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Lock, Play, AlertTriangle } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ChevronLeft, Lock, Play, AlertTriangle, Check } from 'lucide-react';
 import { Course, Episode, Chapter } from '@/components/data/course';
 import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
 
@@ -13,8 +14,10 @@ interface CourseEpisodePageProps {
 }
 
 export default function CourseEpisodePage({ course, episode, chapter }: CourseEpisodePageProps) {
+  const router = useRouter();
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [hasPurchasedCourse, setHasPurchasedCourse] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null);
   
   // بررسی دسترسی کاربر به اپیزود
   const hasAccess = 
@@ -22,8 +25,51 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
     hasPurchasedCourse || // کاربر دوره را خریده است
     (isPremiumUser && course.isFreePremium); // کاربر اشتراک ویژه دارد و دوره برای اعضای ویژه رایگان است
   
+  // نمایش پیام موفقیت و حذف آن پس از چند ثانیه
+  useEffect(() => {
+    if (showSuccessMessage) {
+      const timer = setTimeout(() => {
+        setShowSuccessMessage(null);
+      }, 3000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccessMessage]);
+  
+  // تغییر وضعیت کاربر به عضو ویژه
+  const togglePremiumStatus = () => {
+    setIsPremiumUser(prev => {
+      const newStatus = !prev;
+      if (newStatus) {
+        setShowSuccessMessage('عضویت ویژه با موفقیت فعال شد');
+      }
+      return newStatus;
+    });
+  };
+  
+  // تغییر وضعیت خرید دوره
+  const togglePurchaseStatus = () => {
+    setHasPurchasedCourse(prev => {
+      const newStatus = !prev;
+      if (newStatus) {
+        setShowSuccessMessage('دوره با موفقیت خریداری شد');
+      }
+      return newStatus;
+    });
+  };
+  
   return (
     <>
+      {/* پیام موفقیت */}
+      {showSuccessMessage && (
+        <div className="fixed bottom-5 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">
+          <div className="flex items-center gap-2">
+            <Check className="h-5 w-5" />
+            <span>{showSuccessMessage}</span>
+          </div>
+        </div>
+      )}
+      
       {/* اطلاعات اپیزود و فصل */}
       <div className="mb-8">
         <h1 className="mb-2 text-3xl font-bold">{episode.title}</h1>
@@ -52,18 +98,20 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                   برای مشاهده این قسمت، باید دوره را خریداری کنید یا عضو ویژه باشید.
                 </p>
                 <div className="flex gap-2">
-                  <Link 
-                    href={`/courses/${course.id}`}
+                  <button 
+                    onClick={togglePurchaseStatus}
                     className="rounded-md bg-primary px-4 py-2 text-white hover:bg-primary/90"
                   >
-                    خرید دوره
-                  </Link>
-                  <Link 
-                    href="/membership"
-                    className="rounded-md border border-amber-500 bg-transparent px-4 py-2 text-amber-500 hover:bg-amber-500/10"
-                  >
-                    عضویت ویژه
-                  </Link>
+                    خرید دوره (آزمایشی)
+                  </button>
+                  {course.isFreePremium && (
+                    <button 
+                      onClick={togglePremiumStatus}
+                      className="rounded-md border border-amber-500 bg-transparent px-4 py-2 text-amber-500 hover:bg-amber-500/10"
+                    >
+                      فعال‌سازی عضویت ویژه (آزمایشی)
+                    </button>
+                  )}
                 </div>
               </div>
             )}
@@ -111,11 +159,11 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
             </div>
             
             <div className="divide-y divide-gray-200 dark:divide-gray-800">
-              {course.chapters && course.chapters.map(chapter => (
-                <div key={chapter.id} className="p-4">
-                  <h3 className="mb-3 font-bold">{chapter.title}</h3>
+              {course.chapters && course.chapters.map(ch => (
+                <div key={ch.id} className="p-4">
+                  <h3 className="mb-3 font-bold">{ch.title}</h3>
                   <div className="space-y-2">
-                    {chapter.episodes.map(ep => {
+                    {ch.episodes.map(ep => {
                       // بررسی دسترسی به هر اپیزود
                       const episodeAccess = 
                         ep.isFree || 
@@ -173,10 +221,10 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           
           {/* دکمه‌های کنترل دسترسی (فقط برای نمایش) */}
           <div className="mt-6 space-y-2 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-800 dark:bg-gray-900">
-            <h3 className="mb-3 font-bold">تغییر وضعیت برای تست</h3>
+            <h3 className="mb-3 font-bold">وضعیت دسترسی</h3>
             <button 
               className={`flex w-full items-center justify-between rounded-lg border border-gray-200 p-3 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 ${isPremiumUser ? 'bg-amber-50 dark:bg-amber-900/10' : ''}`}
-              onClick={() => setIsPremiumUser(prev => !prev)}
+              onClick={togglePremiumStatus}
             >
               <span>عضویت ویژه</span>
               {isPremiumUser ? (
@@ -192,7 +240,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
             
             <button 
               className={`flex w-full items-center justify-between rounded-lg border border-gray-200 p-3 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 ${hasPurchasedCourse ? 'bg-green-50 dark:bg-green-900/10' : ''}`}
-              onClick={() => setHasPurchasedCourse(prev => !prev)}
+              onClick={togglePurchaseStatus}
             >
               <span>خرید دوره</span>
               {hasPurchasedCourse ? (

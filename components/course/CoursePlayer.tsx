@@ -7,9 +7,11 @@ import { Course, Episode, Chapter } from '@/components/data/course';
 interface CoursePlayerProps {
   course: Course;
   activeEpisodeId?: string;
+  isPremiumUser?: boolean;
+  hasPurchasedCourse?: boolean;
 }
 
-export default function CoursePlayer({ course, activeEpisodeId }: CoursePlayerProps) {
+export default function CoursePlayer({ course, activeEpisodeId, isPremiumUser = false, hasPurchasedCourse = false }: CoursePlayerProps) {
   const [videoUrl, setVideoUrl] = useState('');
   const [activeEpisode, setActiveEpisode] = useState<Episode | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -46,24 +48,26 @@ export default function CoursePlayer({ course, activeEpisodeId }: CoursePlayerPr
       for (const chapter of course.chapters) {
         const found = chapter.episodes.find(ep => ep.id === activeEpisodeId);
         if (found) {
-          episode = found;
+          // بررسی دسترسی کاربر به قسمت
+          const hasAccess = 
+            found.isFree || // قسمت رایگان است
+            hasPurchasedCourse || // کاربر دوره را خریده است
+            (isPremiumUser && course.isFreePremium); // کاربر عضو ویژه است و دوره برای اعضای ویژه رایگان است
+          
+          if (hasAccess) {
+            episode = found;
+          } else {
+            // اگر کاربر به این قسمت دسترسی ندارد، اولین قسمت رایگان را نمایش بده
+            episode = findFirstFreeEpisode(course.chapters);
+          }
           break;
         }
       }
-    } else {
-      // پیش‌فرض: اولین قسمت رایگان
-      for (const chapter of course.chapters) {
-        const freeEpisode = chapter.episodes.find(ep => ep.isFree);
-        if (freeEpisode) {
-          episode = freeEpisode;
-          break;
-        }
-      }
-      
-      // اگر قسمت رایگان پیدا نشد، اولین قسمت را انتخاب کن
-      if (!episode && course.chapters[0]?.episodes[0]) {
-        episode = course.chapters[0].episodes[0];
-      }
+    }
+    
+    // اگر هنوز قسمتی انتخاب نشده، اولین قسمت رایگان را پیدا کن
+    if (!episode) {
+      episode = findFirstFreeEpisode(course.chapters);
     }
     
     if (episode) {
@@ -71,7 +75,24 @@ export default function CoursePlayer({ course, activeEpisodeId }: CoursePlayerPr
       // در یک پروژه واقعی، URL ویدیو از API بدست می‌آید
       setVideoUrl(episode.videoUrl || 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4');
     }
-  }, [course, activeEpisodeId]);
+  }, [course, activeEpisodeId, isPremiumUser, hasPurchasedCourse]);
+  
+  // یافتن اولین قسمت رایگان در دوره
+  const findFirstFreeEpisode = (chapters: Chapter[]): Episode | null => {
+    for (const chapter of chapters) {
+      const freeEpisode = chapter.episodes.find(ep => ep.isFree);
+      if (freeEpisode) {
+        return freeEpisode;
+      }
+    }
+    
+    // اگر هیچ قسمت رایگانی پیدا نشد، اولین قسمت را انتخاب کن
+    if (chapters[0]?.episodes[0]) {
+      return chapters[0].episodes[0];
+    }
+    
+    return null;
+  };
   
   // کنترل پخش ویدیو
   const togglePlay = () => {

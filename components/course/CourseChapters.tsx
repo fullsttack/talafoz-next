@@ -9,6 +9,7 @@ import { Chapter, Episode } from '@/components/data/course';
 interface CourseChaptersProps {
   chapters: Chapter[];
   isPremiumUser?: boolean;
+  hasPurchasedCourse?: boolean;
   activeEpisode?: string;
   onSelectEpisode?: (episodeId: string) => void;
   courseId?: string;
@@ -18,6 +19,7 @@ interface CourseChaptersProps {
 export default function CourseChapters({ 
   chapters = [],
   isPremiumUser = false,
+  hasPurchasedCourse = false,
   activeEpisode,
   onSelectEpisode,
   courseId,
@@ -65,19 +67,31 @@ export default function CourseChapters({
   
   // بررسی آیا قسمت قابل مشاهده است یا خیر
   const isEpisodeAccessible = (episode: Episode) => {
-    return episode.isFree || isPremiumUser;
+    return episode.isFree || hasPurchasedCourse || isPremiumUser;
+  };
+  
+  // آیا اپیزود فقط قابل مشاهده در همین صفحه است (رایگان)
+  const isInlineViewableEpisode = (episode: Episode) => {
+    return episode.isFree;
+  };
+  
+  // آیا اپیزود نیاز به رفتن به صفحه جداگانه دارد (خریداری شده)
+  const needsNavigationToEpisode = (episode: Episode) => {
+    return !episode.isFree && (hasPurchasedCourse || isPremiumUser);
   };
   
   // کلیک روی قسمت
   const handleEpisodeClick = (episode: Episode) => {
     if (!isEpisodeAccessible(episode)) return;
     
-    if (useLinks && courseId) {
-      // اگر useLinks فعال باشد، از لینک استفاده می‌کنیم
-      router.push(`/courses/${courseId}/episodes/${episode.id}`);
-    } else {
-      // در غیر این صورت از callback استفاده می‌کنیم
+    if (isInlineViewableEpisode(episode)) {
+      // اپیزود رایگان - پخش در همین صفحه
       onSelectEpisode?.(episode.id);
+    } else if (needsNavigationToEpisode(episode)) {
+      // اپیزود خریداری شده - رفتن به صفحه اپیزود
+      if (useLinks && courseId) {
+        router.push(`/courses/${courseId}/episodes/${episode.id}`);
+      }
     }
   };
   
@@ -85,6 +99,8 @@ export default function CourseChapters({
   const renderEpisode = (episode: Episode, episodeIndex: number, chapter: Chapter) => {
     const isAccessible = isEpisodeAccessible(episode);
     const isActive = activeEpisode === episode.id;
+    const isInlinePlayable = isInlineViewableEpisode(episode);
+    const isNavigable = needsNavigationToEpisode(episode);
     
     const episodeContent = (
       <>
@@ -120,12 +136,14 @@ export default function CourseChapters({
       </>
     );
     
+    // تعیین کلاس‌های CSS مناسب
     const className = `group flex items-center justify-between border-b border-gray-100 px-6 py-3 last:border-b-0 dark:border-gray-800 ${
       !isAccessible ? 'cursor-not-allowed bg-gray-50 opacity-70 dark:bg-gray-800/10' :
       isActive ? 'bg-primary/5 dark:bg-primary/10' : 'hover:bg-gray-100 dark:hover:bg-gray-800/20'
     }`;
     
-    if (useLinks && courseId && isAccessible) {
+    // شرط اینکه از لینک استفاده کنیم یا از onClick
+    if (isNavigable && useLinks && courseId) {
       return (
         <Link 
           href={`/courses/${courseId}/episodes/${episode.id}`}
@@ -141,7 +159,7 @@ export default function CourseChapters({
       <div 
         key={episode.id}
         onClick={() => handleEpisodeClick(episode)}
-        className={`${className} ${isAccessible ? 'cursor-pointer' : ''}`}
+        className={`${className} ${isInlinePlayable || isNavigable ? 'cursor-pointer' : ''}`}
       >
         {episodeContent}
       </div>
