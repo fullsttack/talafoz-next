@@ -4,8 +4,16 @@ import { useState, useMemo, useCallback } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
+// Course interface for type safety
+interface Course {
+  id: string;
+  title: string;
+  categories?: string[];
+  [key: string]: unknown; // Using unknown instead of any for better type safety
+}
+
 // دریافت همه دسته‌بندی‌های منحصر به فرد از دوره‌ها
-export const getUniqueCategories = (courses: any[]) => {
+export const getUniqueCategories = (courses: Course[]) => {
   const categoriesSet = new Set<string>();
   
   courses.forEach(course => {
@@ -20,7 +28,7 @@ export const getUniqueCategories = (courses: any[]) => {
 };
 
 interface CourseFilterSidebarProps {
-  courses: any[];
+  courses: Course[];
 }
 
 export default function CourseFilterSidebar({ courses }: CourseFilterSidebarProps) {

@@ -135,6 +135,10 @@ export default function CourseReviews({ courseId, courseRating, reviewsCount = 0
   const [newReviewContent, setNewReviewContent] = useState('');
   const [newReviewRating, setNewReviewRating] = useState(5);
   const [showReplies, setShowReplies] = useState<Record<string, boolean>>({});
+  // State for storing reply content for each review
+  const [replyContents, setReplyContents] = useState<Record<string, string>>({});
+  // State to track which review has an active reply form
+  const [activeReplyForm, setActiveReplyForm] = useState<string | null>(null);
 
   // تغییر وضعیت نمایش پاسخ‌ها برای یک نظر
   const toggleReplies = (reviewId: string) => {
@@ -174,27 +178,32 @@ export default function CourseReviews({ courseId, courseRating, reviewsCount = 0
   
   // ارسال نظر جدید
   const handleSubmitReview = () => {
-    // در یک اپلیکیشن واقعی، اینجا یک API call خواهد بود
-    console.log('نظر جدید:', {
-      rating: newReviewRating,
-      content: newReviewContent
-    });
+    if (newReviewContent.trim() === '') return;
     
-    // پاک کردن فرم و بستن آن
+    console.log(`Submitting review for course ${courseId} with rating ${newReviewRating} and content: ${newReviewContent}`);
+    
+    // در حالت واقعی، اینجا یک API call انجام می‌شود
+    // mockCreateReview(newReviewContent, newReviewRating);
+    
+    // پاک کردن فرم
     setNewReviewContent('');
+    setNewReviewRating(5);
     setShowReviewForm(false);
-    
-    // نمایش پیام موفقیت (در یک اپ واقعی)
-    alert('نظر شما با موفقیت ثبت شد و پس از تایید نمایش داده خواهد شد.');
   };
   
-  // ارسال پاسخ به یک نظر
   const handleSubmitReply = (reviewId: string, replyContent: string) => {
-    // در یک اپلیکیشن واقعی، اینجا یک API call خواهد بود
-    console.log('پاسخ جدید برای نظر', reviewId, ':', replyContent);
+    if (!replyContent.trim()) return;
     
-    // نمایش پیام موفقیت (در یک اپ واقعی)
-    alert('پاسخ شما با موفقیت ثبت شد.');
+    console.log(`Submitting reply to review ${reviewId} for course ${courseId} with content: ${replyContent}`);
+    
+    // در حالت واقعی، اینجا یک API call انجام می‌شود
+    // mockAddReplyToReview(reviewId, replyContent);
+    
+    // آپدیت UI به صورت موقت تا زمان پیاده‌سازی API
+    setShowReplies(prev => ({
+      ...prev,
+      [reviewId]: true // نمایش پاسخ‌ها بعد از ارسال پاسخ جدید
+    }));
   };
   
   return (
@@ -397,9 +406,9 @@ export default function CourseReviews({ courseId, courseRating, reviewsCount = 0
               </div>
               
               {/* نمایش پاسخ‌ها */}
-              {showReplies[review.id] && review.replies && review.replies.length > 0 && (
+              {showReplies[review.id] && (
                 <div className="mr-4 mt-4 space-y-4 border-r border-gray-200 pr-4 dark:border-gray-700">
-                  {review.replies.map((reply) => (
+                  {review.replies && review.replies.length > 0 && review.replies.map((reply) => (
                     <div key={reply.id} className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
                       <div className="mb-2 flex items-center gap-3">
                         <div className="relative h-8 w-8 overflow-hidden rounded-full bg-gray-200">
@@ -429,6 +438,53 @@ export default function CourseReviews({ courseId, courseRating, reviewsCount = 0
                       <div className="text-gray-700 dark:text-gray-300">{reply.content}</div>
                     </div>
                   ))}
+                  
+                  {/* Reply form */}
+                  {activeReplyForm === review.id ? (
+                    <div className="rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
+                      <textarea 
+                        value={replyContents[review.id] || ''} 
+                        onChange={(e) => setReplyContents(prev => ({
+                          ...prev,
+                          [review.id]: e.target.value
+                        }))}
+                        rows={3}
+                        placeholder="پاسخ خود را بنویسید..."
+                        className="mb-3 w-full resize-none rounded-lg border border-gray-200 p-3 dark:border-gray-700 dark:bg-gray-800"
+                      />
+                      <div className="flex justify-end gap-2">
+                        <button 
+                          onClick={() => setActiveReplyForm(null)}
+                          className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+                        >
+                          انصراف
+                        </button>
+                        <button 
+                          onClick={() => {
+                            handleSubmitReply(review.id, replyContents[review.id] || '');
+                            // Clear reply form after submission
+                            setReplyContents(prev => ({
+                              ...prev,
+                              [review.id]: ''
+                            }));
+                            setActiveReplyForm(null);
+                          }}
+                          disabled={!replyContents[review.id]?.trim()}
+                          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-dark disabled:bg-gray-300 dark:disabled:bg-gray-700"
+                        >
+                          ارسال پاسخ
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={() => setActiveReplyForm(review.id)}
+                      className="flex w-full items-center justify-center gap-1 rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-800"
+                    >
+                      <MessageCircle className="h-4 w-4" />
+                      <span>پاسخ به این نظر</span>
+                    </button>
+                  )}
                 </div>
               )}
             </div>

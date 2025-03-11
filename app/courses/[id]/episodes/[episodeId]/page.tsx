@@ -1,6 +1,4 @@
 import { notFound } from 'next/navigation';
-import { use } from 'react';
-
 import { courses } from '@/components/data/course';
 import CourseEpisodePage from '@/components/course/CourseEpisodePage';
 
@@ -11,10 +9,33 @@ interface EpisodePageProps {
   };
 }
 
-export default function EpisodePage({ params }: EpisodePageProps) {
-  // استفاده از React.use برای دسترسی به پارامترها
-  const courseId = use(params).id;
-  const episodeId = use(params).episodeId;
+// Generate static params for all episodes
+export async function generateStaticParams() {
+  const params = [];
+  
+  for (const course of courses) {
+    if (course.chapters) {
+      for (const chapter of course.chapters) {
+        for (const episode of chapter.episodes) {
+          params.push({
+            id: course.id,
+            episodeId: episode.id
+          });
+        }
+      }
+    }
+  }
+  
+  return params;
+}
+
+// Set dynamic mode to force-static for static export
+export const dynamic = 'force-static';
+
+export default async function EpisodePage({ params }: EpisodePageProps) {
+  // Access params directly
+  const courseId = params.id;
+  const episodeId = params.episodeId;
   
   // پیدا کردن دوره بر اساس ID
   const course = courses.find(course => course.id === courseId);

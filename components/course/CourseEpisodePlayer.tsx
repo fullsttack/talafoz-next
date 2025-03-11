@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Play, Pause, Volume2, VolumeX, Maximize, Settings } from 'lucide-react';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { Play, Pause, Volume2, VolumeX, Maximize } from 'lucide-react';
 import { Episode } from '@/components/data/course';
 
 interface CourseEpisodePlayerProps {
@@ -25,12 +25,13 @@ export default function CourseEpisodePlayer({
   const [volume, setVolume] = useState(1);
   const [showVolumeControl, setShowVolumeControl] = useState(false);
   const [hasInitializedProgress, setHasInitializedProgress] = useState(false);
+  const [previousVolume, setPreviousVolume] = useState(1);
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
-  const playerRef = useRef<HTMLDivElement>(null);
   const volumeControlTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const progressUpdateTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const videoContainerRef = useRef<HTMLDivElement>(null);
   
   // تنظیم URL ویدیو
   useEffect(() => {
@@ -48,25 +49,33 @@ export default function CourseEpisodePlayer({
     }
   }, [initialProgress, duration, hasInitializedProgress]);
   
-  // کنترل پخش ویدیو
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+  // Toggle play/pause
+  const togglePlay = useCallback(() => {
+    if (!videoRef.current) return;
+    
+    if (videoRef.current.paused) {
+      videoRef.current.play();
+      setIsPlaying(true);
+    } else {
+      videoRef.current.pause();
+      setIsPlaying(false);
     }
-  };
+  }, []);
   
-  // کنترل صدا
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+  // Toggle mute/unmute
+  const toggleMute = useCallback(() => {
+    if (!videoRef.current) return;
+    
+    videoRef.current.muted = !videoRef.current.muted;
+    setIsMuted(videoRef.current.muted);
+    
+    if (videoRef.current.muted) {
+      setPreviousVolume(volume);
+      setVolume(0);
+    } else {
+      setVolume(previousVolume);
     }
-  };
+  }, [volume, previousVolume]);
   
   // تنظیم حجم صدا
   const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,21 +174,18 @@ export default function CourseEpisodePlayer({
     }
   };
   
-  // حالت تمام صفحه
-  const toggleFullScreen = () => {
-    if (playerRef.current) {
-      if (!isFullScreen) {
-        if (playerRef.current.requestFullscreen) {
-          playerRef.current.requestFullscreen();
-        }
-      } else {
-        if (document.exitFullscreen) {
-          document.exitFullscreen();
-        }
-      }
-      setIsFullScreen(!isFullScreen);
+  // Toggle fullscreen
+  const toggleFullScreen = useCallback(() => {
+    if (!videoContainerRef.current) return;
+    
+    if (!document.fullscreenElement) {
+      videoContainerRef.current.requestFullscreen().catch(err => {
+        console.error(`Error attempting to enable fullscreen: ${err.message}`);
+      });
+    } else {
+      document.exitFullscreen();
     }
-  };
+  }, []);
   
   // تبدیل ثانیه به فرمت mm:ss
   const formatTime = (seconds: number) => {
@@ -198,35 +204,24 @@ export default function CourseEpisodePlayer({
   // کلیدهای میانبر
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (document.activeElement?.tagName === 'INPUT') return;
-      
-      switch (e.key.toLowerCase()) {
-        case ' ':
-        case 'k':
+      // جلوگیری از عملکرد کلیدها در صورت وارد کردن اطلاعات در یک input
+      if (
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
+      ) {
+        return;
+      }
+
+      switch (e.code) {
+        case 'Space':
           e.preventDefault();
           togglePlay();
           break;
-        case 'm':
-          e.preventDefault();
+        case 'KeyM':
           toggleMute();
           break;
-        case 'f':
-          e.preventDefault();
+        case 'KeyF':
           toggleFullScreen();
-          break;
-        case 'arrowright':
-          e.preventDefault();
-          if (videoRef.current) {
-            videoRef.current.currentTime += 10;
-          }
-          break;
-        case 'arrowleft':
-          e.preventDefault();
-          if (videoRef.current) {
-            videoRef.current.currentTime -= 10;
-          }
-          break;
-        default:
           break;
       }
     };
@@ -236,7 +231,7 @@ export default function CourseEpisodePlayer({
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, []);
+  }, [togglePlay, toggleMute, toggleFullScreen]);
   
   // رویداد تغییر حالت تمام صفحه
   useEffect(() => {
@@ -253,8 +248,8 @@ export default function CourseEpisodePlayer({
   
   return (
     <div 
-      ref={playerRef}
-      className="relative aspect-video overflow-hidden bg-black"
+      ref={videoContainerRef}
+      className={`relative overflow-hidden rounded-lg bg-black ${isFullScreen ? 'fixed inset-0 z-50' : ''}`}
     >
       {/* ویدیو - فقط زمانی که videoUrl وجود داشته باشد */}
       {videoUrl && (

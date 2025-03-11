@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { ChevronLeft, Lock, Play, AlertTriangle, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import { Course, Episode, Chapter } from '@/components/data/course';
 import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
@@ -14,7 +13,6 @@ interface CourseEpisodePageProps {
 }
 
 export default function CourseEpisodePage({ course, episode, chapter }: CourseEpisodePageProps) {
-  const router = useRouter();
   const [isPremiumUser, setIsPremiumUser] = useState(false);
   const [hasPurchasedCourse, setHasPurchasedCourse] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState<string | null>(null);
@@ -45,7 +43,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   // لیست اپیزودهایی که به طور کامل دیده شده‌اند
   const [completedEpisodes, setCompletedEpisodes] = useState<string[]>(() => {
     return Object.entries(watchedProgress)
-      .filter(([_, progress]) => progress >= 95)
+      .filter(([, progress]) => progress >= 95)
       .map(([episodeId]) => episodeId);
   });
   
@@ -264,7 +262,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
               {course.chapters && course.chapters.map(ch => {
                 const chapterProgress = calculateChapterProgress(ch);
                 return (
-                  <div key={ch.id} className="border-b border-gray-200 last:border-b-0 dark:border-gray-800">
+                  <div key={ch.id} className={`border-b border-gray-200 last:border-b-0 dark:border-gray-800 ${chapterProgress === 100 ? 'completed-chapter' : ''}`}>
                     {/* سرفصل */}
                     <button
                       onClick={() => toggleChapter(ch.id)}

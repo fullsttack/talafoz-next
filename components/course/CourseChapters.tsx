@@ -96,7 +96,7 @@ export default function CourseChapters({
   };
   
   // رندر هر قسمت
-  const renderEpisode = (episode: Episode, episodeIndex: number, chapter: Chapter) => {
+  const renderEpisode = (episode: Episode, episodeIndex: number) => {
     const isAccessible = isEpisodeAccessible(episode);
     const isActive = activeEpisode === episode.id;
     const isInlinePlayable = isInlineViewableEpisode(episode);
@@ -228,7 +228,7 @@ export default function CourseChapters({
             {expandedChapters[chapter.id] && (
               <div className="border-t border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-900/40">
                 {chapter.episodes.map((episode, episodeIndex) => 
-                  renderEpisode(episode, episodeIndex, chapter)
+                  renderEpisode(episode, episodeIndex)
                 )}
               </div>
             )}

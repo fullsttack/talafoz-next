@@ -4,50 +4,65 @@ import { useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import CourseCard from '@/components/course/CourseCard';
 
-interface FilteredCourseListProps {
-  courses: any[];
-  isPremiumUser?: boolean;
+// Course interface for type safety
+interface Course {
+  id: string;
+  title: string;
+  instructor: string;
+  thumbnail: string;
+  price: number;
+  discountedPrice?: number;
+  rating: number;
+  reviewsCount: number;
+  studentsCount: number;
+  isPremium?: boolean;
+  categories?: string[];
+  level?: string;
+  [key: string]: unknown; // Using unknown instead of any for better type safety
 }
 
-export default function FilteredCourseList({ courses, isPremiumUser = false }: FilteredCourseListProps) {
-  const searchParams = useSearchParams();
-  
-  // قیلترهای فعلی
-  const typeFilter = searchParams.get('type') || '';
-  const categoryFilters = searchParams.get('categories')?.split(',').filter(Boolean) || [];
-  const searchQuery = searchParams.get('query') || '';
-  
+interface FilteredCourseListProps {
+  courses: Course[];
+  isPremiumUser?: boolean;
+  typeFilter?: string;
+  categoryFilters?: string[];
+  searchQuery?: string;
+}
+
+export default function FilteredCourseList({ 
+  courses, 
+  isPremiumUser = false,
+  typeFilter = '',
+  categoryFilters = [],
+  searchQuery = ''
+}: FilteredCourseListProps) {
   // استفاده از useMemo برای محاسبه دوره‌های فیلتر شده
   const filteredCourses = useMemo(() => {
+    const query = searchQuery.toLowerCase();
     let result = [...courses];
     
-    // فیلتر بر اساس نوع دوره
-    if (typeFilter) {
-      if (typeFilter === 'free') {
-        result = result.filter(course => course.isFree);
-      } else if (typeFilter === 'paid') {
-        result = result.filter(course => !course.isFree && course.price > 0);
-      } else if (typeFilter === 'premium') {
-        result = result.filter(course => course.isFreePremium);
-      }
+    // فیلتر بر اساس نوع (همه/رایگان/ویژه)
+    if (typeFilter === 'free') {
+      result = result.filter(course => !course.isPremium);
+    } else if (typeFilter === 'premium') {
+      result = result.filter(course => course.isPremium);
     }
     
-    // فیلتر بر اساس دسته‌بندی‌ها
+    // فیلتر بر اساس دسته‌بندی
     if (categoryFilters.length > 0) {
-      result = result.filter(course => 
-        course.categories?.some((category: string) => 
+      result = result.filter(course =>
+        course.categories && course.categories.some((category: string) =>
           categoryFilters.includes(category)
         )
       );
     }
     
-    // فیلتر بر اساس عبارت جستجو
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      result = result.filter(course => 
-        course.title.toLowerCase().includes(query) || 
-        course.description.toLowerCase().includes(query) ||
-        course.categories.some((category: string) => 
+    // فیلتر بر اساس جستجو
+    if (query) {
+      result = result.filter(course =>
+        course.title.toLowerCase().includes(query) ||
+        course.instructor.toLowerCase().includes(query) ||
+        course.categories && course.categories.some((category: string) => 
           category.toLowerCase().includes(query)
         )
       );

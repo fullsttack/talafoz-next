@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { ChevronLeft } from 'lucide-react';
-import { use } from 'react';
 
 import { courses } from '@/components/data/course';
 import CourseContent from '@/components/course/CourseContent';
@@ -10,15 +9,21 @@ interface CoursePageProps {
   params: {
     id: string;
   };
-  searchParams: {
-    episodeId?: string;
-  };
 }
 
-export default function CoursePage({ params, searchParams }: CoursePageProps) {
-  // Usar React.use para acceder a los parámetros
-  const id = use(params).id;
-  const episodeId = use(searchParams).episodeId;
+// Generate static params for all courses
+export async function generateStaticParams() {
+  return courses.map(course => ({
+    id: course.id
+  }));
+}
+
+// Set dynamic mode to force-static for static export
+export const dynamic = 'force-static';
+
+export default async function CoursePage({ params }: CoursePageProps) {
+  // Access params directly
+  const id = params.id;
   
   // Encontrar el curso por ID
   const course = courses.find(course => course.id === id);
@@ -45,7 +50,7 @@ export default function CoursePage({ params, searchParams }: CoursePageProps) {
       </div>
       
       {/* Contenido del curso */}
-      <CourseContent course={course} initialEpisodeId={episodeId} />
+      <CourseContent course={course} initialEpisodeId={null} />
     </div>
   );
 } 

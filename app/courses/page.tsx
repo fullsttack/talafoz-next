@@ -1,9 +1,19 @@
+import { Suspense } from 'react';
 import { courses } from '@/components/data/course';
 import FilteredCourseList from '@/components/course/FilteredCourseList';
 import CourseSearch from '@/components/course/CourseSearch';
 
 // Definimos los cursos aquí como una constante para evitar recreaciones
 const COURSES = courses;
+
+// Generate static params for all possible search combinations
+export async function generateStaticParams() {
+  // For a static export, we'll just generate the base page
+  return [{}];
+}
+
+// Set dynamic mode to force-static for static export
+export const dynamic = 'force-static';
 
 export default function CoursesPage({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) {
   // Get current search and filter parameters
@@ -34,7 +44,9 @@ export default function CoursesPage({ searchParams }: { searchParams: { [key: st
     <>
       {/* جستجو */}
       <div className="mb-6">
-        <CourseSearch />
+        <Suspense fallback={<div>Loading search...</div>}>
+          <CourseSearch />
+        </Suspense>
       </div>
       
       {/* عنوان صفحه */}
@@ -49,7 +61,15 @@ export default function CoursesPage({ searchParams }: { searchParams: { [key: st
       </div>
       
       {/* لیست دوره‌های فیلتر شده */}
-      <FilteredCourseList courses={COURSES} isPremiumUser={false} />
+      <Suspense fallback={<div>Loading courses...</div>}>
+        <FilteredCourseList 
+          courses={COURSES} 
+          isPremiumUser={false} 
+          typeFilter={typeFilter}
+          categoryFilters={categoryFilters}
+          searchQuery={searchQuery}
+        />
+      </Suspense>
     </>
   );
 } 

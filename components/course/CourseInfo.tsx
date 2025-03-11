@@ -40,7 +40,8 @@ export default function CourseInfo({ course }: CourseInfoProps) {
         month: 'long',
         day: 'numeric',
       }).format(date);
-    } catch (e) {
+    /* eslint-disable-next-line @typescript-eslint/no-unused-vars */
+    } catch (_e) {
       return dateString;
     }
   };
