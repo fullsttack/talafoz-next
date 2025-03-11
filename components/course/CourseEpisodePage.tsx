@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { ChevronLeft, Lock, Play, Check, ChevronDown, ChevronUp, Clock, BookOpen, Award, ArrowLeft, FileText, Paperclip, MessageSquare, PenLine, ChevronRight } from 'lucide-react';
+import { ChevronLeft, Lock, Play, Check, ChevronDown, ChevronUp, Clock, BookOpen, ArrowLeft, FileText, Paperclip, MessageSquare, PenLine } from 'lucide-react';
 import { Course, Episode, Chapter } from '@/components/data/course';
 import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
-import EpisodeFeaturesTabs from '@/components/episode/EpisodeFeaturesTabs';
 import EpisodeNotes from '@/components/episode/EpisodeNotes';
 import EpisodeAssignments from '@/components/episode/EpisodeAssignments';
 import EpisodeAttachments from '@/components/episode/EpisodeAttachments';
@@ -279,12 +278,78 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
     { id: 'comments', label: 'نظرات', icon: <MessageSquare className="h-5 w-5" /> },
   ];
 
+  // تغییر تب با بررسی دسترسی
+  const handleTabChange = (tabId: 'chapters' | 'notes' | 'assignments' | 'attachments' | 'comments') => {
+    // تب فصل‌ها همیشه قابل دسترس است
+    if (tabId === 'chapters') {
+      setActiveTab(tabId);
+      return;
+    }
+
+    // بررسی دسترسی به تب‌های دیگر
+    if (!hasAccess) {
+      // نمایش پیام عدم دسترسی
+      setShowSuccessMessage("برای دسترسی به این بخش باید دوره را خریداری کنید");
+    } else {
+      // تغییر تب در صورت دسترسی
+      setActiveTab(tabId);
+    }
+  };
+
+  // در تب‌های سمت راست، پارامتر isLocked را به همه کامپوننت‌ها اضافه می‌کنیم
+  function renderSidebarTabContent() {
+    switch (activeTab) {
+      case 'notes':
+        return <EpisodeNotes episodeId={episode.id} courseId={course.id} isLocked={!hasAccess} />;
+      case 'assignments':
+        return <EpisodeAssignments episodeId={episode.id} courseId={course.id} isLocked={!hasAccess} />;
+      case 'attachments':
+        return <EpisodeAttachments episodeId={episode.id} courseId={course.id} isLocked={!hasAccess} />;
+      case 'comments':
+        return <EpisodeComments episodeId={episode.id} courseId={course.id} isLocked={!hasAccess} />;
+      default:
+        return <div>Not found</div>;
+    }
+  }
+
   return (
     <>
-      {/* پیام موفقیت */}
+      {/* پیام توست */}
       {showSuccessMessage && (
-        <div className="fixed bottom-4 left-4 right-4 z-50 animate-fade-in-up rounded-lg bg-green-100 p-4 text-center text-green-800 shadow-lg dark:bg-green-900/30 dark:text-green-400 md:left-auto md:right-4 md:w-80">
-          {showSuccessMessage}
+        <div className={`fixed top-16 right-2 z-50 animate-fade-in rounded-lg p-4 text-center shadow-lg w-[90%] sm:w-[450px] max-w-md
+          ${showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید') 
+            ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40' 
+            : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/40'
+          }`}>
+          
+          <div className="flex items-center justify-center gap-2 mb-1">
+            {showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید') ? (
+              <Lock className="h-5 w-5 flex-shrink-0" />
+            ) : (
+              <Check className="h-5 w-5 flex-shrink-0" />
+            )}
+            <span className="font-medium">{showSuccessMessage}</span>
+          </div>
+          
+          {/* دکمه‌های خرید فقط برای پیام‌های مربوط به عدم دسترسی */}
+          {(showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید')) && (
+            <div className="flex gap-2 justify-center mt-3">
+              <button 
+                onClick={togglePurchaseStatus}
+                className="bg-amber-600 hover:bg-amber-700 text-white text-xs py-1.5 px-3 rounded transition-colors"
+              >
+                خرید دوره
+              </button>
+              {course.isFreePremium && (
+                <button 
+                  onClick={togglePremiumStatus}
+                  className="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded transition-colors"
+                >
+                  تهیه اشتراک ویژه
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -536,22 +601,36 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           {/* تب‌های سایدبار */}
           <div className="bg-gray-900/40 border-b border-gray-700">
             <div className="flex justify-between overflow-x-auto px-0.5 pt-1">
-              {tabs.map(tab => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`flex flex-1 flex-col items-center gap-1 px-1.5 py-2 text-sm font-medium transition-all rounded-t-lg relative ${
-                    activeTab === tab.id
-                      ? 'bg-gray-800 text-green-400 shadow-sm'
-                      : 'text-gray-400 hover:bg-gray-700/40 hover:text-gray-200'
-                  }`}
-                >
-                  <div className={`${activeTab === tab.id ? 'text-green-400' : 'text-gray-400'}`}>
-                    {tab.icon}
-                  </div>
-                  <span className="text-xs font-medium">{tab.label}</span>
-                </button>
-              ))}
+              {tabs.map(tab => {
+                // تعیین وضعیت قفل برای هر تب
+                const isTabLocked = !hasAccess && tab.id !== 'chapters';
+                
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => handleTabChange(tab.id as any)}
+                    className={`flex flex-1 flex-col items-center gap-1 px-1.5 py-2 text-sm font-medium transition-all rounded-t-lg relative ${
+                      activeTab === tab.id
+                        ? 'bg-gray-800 text-green-400 shadow-sm'
+                        : 'text-gray-400 hover:bg-gray-700/40 hover:text-gray-200'
+                    }`}
+                  >
+                    <div className="relative">
+                      <div className={`${activeTab === tab.id ? 'text-green-400' : 'text-gray-400'}`}>
+                        {tab.icon}
+                      </div>
+                      
+                      {/* نمایش آیکون قفل برای تب‌های که کاربر دسترسی ندارد */}
+                      {isTabLocked && (
+                        <div className="absolute -top-1 -right-1 flex items-center justify-center h-3.5 w-3.5 rounded-full bg-gray-700">
+                          <Lock className="h-2 w-2 text-amber-400" />
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-xs font-medium">{tab.label}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
           
@@ -684,6 +763,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                   episodeId={episode.id} 
                   courseId={course.id} 
                   currentTime={currentPlayerTime} 
+                  isLocked={!hasAccess}
                 />
               </div>
             )}
@@ -694,6 +774,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                 <EpisodeAssignments 
                   episodeId={episode.id} 
                   courseId={course.id} 
+                  isLocked={!hasAccess}
                 />
               </div>
             )}
@@ -704,6 +785,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                 <EpisodeAttachments 
                   episodeId={episode.id} 
                   courseId={course.id} 
+                  isLocked={!hasAccess}
                 />
               </div>
             )}
@@ -714,6 +796,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                 <EpisodeComments 
                   episodeId={episode.id} 
                   courseId={course.id} 
+                  isLocked={!hasAccess}
                 />
               </div>
             )}

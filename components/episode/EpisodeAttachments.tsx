@@ -1,11 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, Download, FileArchive, FileImage, FileCode, Film, Music, File, ExternalLink } from 'lucide-react';
+import { FileText, Download, FileArchive, FileImage, FileCode, Film, Music, File, ExternalLink, Lock } from 'lucide-react';
 
 interface EpisodeAttachmentsProps {
   episodeId: string;
   courseId: string;
+  isLocked?: boolean;
 }
 
 interface Attachment {
@@ -19,7 +20,7 @@ interface Attachment {
   isNew?: boolean;
 }
 
-export default function EpisodeAttachments({ episodeId, courseId }: EpisodeAttachmentsProps) {
+export default function EpisodeAttachments({ episodeId, courseId, isLocked = false }: EpisodeAttachmentsProps) {
   // در یک پروژه واقعی، این داده‌ها از API دریافت می‌شوند
   const [attachments, setAttachments] = useState<Attachment[]>([
     {
@@ -103,6 +104,31 @@ export default function EpisodeAttachments({ episodeId, courseId }: EpisodeAttac
       ));
     }
   };
+
+  // اگر محتوا قفل باشد، صفحه قفل نمایش داده می‌شود
+  if (isLocked) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center text-center p-8">
+        <div className="bg-gray-800/60 p-6 rounded-lg border border-gray-700 flex flex-col items-center max-w-md">
+          <div className="bg-yellow-500/20 p-3 rounded-full mb-4">
+            <Lock className="h-12 w-12 text-yellow-500" />
+          </div>
+          <h3 className="text-white text-lg font-medium mb-2">دسترسی محدود شده</h3>
+          <p className="text-gray-300 text-sm mb-4">
+            برای دسترسی به فایل‌های ضمیمه این قسمت، لطفاً دوره را خریداری کنید یا اشتراک ویژه تهیه نمایید.
+          </p>
+          <div className="flex gap-3 mt-2">
+            <button className="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md text-sm transition-colors">
+              خرید دوره
+            </button>
+            <button className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md text-sm transition-colors">
+              تهیه اشتراک ویژه
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col h-full">

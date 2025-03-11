@@ -1,298 +1,317 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { Send, ThumbsUp, MessageSquare, MoreVertical, Edit2, Trash2, AlertCircle, User } from 'lucide-react';
+import { MoreVertical, MessageCircle, Heart, Clock, Reply, Edit, Trash, Send, Lock } from 'lucide-react';
 
 interface EpisodeCommentsProps {
   episodeId: string;
   courseId: string;
+  isLocked?: boolean;
 }
 
 interface Comment {
   id: string;
   userId: string;
-  userName: string;
-  userAvatar?: string;
+  username: string;
+  avatarUrl: string;
   content: string;
   createdAt: string;
   likes: number;
-  isLiked: boolean;
-  isAuthor: boolean;
-  replies?: Comment[];
-  isInstructor?: boolean;
+  userHasLiked: boolean;
+  replies: Reply[];
+  isEditing?: boolean;
 }
 
-export default function EpisodeComments({ episodeId, courseId }: EpisodeCommentsProps) {
+interface Reply {
+  id: string;
+  userId: string;
+  username: string;
+  avatarUrl: string;
+  content: string;
+  createdAt: string;
+  likes: number;
+  userHasLiked: boolean;
+  isEditing?: boolean;
+}
+
+export default function EpisodeComments({ episodeId, courseId, isLocked = false }: EpisodeCommentsProps) {
   // در یک پروژه واقعی، این داده‌ها از API دریافت می‌شوند
   const [comments, setComments] = useState<Comment[]>([
     {
       id: '1',
-      userId: 'instructor1',
-      userName: 'استاد محمدی',
-      userAvatar: '/avatars/instructor.jpg',
-      content: 'دوستان عزیز، اگر سوالی در مورد مطالب این قسمت دارید، می‌توانید در بخش نظرات مطرح کنید.',
-      createdAt: '1402/12/01 14:30',
+      userId: 'user1',
+      username: 'علی محمدی',
+      avatarUrl: 'https://via.placeholder.com/40',
+      content: 'این قسمت واقعاً عالی بود! مفاهیم خیلی واضح توضیح داده شدند.',
+      createdAt: '1402/12/05 14:30',
       likes: 12,
-      isLiked: false,
-      isAuthor: false,
-      isInstructor: true
+      userHasLiked: false,
+      replies: [
+        {
+          id: 'reply1',
+          userId: 'user2',
+          username: 'سارا احمدی',
+          avatarUrl: 'https://via.placeholder.com/40',
+          content: 'کاملاً موافقم! مخصوصاً بخش مربوط به کار با API ها خیلی مفید بود.',
+          createdAt: '1402/12/05 15:15',
+          likes: 3,
+          userHasLiked: true
+        }
+      ]
     },
     {
       id: '2',
-      userId: 'user1',
-      userName: 'علی رضایی',
-      userAvatar: '/avatars/user1.jpg',
-      content: 'خیلی ممنون از توضیحات کاملتون. یک سوال داشتم در مورد بخش پیاده‌سازی کلاس‌ها، آیا می‌شه از روش دیگه‌ای هم استفاده کرد؟',
-      createdAt: '1402/12/02 10:15',
-      likes: 3,
-      isLiked: true,
-      isAuthor: false,
+      userId: 'user3',
+      username: 'مهدی رضایی',
+      avatarUrl: 'https://via.placeholder.com/40',
+      content: 'من یک سوال درباره بخش پیاده‌سازی احراز هویت دارم. آیا می‌توان از روش دیگری هم استفاده کرد؟',
+      createdAt: '1402/12/04 10:22',
+      likes: 5,
+      userHasLiked: true,
       replies: [
         {
-          id: '2-1',
-          userId: 'instructor1',
-          userName: 'استاد محمدی',
-          userAvatar: '/avatars/instructor.jpg',
-          content: 'بله، روش‌های دیگری هم وجود دارد. در قسمت بعدی به روش‌های جایگزین هم خواهیم پرداخت.',
-          createdAt: '1402/12/02 11:30',
+          id: 'reply2',
+          userId: 'instructor',
+          username: 'استاد دوره',
+          avatarUrl: 'https://via.placeholder.com/40',
+          content: 'بله، شما می‌توانید از JWT هم استفاده کنید. در قسمت بعدی به آن خواهیم پرداخت.',
+          createdAt: '1402/12/04 11:30',
+          likes: 8,
+          userHasLiked: false
+        },
+        {
+          id: 'reply3',
+          userId: 'user3',
+          username: 'مهدی رضایی',
+          avatarUrl: 'https://via.placeholder.com/40',
+          content: 'ممنون از پاسخ شما! منتظر قسمت بعدی هستم.',
+          createdAt: '1402/12/04 12:15',
           likes: 2,
-          isLiked: false,
-          isAuthor: false,
-          isInstructor: true
+          userHasLiked: false
         }
       ]
     },
     {
       id: '3',
-      userId: 'user2',
-      userName: 'سارا کریمی',
-      content: 'من در پیاده‌سازی بخش آخر به مشکل برخوردم. خطای زیر رو دریافت می‌کنم:\n`TypeError: Cannot read property of undefined`\nمی‌تونید راهنمایی کنید؟',
-      createdAt: '1402/12/03 16:45',
-      likes: 0,
-      isLiked: false,
-      isAuthor: false
-    },
-    {
-      id: '4',
-      userId: 'currentUser',
-      userName: 'شما',
-      userAvatar: '/avatars/me.jpg',
-      content: 'توضیحات این قسمت خیلی کامل و مفید بود. ممنون از زحماتتون.',
-      createdAt: '1402/12/04 09:20',
-      likes: 1,
-      isLiked: false,
-      isAuthor: true
+      userId: 'user4',
+      username: 'زهرا کریمی',
+      avatarUrl: 'https://via.placeholder.com/40',
+      content: 'من این پروژه رو پیاده‌سازی کردم ولی با یک مشکل مواجه شدم. وقتی کاربر لاگین می‌کنه، احیاناً با ارور مواجه میشم. کسی می‌تونه کمک کنه؟',
+      createdAt: '1402/12/03 19:45',
+      likes: 2,
+      userHasLiked: false,
+      replies: []
     }
   ]);
-  
+
   const [newComment, setNewComment] = useState('');
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
-  const [replyContent, setReplyContent] = useState('');
-  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
-  const [editContent, setEditContent] = useState('');
-  const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  
+  const [newReplyContent, setNewReplyContent] = useState('');
+  const [menuOpenFor, setMenuOpenFor] = useState<string | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+
+  // باز و بسته کردن منوی عملیات نظر
+  const toggleMenu = (commentId: string) => {
+    setMenuOpenFor(menuOpenFor === commentId ? null : commentId);
+  };
+
   // ارسال نظر جدید
-  const submitComment = () => {
-    if (newComment.trim() === '') return;
+  const handleSubmitComment = () => {
+    if (!newComment.trim()) return;
     
     const newCommentObj: Comment = {
-      id: Date.now().toString(),
+      id: `new-${Date.now()}`,
       userId: 'currentUser',
-      userName: 'شما',
-      userAvatar: '/avatars/me.jpg',
+      username: 'شما',
+      avatarUrl: 'https://via.placeholder.com/40',
       content: newComment,
-      createdAt: new Date().toLocaleString('fa-IR'),
+      createdAt: new Date().toLocaleDateString('fa-IR') + ' ' + new Date().toLocaleTimeString('fa-IR').substring(0, 5),
       likes: 0,
-      isLiked: false,
-      isAuthor: true
+      userHasLiked: false,
+      replies: []
     };
     
-    setComments([...comments, newCommentObj]);
+    setComments([newCommentObj, ...comments]);
     setNewComment('');
   };
-  
+
   // ارسال پاسخ به نظر
-  const submitReply = (parentId: string) => {
-    if (replyContent.trim() === '') return;
+  const handleSubmitReply = (commentId: string) => {
+    if (!newReplyContent.trim()) return;
     
-    const newReply: Comment = {
-      id: `${parentId}-${Date.now()}`,
+    const newReplyObj: Reply = {
+      id: `new-reply-${Date.now()}`,
       userId: 'currentUser',
-      userName: 'شما',
-      userAvatar: '/avatars/me.jpg',
-      content: replyContent,
-      createdAt: new Date().toLocaleString('fa-IR'),
+      username: 'شما',
+      avatarUrl: 'https://via.placeholder.com/40',
+      content: newReplyContent,
+      createdAt: new Date().toLocaleDateString('fa-IR') + ' ' + new Date().toLocaleTimeString('fa-IR').substring(0, 5),
       likes: 0,
-      isLiked: false,
-      isAuthor: true
+      userHasLiked: false
     };
     
-    setComments(comments.map(comment => {
-      if (comment.id === parentId) {
-        return {
-          ...comment,
-          replies: [...(comment.replies || []), newReply]
-        };
-      }
-      return comment;
-    }));
+    setComments(comments.map(comment => 
+      comment.id === commentId 
+        ? { ...comment, replies: [...comment.replies, newReplyObj] } 
+        : comment
+    ));
     
     setReplyingTo(null);
-    setReplyContent('');
+    setNewReplyContent('');
   };
-  
-  // لایک کردن نظر
-  const toggleLike = (commentId: string, isReply = false, parentId?: string) => {
-    if (isReply && parentId) {
+
+  // تغییر وضعیت لایک
+  const toggleLike = (commentId: string, replyId?: string) => {
+    if (replyId) {
+      // لایک کردن پاسخ
       setComments(comments.map(comment => {
-        if (comment.id === parentId && comment.replies) {
-          return {
-            ...comment,
-            replies: comment.replies.map(reply => {
-              if (reply.id === commentId) {
-                return {
-                  ...reply,
-                  likes: reply.isLiked ? reply.likes - 1 : reply.likes + 1,
-                  isLiked: !reply.isLiked
-                };
-              }
-              return reply;
-            })
-          };
-        }
-        return comment;
+        if (comment.id !== commentId) return comment;
+        
+        return {
+          ...comment,
+          replies: comment.replies.map(reply => {
+            if (reply.id !== replyId) return reply;
+            
+            return {
+              ...reply,
+              likes: reply.userHasLiked ? reply.likes - 1 : reply.likes + 1,
+              userHasLiked: !reply.userHasLiked
+            };
+          })
+        };
       }));
     } else {
+      // لایک کردن نظر اصلی
       setComments(comments.map(comment => {
-        if (comment.id === commentId) {
-          return {
-            ...comment,
-            likes: comment.isLiked ? comment.likes - 1 : comment.likes + 1,
-            isLiked: !comment.isLiked
-          };
-        }
-        return comment;
+        if (comment.id !== commentId) return comment;
+        
+        return {
+          ...comment,
+          likes: comment.userHasLiked ? comment.likes - 1 : comment.likes + 1,
+          userHasLiked: !comment.userHasLiked
+        };
       }));
     }
   };
-  
-  // شروع ویرایش نظر
-  const startEditing = (comment: Comment) => {
-    setEditingCommentId(comment.id);
-    setEditContent(comment.content);
-    setOpenMenuId(null);
+
+  // ویرایش نظر
+  const startEditing = (commentId: string, replyId?: string) => {
+    setMenuOpenFor(null);
     
-    // تمرکز روی تکست‌اریا پس از رندر
-    setTimeout(() => {
-      if (textareaRef.current) {
-        textareaRef.current.focus();
-      }
-    }, 0);
-  };
-  
-  // ذخیره تغییرات نظر
-  const saveEdit = () => {
-    if (editingCommentId && editContent.trim() !== '') {
+    if (replyId) {
+      // ویرایش پاسخ
       setComments(comments.map(comment => {
-        if (comment.id === editingCommentId) {
-          return { ...comment, content: editContent };
-        }
+        if (comment.id !== commentId) return comment;
         
-        if (comment.replies) {
-          const updatedReplies = comment.replies.map(reply => {
-            if (reply.id === editingCommentId) {
-              return { ...reply, content: editContent };
-            }
-            return reply;
-          });
-          
-          if (updatedReplies.some(reply => reply.id === editingCommentId)) {
-            return { ...comment, replies: updatedReplies };
-          }
-        }
-        
-        return comment;
-      }));
-      
-      setEditingCommentId(null);
-      setEditContent('');
-    }
-  };
-  
-  // حذف نظر
-  const deleteComment = (commentId: string, isReply = false, parentId?: string) => {
-    if (isReply && parentId) {
-      setComments(comments.map(comment => {
-        if (comment.id === parentId && comment.replies) {
-          return {
-            ...comment,
-            replies: comment.replies.filter(reply => reply.id !== commentId)
-          };
-        }
-        return comment;
+        return {
+          ...comment,
+          replies: comment.replies.map(reply => {
+            if (reply.id !== replyId) return reply;
+            
+            return { ...reply, isEditing: true };
+          })
+        };
       }));
     } else {
+      // ویرایش نظر اصلی
+      setComments(comments.map(comment => 
+        comment.id === commentId ? { ...comment, isEditing: true } : comment
+      ));
+    }
+  };
+
+  // حذف نظر
+  const deleteComment = (commentId: string, replyId?: string) => {
+    setMenuOpenFor(null);
+    
+    if (replyId) {
+      // حذف پاسخ
+      setComments(comments.map(comment => {
+        if (comment.id !== commentId) return comment;
+        
+        return {
+          ...comment,
+          replies: comment.replies.filter(reply => reply.id !== replyId)
+        };
+      }));
+    } else {
+      // حذف نظر اصلی
       setComments(comments.filter(comment => comment.id !== commentId));
     }
-    
-    setOpenMenuId(null);
   };
-  
-  // رندر منوی عملیات
-  const renderActionMenu = (comment: Comment, isReply = false, parentId?: string) => {
-    if (!comment.isAuthor) return null;
-    
-    return (
-      <div className="relative">
-        <button
-          onClick={() => setOpenMenuId(openMenuId === comment.id ? null : comment.id)}
-          className="p-1 rounded-full hover:bg-gray-700 text-gray-400 hover:text-white transition-colors"
-        >
-          <MoreVertical className="h-4 w-4" />
-        </button>
+
+  // ذخیره تغییرات ویرایش
+  const saveEdit = (commentId: string, newContent: string, replyId?: string) => {
+    if (replyId) {
+      // ذخیره تغییرات پاسخ
+      setComments(comments.map(comment => {
+        if (comment.id !== commentId) return comment;
         
-        {openMenuId === comment.id && (
-          <div className="absolute left-0 mt-1 w-32 bg-gray-800 rounded-md shadow-lg border border-gray-700 z-10">
-            <button
-              onClick={() => startEditing(comment)}
-              className="flex items-center w-full px-3 py-2 text-sm text-left text-gray-300 hover:bg-gray-700 hover:text-white"
-            >
-              <Edit2 className="h-4 w-4 mr-2" />
-              <span>ویرایش</span>
+        return {
+          ...comment,
+          replies: comment.replies.map(reply => {
+            if (reply.id !== replyId) return reply;
+            
+            return { ...reply, content: newContent, isEditing: false };
+          })
+        };
+      }));
+    } else {
+      // ذخیره تغییرات نظر اصلی
+      setComments(comments.map(comment => 
+        comment.id === commentId 
+          ? { ...comment, content: newContent, isEditing: false } 
+          : comment
+      ));
+    }
+  };
+
+  // رندر کردن منوی عملیات
+  const renderActionMenu = (commentId: string, replyId?: string) => {
+    return (
+      <div ref={menuRef} className="absolute left-0 top-6 bg-gray-800 border border-gray-700 rounded-md shadow-lg py-1 z-10 w-28">
+        <button
+          onClick={() => startEditing(commentId, replyId)} 
+          className="w-full text-right px-3 py-1.5 text-sm hover:bg-gray-700 flex items-center"
+        >
+          <Edit className="h-4 w-4 ml-2" />
+          <span>ویرایش</span>
+        </button>
+        <button
+          onClick={() => deleteComment(commentId, replyId)}
+          className="w-full text-right px-3 py-1.5 text-sm text-red-400 hover:bg-gray-700 flex items-center"
+        >
+          <Trash className="h-4 w-4 ml-2" />
+          <span>حذف</span>
+        </button>
+      </div>
+    );
+  };
+
+  // اگر محتوا قفل باشد، صفحه قفل نمایش داده می‌شود
+  if (isLocked) {
+    return (
+      <div className="flex flex-col h-full items-center justify-center text-center p-8">
+        <div className="bg-gray-800/60 p-6 rounded-lg border border-gray-700 flex flex-col items-center max-w-md">
+          <div className="bg-yellow-500/20 p-3 rounded-full mb-4">
+            <Lock className="h-12 w-12 text-yellow-500" />
+          </div>
+          <h3 className="text-white text-lg font-medium mb-2">دسترسی محدود شده</h3>
+          <p className="text-gray-300 text-sm mb-4">
+            برای دسترسی به نظرات این قسمت، لطفاً دوره را خریداری کنید یا اشتراک ویژه تهیه نمایید.
+          </p>
+          <div className="flex gap-3 mt-2">
+            <button className="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md text-sm transition-colors">
+              خرید دوره
             </button>
-            <button
-              onClick={() => deleteComment(comment.id, isReply, parentId)}
-              className="flex items-center w-full px-3 py-2 text-sm text-left text-red-400 hover:bg-gray-700"
-            >
-              <Trash2 className="h-4 w-4 mr-2" />
-              <span>حذف</span>
+            <button className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md text-sm transition-colors">
+              تهیه اشتراک ویژه
             </button>
           </div>
-        )}
+        </div>
       </div>
     );
-  };
-  
-  // رندر آواتار کاربر
-  const renderAvatar = (comment: Comment) => {
-    if (comment.userAvatar) {
-      return (
-        <img 
-          src={comment.userAvatar} 
-          alt={comment.userName} 
-          className="h-8 w-8 rounded-full object-cover"
-        />
-      );
-    }
-    
-    return (
-      <div className="h-8 w-8 rounded-full bg-gray-700 flex items-center justify-center">
-        <User className="h-4 w-4 text-gray-400" />
-      </div>
-    );
-  };
+  }
 
   return (
     <div className="flex flex-col h-full">
@@ -301,207 +320,241 @@ export default function EpisodeComments({ episodeId, courseId }: EpisodeComments
       </div>
       
       {/* فرم ارسال نظر جدید */}
-      <div className="mb-6 bg-gray-800 rounded-lg p-4 border border-gray-700">
+      <div className="bg-gray-800/70 rounded-lg border border-gray-700 p-3 mb-6">
         <textarea
+          className="w-full bg-gray-700 rounded-md border border-gray-600 text-white text-sm p-3 h-24 mb-2 placeholder-gray-400 resize-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none"
+          placeholder="نظر خود را درباره این قسمت بنویسید..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
-          placeholder="نظر خود را بنویسید..."
-          className="w-full bg-gray-700 text-white rounded-md p-3 text-sm resize-none h-24 focus:outline-none focus:ring-1 focus:ring-green-500 border border-gray-600"
-        />
-        <div className="flex justify-between items-center mt-3">
-          <div className="text-xs text-gray-400">
-            <AlertCircle className="h-3.5 w-3.5 inline-block mr-1" />
-            نظرات پس از تایید نمایش داده می‌شوند
-          </div>
+        ></textarea>
+        <div className="flex justify-end">
           <button
-            onClick={submitComment}
-            disabled={newComment.trim() === ''}
-            className="flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            onClick={handleSubmitComment}
+            disabled={!newComment.trim()}
+            className={`flex items-center text-sm px-4 py-2 rounded-md ${
+              newComment.trim() 
+                ? 'bg-yellow-600 hover:bg-yellow-700 text-white' 
+                : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+            } transition-colors`}
           >
-            <Send className="h-4 w-4" />
-            <span>ارسال نظر</span>
+            <Send className="h-4 w-4 ml-1 -rotate-90" />
+            ارسال نظر
           </button>
         </div>
       </div>
       
       {/* لیست نظرات */}
-      <div className="flex-1 overflow-y-auto space-y-4">
-        {comments.length === 0 ? (
-          <div className="text-center py-8 text-gray-400 text-sm">
-            هنوز نظری ثبت نشده است. اولین نفری باشید که نظر می‌دهد!
-          </div>
-        ) : (
-          comments.map(comment => (
-            <div key={comment.id} className="bg-gray-800/70 rounded-lg p-4 border border-gray-700">
-              {/* سربرگ نظر */}
-              <div className="flex justify-between items-start mb-3">
-                <div className="flex items-center">
-                  {renderAvatar(comment)}
-                  <div className="ml-2">
-                    <div className="flex items-center">
-                      <span className="font-medium text-white text-sm">{comment.userName}</span>
-                      {comment.isInstructor && (
-                        <span className="ml-2 bg-blue-500/20 text-blue-400 text-xs px-1.5 py-0.5 rounded">استاد</span>
-                      )}
+      {comments.length === 0 ? (
+        <div className="text-center py-8 text-gray-400 text-sm">
+          هنوز نظری برای این قسمت ثبت نشده است. اولین نظر را شما ثبت کنید!
+        </div>
+      ) : (
+        <div className="space-y-6 overflow-y-auto flex-grow">
+          {comments.map(comment => (
+            <div key={comment.id} className="bg-gray-800/70 rounded-lg border border-gray-700 p-4">
+              {/* نظر اصلی */}
+              <div className="flex">
+                <img
+                  src={comment.avatarUrl}
+                  alt={comment.username}
+                  className="w-10 h-10 rounded-full ml-3"
+                />
+                <div className="flex-1">
+                  <div className="flex justify-between">
+                    <div>
+                      <span className="font-medium text-white">{comment.username}</span>
+                      <span className="text-gray-400 text-xs mr-2 flex items-center">
+                        <Clock className="h-3 w-3 ml-1" />
+                        {comment.createdAt}
+                      </span>
                     </div>
-                    <span className="text-xs text-gray-400">{comment.createdAt}</span>
+                    {/* منوی عملیات */}
+                    {comment.userId === 'currentUser' && (
+                      <div className="relative">
+                        <button
+                          onClick={() => toggleMenu(comment.id)}
+                          className="text-gray-400 hover:text-white p-1"
+                        >
+                          <MoreVertical className="h-4 w-4" />
+                        </button>
+                        {menuOpenFor === comment.id && renderActionMenu(comment.id)}
+                      </div>
+                    )}
                   </div>
+                  
+                  {/* محتوای نظر */}
+                  {comment.isEditing ? (
+                    <div className="mt-2">
+                      <textarea
+                        className="w-full bg-gray-700 rounded-md border border-gray-600 text-white text-sm p-2 mb-2 resize-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none"
+                        defaultValue={comment.content}
+                        rows={2}
+                        autoFocus
+                        id={`edit-comment-${comment.id}`}
+                      ></textarea>
+                      <div className="flex justify-end space-x-2 space-x-reverse">
+                        <button
+                          onClick={() => saveEdit(comment.id, document.getElementById(`edit-comment-${comment.id}`) as HTMLTextAreaElement ? (document.getElementById(`edit-comment-${comment.id}`) as HTMLTextAreaElement).value : '')}
+                          className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition-colors"
+                        >
+                          ذخیره
+                        </button>
+                        <button
+                          onClick={() => setComments(comments.map(c => c.id === comment.id ? { ...c, isEditing: false } : c))}
+                          className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+                        >
+                          انصراف
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-gray-300 text-sm mt-1">{comment.content}</p>
+                  )}
+                  
+                  {/* دکمه‌های عملیات */}
+                  <div className="flex items-center mt-3 space-x-4 space-x-reverse">
+                    <button
+                      onClick={() => toggleLike(comment.id)}
+                      className={`flex items-center text-xs ${comment.userHasLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                    >
+                      <Heart className={`h-4 w-4 ml-1 ${comment.userHasLiked ? 'fill-current' : ''}`} />
+                      {comment.likes > 0 && comment.likes}
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        setReplyingTo(comment.id);
+                        setNewReplyContent('');
+                      }}
+                      className="flex items-center text-xs text-gray-400 hover:text-blue-400"
+                    >
+                      <Reply className="h-4 w-4 ml-1" />
+                      پاسخ
+                    </button>
+                  </div>
+                  
+                  {/* فرم پاسخ به نظر */}
+                  {replyingTo === comment.id && (
+                    <div className="mt-3 bg-gray-700/50 rounded-md p-3 border border-gray-600">
+                      <textarea
+                        className="w-full bg-gray-700 rounded-md border border-gray-600 text-white text-sm p-2 h-16 mb-2 resize-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none"
+                        placeholder="پاسخ خود را بنویسید..."
+                        value={newReplyContent}
+                        onChange={(e) => setNewReplyContent(e.target.value)}
+                      ></textarea>
+                      <div className="flex justify-end space-x-2 space-x-reverse">
+                        <button
+                          onClick={() => handleSubmitReply(comment.id)}
+                          disabled={!newReplyContent.trim()}
+                          className={`text-xs px-3 py-1 rounded-md ${
+                            newReplyContent.trim() 
+                              ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                              : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                          } transition-colors`}
+                        >
+                          ارسال پاسخ
+                        </button>
+                        <button
+                          onClick={() => setReplyingTo(null)}
+                          className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+                        >
+                          انصراف
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                
-                {renderActionMenu(comment)}
               </div>
-              
-              {/* محتوای نظر */}
-              {editingCommentId === comment.id ? (
-                <div className="mb-3">
-                  <textarea
-                    ref={textareaRef}
-                    value={editContent}
-                    onChange={(e) => setEditContent(e.target.value)}
-                    className="w-full bg-gray-700 text-white rounded-md p-3 text-sm resize-none h-24 focus:outline-none focus:ring-1 focus:ring-green-500 border border-gray-600 mb-2"
-                  />
-                  <div className="flex justify-end gap-2">
-                    <button
-                      onClick={saveEdit}
-                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md text-xs"
-                    >
-                      ذخیره تغییرات
-                    </button>
-                    <button
-                      onClick={() => setEditingCommentId(null)}
-                      className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1 rounded-md text-xs"
-                    >
-                      انصراف
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <p className="text-sm text-gray-200 whitespace-pre-wrap mb-3">{comment.content}</p>
-              )}
-              
-              {/* دکمه‌های عملیات */}
-              <div className="flex items-center gap-4 text-xs">
-                <button
-                  onClick={() => toggleLike(comment.id)}
-                  className={`flex items-center gap-1 ${
-                    comment.isLiked ? 'text-green-400' : 'text-gray-400 hover:text-green-400'
-                  }`}
-                >
-                  <ThumbsUp className="h-3.5 w-3.5" />
-                  <span>{comment.likes > 0 ? comment.likes : 'پسندیدن'}</span>
-                </button>
-                
-                <button
-                  onClick={() => {
-                    setReplyingTo(replyingTo === comment.id ? null : comment.id);
-                    setReplyContent('');
-                  }}
-                  className="flex items-center gap-1 text-gray-400 hover:text-blue-400"
-                >
-                  <MessageSquare className="h-3.5 w-3.5" />
-                  <span>پاسخ</span>
-                </button>
-              </div>
-              
-              {/* فرم پاسخ به نظر */}
-              {replyingTo === comment.id && (
-                <div className="mt-3 pt-3 border-t border-gray-700">
-                  <textarea
-                    value={replyContent}
-                    onChange={(e) => setReplyContent(e.target.value)}
-                    placeholder={`در پاسخ به ${comment.userName}...`}
-                    className="w-full bg-gray-700 text-white rounded-md p-2 text-sm resize-none h-20 focus:outline-none focus:ring-1 focus:ring-blue-500 border border-gray-600"
-                  />
-                  <div className="flex justify-end gap-2 mt-2">
-                    <button
-                      onClick={() => submitReply(comment.id)}
-                      disabled={replyContent.trim() === ''}
-                      className="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-xs disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <Send className="h-3 w-3" />
-                      <span>ارسال پاسخ</span>
-                    </button>
-                    <button
-                      onClick={() => setReplyingTo(null)}
-                      className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-1.5 rounded-md text-xs"
-                    >
-                      انصراف
-                    </button>
-                  </div>
-                </div>
-              )}
               
               {/* پاسخ‌ها */}
-              {comment.replies && comment.replies.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-gray-700 space-y-3">
+              {comment.replies.length > 0 && (
+                <div className="mt-4 pt-3 border-t border-gray-700 mr-12">
                   {comment.replies.map(reply => (
-                    <div key={reply.id} className="bg-gray-700/30 rounded-lg p-3 border border-gray-700">
-                      {/* سربرگ پاسخ */}
-                      <div className="flex justify-between items-start mb-2">
-                        <div className="flex items-center">
-                          {renderAvatar(reply)}
-                          <div className="ml-2">
-                            <div className="flex items-center">
-                              <span className="font-medium text-white text-sm">{reply.userName}</span>
-                              {reply.isInstructor && (
-                                <span className="ml-2 bg-blue-500/20 text-blue-400 text-xs px-1.5 py-0.5 rounded">استاد</span>
-                              )}
-                            </div>
-                            <span className="text-xs text-gray-400">{reply.createdAt}</span>
+                    <div key={reply.id} className="flex mt-3 first:mt-0">
+                      <img
+                        src={reply.avatarUrl}
+                        alt={reply.username}
+                        className="w-8 h-8 rounded-full ml-3"
+                      />
+                      <div className="flex-1">
+                        <div className="flex justify-between">
+                          <div>
+                            <span className="font-medium text-white text-sm">{reply.username}</span>
+                            <span className="text-gray-400 text-xs mr-2 flex items-center">
+                              <Clock className="h-3 w-3 ml-1" />
+                              {reply.createdAt}
+                            </span>
                           </div>
+                          {/* منوی عملیات پاسخ */}
+                          {reply.userId === 'currentUser' && (
+                            <div className="relative">
+                              <button
+                                onClick={() => toggleMenu(`${comment.id}-${reply.id}`)}
+                                className="text-gray-400 hover:text-white p-1"
+                              >
+                                <MoreVertical className="h-4 w-4" />
+                              </button>
+                              {menuOpenFor === `${comment.id}-${reply.id}` && renderActionMenu(comment.id, reply.id)}
+                            </div>
+                          )}
                         </div>
                         
-                        {renderActionMenu(reply, true, comment.id)}
-                      </div>
-                      
-                      {/* محتوای پاسخ */}
-                      {editingCommentId === reply.id ? (
-                        <div className="mb-2">
-                          <textarea
-                            ref={textareaRef}
-                            value={editContent}
-                            onChange={(e) => setEditContent(e.target.value)}
-                            className="w-full bg-gray-700 text-white rounded-md p-2 text-sm resize-none h-20 focus:outline-none focus:ring-1 focus:ring-green-500 border border-gray-600 mb-2"
-                          />
-                          <div className="flex justify-end gap-2">
-                            <button
-                              onClick={saveEdit}
-                              className="bg-green-600 hover:bg-green-700 text-white px-2 py-1 rounded-md text-xs"
-                            >
-                              ذخیره
-                            </button>
-                            <button
-                              onClick={() => setEditingCommentId(null)}
-                              className="bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-md text-xs"
-                            >
-                              انصراف
-                            </button>
+                        {/* محتوای پاسخ */}
+                        {reply.isEditing ? (
+                          <div className="mt-2">
+                            <textarea
+                              className="w-full bg-gray-700 rounded-md border border-gray-600 text-white text-sm p-2 mb-2 resize-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none"
+                              defaultValue={reply.content}
+                              rows={2}
+                              autoFocus
+                              id={`edit-reply-${reply.id}`}
+                            ></textarea>
+                            <div className="flex justify-end space-x-2 space-x-reverse">
+                              <button
+                                onClick={() => saveEdit(comment.id, document.getElementById(`edit-reply-${reply.id}`) as HTMLTextAreaElement ? (document.getElementById(`edit-reply-${reply.id}`) as HTMLTextAreaElement).value : '', reply.id)}
+                                className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition-colors"
+                              >
+                                ذخیره
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setComments(comments.map(c => {
+                                    if (c.id !== comment.id) return c;
+                                    return {
+                                      ...c,
+                                      replies: c.replies.map(r => r.id === reply.id ? { ...r, isEditing: false } : r)
+                                    };
+                                  }));
+                                }}
+                                className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+                              >
+                                انصراف
+                              </button>
+                            </div>
                           </div>
+                        ) : (
+                          <p className="text-gray-300 text-xs mt-1">{reply.content}</p>
+                        )}
+                        
+                        {/* دکمه‌های عملیات پاسخ */}
+                        <div className="flex items-center mt-2">
+                          <button
+                            onClick={() => toggleLike(comment.id, reply.id)}
+                            className={`flex items-center text-xs ${reply.userHasLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                          >
+                            <Heart className={`h-3.5 w-3.5 ml-1 ${reply.userHasLiked ? 'fill-current' : ''}`} />
+                            {reply.likes > 0 && reply.likes}
+                          </button>
                         </div>
-                      ) : (
-                        <p className="text-sm text-gray-200 whitespace-pre-wrap mb-2">{reply.content}</p>
-                      )}
-                      
-                      {/* دکمه‌های عملیات پاسخ */}
-                      <div className="flex items-center gap-3 text-xs">
-                        <button
-                          onClick={() => toggleLike(reply.id, true, comment.id)}
-                          className={`flex items-center gap-1 ${
-                            reply.isLiked ? 'text-green-400' : 'text-gray-400 hover:text-green-400'
-                          }`}
-                        >
-                          <ThumbsUp className="h-3 w-3" />
-                          <span>{reply.likes > 0 ? reply.likes : 'پسندیدن'}</span>
-                        </button>
                       </div>
                     </div>
                   ))}
                 </div>
               )}
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 } 
