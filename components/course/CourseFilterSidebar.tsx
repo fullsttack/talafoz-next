@@ -5,7 +5,7 @@ import { Check, ChevronDown } from 'lucide-react';
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 
 // Course interface for type safety
-interface Course {
+export interface Course {
   id: string;
   title: string;
   categories?: string[];

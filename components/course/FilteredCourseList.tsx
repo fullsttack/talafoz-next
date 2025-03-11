@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import CourseCard from '@/components/course/CourseCard';
 
 // Course interface for type safety
-interface Course {
+export interface Course {
   id: string;
   title: string;
   instructor: string;

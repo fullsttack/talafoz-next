@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { courses } from '@/components/data/course';
-import FilteredCourseList from '@/components/course/FilteredCourseList';
+import FilteredCourseList, { Course as FilteredCourse } from '@/components/course/FilteredCourseList';
 import CourseSearch from '@/components/course/CourseSearch';
 
 // Definimos los cursos aquí como una constante para evitar recreaciones
@@ -63,7 +63,7 @@ export default function CoursesPage({ searchParams }: { searchParams: { [key: st
       {/* لیست دوره‌های فیلتر شده */}
       <Suspense fallback={<div>Loading courses...</div>}>
         <FilteredCourseList 
-          courses={COURSES} 
+          courses={COURSES as unknown as FilteredCourse[]} 
           isPremiumUser={false} 
           typeFilter={typeFilter}
           categoryFilters={categoryFilters}

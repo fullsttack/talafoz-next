@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import { courses } from '@/components/data/course';
 import CourseFilterSidebar from '@/components/course/CourseFilterSidebar';
 import { usePathname } from 'next/navigation';
+import { Course as SidebarCourse } from '@/components/course/CourseFilterSidebar';
 
 // متادیتا به فایل جداگانه منتقل شده است
 // import './metadata'; // Next.js 15 به صورت خودکار آن را پیدا می‌کند
@@ -32,7 +33,7 @@ export default function CoursesLayout({
             {/* Sidebar for filters */}
             <div className="w-full lg:w-72 flex-shrink-0">
               <div className="lg:sticky lg:top-24 lg:h-fit">
-                <CourseFilterSidebar courses={courses} />
+                <CourseFilterSidebar courses={courses as unknown as SidebarCourse[]} />
               </div>
             </div>
             
