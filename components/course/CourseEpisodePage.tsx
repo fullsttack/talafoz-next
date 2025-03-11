@@ -28,6 +28,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
   const [completionTimerProgress, setCompletionTimerProgress] = useState(0);
   const [isVideoEnded, setIsVideoEnded] = useState(false);
+  const [showEarnedPoints, setShowEarnedPoints] = useState(false);
   
   const router = useRouter();
   const completionTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -115,8 +116,13 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
     }
     
     setCompletionTimerProgress(0);
+    // نمایش امتیاز با تاخیر برای ایجاد افکت
+    setTimeout(() => {
+      setShowEarnedPoints(true);
+    }, 1000);
+    
     const startTime = Date.now();
-    const duration = 5000; // 5 ثانیه
+    const duration = 10000; // 10 ثانیه
     
     completionTimerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -137,6 +143,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
       completionTimerRef.current = null;
     }
     setShowCompletionDialog(false);
+    setShowEarnedPoints(false);
   };
   
   // پیدا کردن و انتقال به قسمت بعدی
@@ -381,43 +388,69 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                 {/* دیالوگ اتمام ویدیو */}
                 {showCompletionDialog && (
                   <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-30 backdrop-blur-sm">
-                    <div className="bg-gray-800 p-6 rounded-xl max-w-md text-center shadow-2xl border border-gray-700 animate-fade-in">
-                      <div className="w-20 h-20 mx-auto mb-4 relative">
-                        <svg className="w-20 h-20 transform -rotate-90" viewBox="0 0 100 100">
-                          <circle 
-                            cx="50" cy="50" r="45" 
-                            className="stroke-gray-700 fill-none" 
-                            strokeWidth="8"
-                          />
-                          <circle 
-                            cx="50" cy="50" r="45" 
-                            className="stroke-green-500 fill-none" 
-                            strokeWidth="8"
-                            strokeDasharray="283"
-                            strokeDashoffset={283 - (283 * completionTimerProgress / 100)}
-                            strokeLinecap="round"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-xl font-bold text-white">{Math.ceil(5 - (completionTimerProgress / 20))}</span>
+                    <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-8 rounded-2xl max-w-md text-center shadow-2xl border border-gray-700 animate-fade-in relative overflow-hidden">
+                      {/* خط تزئینی بالا */}
+                      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-400 via-green-500 to-green-400"></div>
+                      
+                      {/* ایکون دایره ای */}
+                      <div className="relative mx-auto">
+                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-400 to-green-600 animate-pulse opacity-30 w-28 h-28 mx-auto"></div>
+                        <div className="w-28 h-28 mx-auto mb-6 relative">
+                          <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
+                            <circle 
+                              cx="50" cy="50" r="45" 
+                              className="stroke-gray-700 fill-none" 
+                              strokeWidth="8"
+                            />
+                            <circle 
+                              cx="50" cy="50" r="45" 
+                              className="stroke-green-500 fill-none" 
+                              strokeWidth="8"
+                              strokeDasharray="283"
+                              strokeDashoffset={283 - (283 * completionTimerProgress / 100)}
+                              strokeLinecap="round"
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-3xl font-bold text-white">{Math.ceil(10 - (completionTimerProgress / 10))}</span>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-center justify-center gap-2 mb-3">
-                        <Check className="w-6 h-6 text-green-500" />
-                        <h3 className="text-xl font-bold text-white">تبریک!</h3>
+                      
+                      <div className="flex items-center justify-center gap-2 mb-5">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
+                          <Check className="w-6 h-6 text-white" />
+                        </div>
+                        <h3 className="text-2xl font-bold text-white">تبریک!</h3>
                       </div>
-                      <p className="text-gray-200 mb-6">شما با موفقیت این قسمت را به پایان رساندید.</p>
+                      
+                      <p className="text-gray-200 mb-5 text-lg">شما با موفقیت این قسمت را به پایان رساندید.</p>
+                      
+                      {/* نمایش امتیاز */}
+                      <div className={`mb-6 transform transition-all duration-500 ${showEarnedPoints ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'}`}>
+                        <div className="bg-gradient-to-r from-amber-500/20 via-amber-600/20 to-amber-500/20 rounded-lg p-4 border border-amber-500/30">
+                          <div className="flex items-center justify-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 text-amber-400">
+                              <circle cx="12" cy="8" r="7" />
+                              <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                            </svg>
+                            <span className="text-xl font-bold text-amber-400">شما ۱۰ امتیاز دریافت کردید</span>
+                          </div>
+                          <div className="text-sm text-amber-300/70 mt-1">امتیازات شما برای دریافت گواهی‌نامه محاسبه می‌شود</div>
+                        </div>
+                      </div>
+                      
                       <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <button
                           onClick={navigateToNextEpisode}
-                          className="bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded-lg flex items-center justify-center gap-1.5 transition-colors"
+                          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-lg hover:shadow-xl font-medium"
                         >
                           <span>رفتن به قسمت بعدی</span>
                           <ChevronLeft className="w-4 h-4" />
                         </button>
                         <button
                           onClick={cancelCompletionTimer}
-                          className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-6 rounded-lg transition-colors"
+                          className="bg-gray-700 hover:bg-gray-600 text-white py-3 px-6 rounded-lg transition-colors border border-gray-600 hover:border-gray-500"
                         >
                           ادامه همین قسمت
                         </button>
