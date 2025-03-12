@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, FileArchive, FileImage, FileCode, Film, Music, File, ExternalLink, Lock, Download } from 'lucide-react';
+import { FileText, FileArchive, FileImage, FileCode, Film, Music, File, Lock, Download, Github, MessageCircleQuestion } from 'lucide-react';
 
 interface EpisodeAttachmentsProps {
   episodeId: string;
@@ -108,145 +108,139 @@ export default function EpisodeAttachments({ isLocked = false }: EpisodeAttachme
   // اگر محتوا قفل باشد، صفحه قفل نمایش داده می‌شود
   if (isLocked) {
     return (
-      <div className="border border-gray-700/50 rounded-lg overflow-hidden">
-        <div className="p-5 text-center">
-          <div className="inline-flex items-center justify-center p-3 bg-gray-800 rounded-full mb-4">
-            <Lock className="h-6 w-6 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-white mb-2">دسترسی محدود شده</h3>
-          <p className="text-gray-400 text-sm max-w-md mx-auto mb-5">
-            برای دسترسی به فایل‌های ضمیمه این قسمت، لطفاً دوره را خریداری کنید.
-          </p>
-          
-          <div className="flex justify-center gap-3">
-            <button className="bg-blue-600/90 hover:bg-blue-600 transition-colors text-white py-2 px-4 rounded-md text-sm">
-              خرید دوره
-            </button>
-            <button className="border border-gray-600 hover:border-gray-500 transition-colors text-white py-2 px-4 rounded-md text-sm">
-              تهیه اشتراک
-            </button>
-          </div>
+      <div className="p-5 text-center">
+        <div className="inline-flex items-center justify-center p-3 bg-gray-800 rounded-full mb-4">
+          <Lock className="h-6 w-6 text-gray-400" />
+        </div>
+        <h3 className="text-lg font-medium text-white mb-2">دسترسی محدود شده</h3>
+        <p className="text-gray-400 text-sm max-w-md mx-auto mb-5">
+          برای دسترسی به فایل‌های ضمیمه این قسمت، لطفاً دوره را خریداری کنید.
+        </p>
+        
+        <div className="flex justify-center gap-3">
+          <button className="bg-blue-600/90 hover:bg-blue-600 transition-colors text-white py-2 px-4 rounded-md text-sm">
+            خرید دوره
+          </button>
+          <button className="border border-gray-600 hover:border-gray-500 transition-colors text-white py-2 px-4 rounded-md text-sm">
+            تهیه اشتراک
+          </button>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="border border-gray-700/50 rounded-lg overflow-hidden">
-      {/* هدر */}
-      <div className="px-4 py-3 border-b border-gray-700/50 flex items-center justify-between bg-gray-800/30">
-        <h3 className="text-white font-medium">فایل‌های ضمیمه</h3>
-        {attachments.length > 0 && (
-          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-700/50 text-gray-300">
-            {attachments.length} فایل
-          </span>
-        )}
-      </div>
+    <div className="flex flex-col min-h-[300px]">
+      <div className="flex-1">
+        {/* هدر */}
+        <div className="mb-3 flex items-center justify-between">
+          <h3 className="text-white font-medium">فایل‌های ضمیمه</h3>
+          {attachments.length > 0 && (
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-700/50 text-gray-300">
+              {attachments.length} فایل
+            </span>
+          )}
+        </div>
 
-      {/* محتوا */}
-      <div className="p-3">
-        {attachments.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-10 text-center">
-            <FileArchive className="h-8 w-8 text-gray-600 mb-2" />
-            <div className="text-gray-400 text-sm">
-              هیچ فایل ضمیمه‌ای برای این قسمت وجود ندارد.
+        {/* محتوا */}
+        <div>
+          {attachments.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 text-center">
+              <FileArchive className="h-8 w-8 text-gray-600 mb-2" />
+              <div className="text-gray-400 text-sm">
+                هیچ فایل ضمیمه‌ای برای این قسمت وجود ندارد.
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            {attachments.map((attachment) => {
-              const { icon, color, bgColor, label } = getFileTypeInfo(attachment.fileType);
-              
-              return (
-                <div 
-                  key={attachment.id}
-                  className="flex bg-gray-800/20 hover:bg-gray-800/40 border border-gray-700/30 rounded-md transition-colors overflow-hidden"
-                >
-                  {/* آیکون فایل */}
-                  <div className={`flex-shrink-0 flex items-center justify-center w-12 ${bgColor}`}>
-                    <div className={color}>{icon}</div>
-                  </div>
-                  
-                  {/* اطلاعات فایل */}
-                  <div className="p-3 flex-1">
-                    <div className="flex items-center">
-                      <h4 className="text-sm font-medium text-white">{attachment.title}</h4>
-                      {attachment.isNew && (
-                        <span className="mr-2 inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs bg-green-500/10 text-green-400">
-                          جدید
-                        </span>
+          ) : (
+            <div className="space-y-2 mb-8">
+              {attachments.map((attachment) => {
+                const { icon, color, bgColor, label } = getFileTypeInfo(attachment.fileType);
+                
+                return (
+                  <div 
+                    key={attachment.id}
+                    onClick={() => handleDownload(attachment)}
+                    className="flex bg-gray-800/20 hover:bg-gray-800/40 border border-gray-700/30 rounded-md transition-colors overflow-hidden relative group cursor-pointer"
+                  >
+                    {/* آیکون فایل */}
+                    <div className={`flex-shrink-0 flex items-center justify-center w-12 ${bgColor}`}>
+                      <div className={color}>{icon}</div>
+                    </div>
+                    
+                    {/* اطلاعات فایل */}
+                    <div className="p-3 flex-1">
+                      <div className="flex items-center">
+                        <h4 className="text-sm font-medium text-white">{attachment.title}</h4>
+                        {attachment.isNew && (
+                          <span className="mr-2 inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs bg-green-500/10 text-green-400">
+                            جدید
+                          </span>
+                        )}
+                      </div>
+                      
+                      {attachment.description && (
+                        <p className="text-xs text-gray-400 mt-1 line-clamp-1">{attachment.description}</p>
                       )}
+                      
+                      <div className="flex mt-2 text-xs text-gray-500">
+                        <div className="flex items-center">
+                          <span className={`inline-block w-2 h-2 rounded-full ${color.replace('text', 'bg')} mr-1.5`}></span>
+                          <span className="ml-1">نوع فایل: </span>
+                          <span>{label}</span>
+                          <span className="mx-2">•</span>
+                          <span>حجم فایل: </span>
+                          <span>{attachment.fileSize}</span>
+                        </div>
+                      </div>
                     </div>
                     
-                    {attachment.description && (
-                      <p className="text-xs text-gray-400 mt-1 line-clamp-1">{attachment.description}</p>
-                    )}
-                    
-                    <div className="flex mt-2 text-xs text-gray-500 space-x-4 space-x-reverse">
-                      <div className="flex items-center">
-                        <span className={`inline-block w-2 h-2 rounded-full ${color.replace('text', 'bg')} mr-1.5`}></span>
-                        <span>{label}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <span>{attachment.fileSize}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <span>{attachment.uploadDate}</span>
+                    {/* دکمه دانلود هاوری وسط */}
+                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
+                      <div className="absolute inset-0 backdrop-blur-sm bg-gray-900/30"></div>
+                      <div className="z-10 p-2 bg-gray-800 rounded-full">
+                        <Download className="h-5 w-5 text-white" />
                       </div>
                     </div>
                   </div>
-                  
-                  {/* دکمه دانلود */}
-                  <div className="flex-shrink-0 flex items-center pr-3">
-                    <button
-                      onClick={() => handleDownload(attachment)}
-                      className="inline-flex items-center gap-1 text-gray-400 hover:text-white transition-colors"
-                    >
-                      <Download className="h-4 w-4" />
-                      <span className="text-xs">دانلود</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-        
-        {/* لینک‌های مفید */}
-        {attachments.length > 0 && (
-          <div className="mt-4 pt-4 border-t border-gray-700/50">
-            <h4 className="text-sm font-medium text-white mb-3">لینک‌های مفید</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <a 
-                href="https://example.com/docs" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
-              >
-                <ExternalLink className="h-4 w-4 ml-2 text-blue-400" />
-                <span className="text-sm">مستندات تکمیلی</span>
-              </a>
-              <a 
-                href="https://example.com/forum" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
-              >
-                <ExternalLink className="h-4 w-4 ml-2 text-purple-400" />
-                <span className="text-sm">انجمن پرسش و پاسخ</span>
-              </a>
-              <a 
-                href="https://example.com/github" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
-              >
-                <ExternalLink className="h-4 w-4 ml-2 text-amber-400" />
-                <span className="text-sm">مخزن گیت‌هاب</span>
-              </a>
+                );
+              })}
             </div>
-          </div>
-        )}
+          )}
+        </div>
+      </div>
+      
+      {/* لینک‌های مفید */}
+      <div className="absolute bottom-10  pt-4 border-t border-gray-700/50">
+        <h4 className="text-sm font-medium text-white mb-3">لینک‌های مفید</h4>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <a 
+            href="https://example.com/docs" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
+          >
+            <FileCode className="h-4 w-4 ml-2 text-blue-400" />
+            <span className="text-sm">مستندات </span>
+          </a>
+          <a 
+            href="https://example.com/forum" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
+          >
+            <MessageCircleQuestion className="h-4 w-4 ml-2 text-purple-400" />
+            <span className="text-sm"> پرسش و پاسخ</span>
+          </a>
+          <a 
+            href="https://example.com/github" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
+          >
+            <Github className="h-4 w-4 ml-2 text-amber-400" />
+            <span className="text-sm">مخزن گیت‌ هاب</span>
+          </a>
+        </div>
       </div>
     </div>
   );
