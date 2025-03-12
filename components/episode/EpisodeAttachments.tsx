@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FileText, Download, FileArchive, FileImage, FileCode, Film, Music, File, ExternalLink, Lock } from 'lucide-react';
+import { FileText, FileArchive, FileImage, FileCode, Film, Music, File, ExternalLink, Lock, Download } from 'lucide-react';
 
 interface EpisodeAttachmentsProps {
   episodeId: string;
@@ -20,7 +20,7 @@ interface Attachment {
   isNew?: boolean;
 }
 
-export default function EpisodeAttachments({ episodeId, courseId, isLocked = false }: EpisodeAttachmentsProps) {
+export default function EpisodeAttachments({ isLocked = false }: EpisodeAttachmentsProps) {
   // در یک پروژه واقعی، این داده‌ها از API دریافت می‌شوند
   const [attachments, setAttachments] = useState<Attachment[]>([
     {
@@ -70,25 +70,25 @@ export default function EpisodeAttachments({ episodeId, courseId, isLocked = fal
     }
   ]);
 
-  // نمایش آیکون مناسب برای هر نوع فایل
-  const renderFileIcon = (fileType: Attachment['fileType']) => {
+  // اطلاعات آیکون و رنگ برای هر نوع فایل
+  const getFileTypeInfo = (fileType: Attachment['fileType']) => {
     switch (fileType) {
       case 'pdf':
-        return <FileText className="h-10 w-10 text-red-400" />;
+        return { icon: <FileText className="h-5 w-5" />, color: 'text-rose-400', bgColor: 'bg-rose-400/10', label: 'PDF' };
       case 'doc':
-        return <FileText className="h-10 w-10 text-blue-400" />;
+        return { icon: <FileText className="h-5 w-5" />, color: 'text-blue-400', bgColor: 'bg-blue-400/10', label: 'Word' };
       case 'zip':
-        return <FileArchive className="h-10 w-10 text-purple-400" />;
+        return { icon: <FileArchive className="h-5 w-5" />, color: 'text-purple-400', bgColor: 'bg-purple-400/10', label: 'فایل فشرده' };
       case 'image':
-        return <FileImage className="h-10 w-10 text-green-400" />;
+        return { icon: <FileImage className="h-5 w-5" />, color: 'text-emerald-400', bgColor: 'bg-emerald-400/10', label: 'تصویر' };
       case 'code':
-        return <FileCode className="h-10 w-10 text-yellow-400" />;
+        return { icon: <FileCode className="h-5 w-5" />, color: 'text-amber-400', bgColor: 'bg-amber-400/10', label: 'کد' };
       case 'video':
-        return <Film className="h-10 w-10 text-pink-400" />;
+        return { icon: <Film className="h-5 w-5" />, color: 'text-pink-400', bgColor: 'bg-pink-400/10', label: 'ویدیو' };
       case 'audio':
-        return <Music className="h-10 w-10 text-blue-400" />;
+        return { icon: <Music className="h-5 w-5" />, color: 'text-cyan-400', bgColor: 'bg-cyan-400/10', label: 'صوت' };
       default:
-        return <File className="h-10 w-10 text-gray-400" />;
+        return { icon: <File className="h-5 w-5" />, color: 'text-gray-400', bgColor: 'bg-gray-400/10', label: 'سایر' };
     }
   };
 
@@ -108,21 +108,22 @@ export default function EpisodeAttachments({ episodeId, courseId, isLocked = fal
   // اگر محتوا قفل باشد، صفحه قفل نمایش داده می‌شود
   if (isLocked) {
     return (
-      <div className="flex flex-col h-full items-center justify-center text-center p-8">
-        <div className="bg-gray-800/60 p-6 rounded-lg border border-gray-700 flex flex-col items-center max-w-md">
-          <div className="bg-yellow-500/20 p-3 rounded-full mb-4">
-            <Lock className="h-12 w-12 text-yellow-500" />
+      <div className="border border-gray-700/50 rounded-lg overflow-hidden">
+        <div className="p-5 text-center">
+          <div className="inline-flex items-center justify-center p-3 bg-gray-800 rounded-full mb-4">
+            <Lock className="h-6 w-6 text-gray-400" />
           </div>
-          <h3 className="text-white text-lg font-medium mb-2">دسترسی محدود شده</h3>
-          <p className="text-gray-300 text-sm mb-4">
-            برای دسترسی به فایل‌های ضمیمه این قسمت، لطفاً دوره را خریداری کنید یا اشتراک ویژه تهیه نمایید.
+          <h3 className="text-lg font-medium text-white mb-2">دسترسی محدود شده</h3>
+          <p className="text-gray-400 text-sm max-w-md mx-auto mb-5">
+            برای دسترسی به فایل‌های ضمیمه این قسمت، لطفاً دوره را خریداری کنید.
           </p>
-          <div className="flex gap-3 mt-2">
-            <button className="bg-yellow-600 hover:bg-yellow-700 text-white py-2 px-4 rounded-md text-sm transition-colors">
+          
+          <div className="flex justify-center gap-3">
+            <button className="bg-blue-600/90 hover:bg-blue-600 transition-colors text-white py-2 px-4 rounded-md text-sm">
               خرید دوره
             </button>
-            <button className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md text-sm transition-colors">
-              تهیه اشتراک ویژه
+            <button className="border border-gray-600 hover:border-gray-500 transition-colors text-white py-2 px-4 rounded-md text-sm">
+              تهیه اشتراک
             </button>
           </div>
         </div>
@@ -131,101 +132,122 @@ export default function EpisodeAttachments({ episodeId, courseId, isLocked = fal
   }
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-sm font-medium text-white">فایل‌های ضمیمه ({attachments.length})</h3>
-        <span className="text-xs text-gray-400">آخرین به‌روزرسانی: {attachments[0]?.uploadDate}</span>
+    <div className="border border-gray-700/50 rounded-lg overflow-hidden">
+      {/* هدر */}
+      <div className="px-4 py-3 border-b border-gray-700/50 flex items-center justify-between bg-gray-800/30">
+        <h3 className="text-white font-medium">فایل‌های ضمیمه</h3>
+        {attachments.length > 0 && (
+          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-700/50 text-gray-300">
+            {attachments.length} فایل
+          </span>
+        )}
       </div>
-      
-      {attachments.length === 0 ? (
-        <div className="text-center py-8 text-gray-400 text-sm">
-          هیچ فایل ضمیمه‌ای برای این قسمت وجود ندارد.
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {attachments.map(attachment => (
-            <div key={attachment.id} className="bg-gray-800/70 rounded-lg p-4 border border-gray-700 flex">
-              <div className="flex-shrink-0 mr-4">
-                {renderFileIcon(attachment.fileType)}
-              </div>
-              
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center mb-1">
-                  <h4 className="font-medium text-white truncate">{attachment.title}</h4>
-                  {attachment.isNew && (
-                    <span className="ml-2 bg-green-500/20 text-green-400 text-xs px-1.5 py-0.5 rounded">جدید</span>
-                  )}
-                </div>
-                
-                {attachment.description && (
-                  <p className="text-sm text-gray-300 mb-2">{attachment.description}</p>
-                )}
-                
-                <div className="flex flex-wrap items-center text-xs text-gray-400 gap-x-4 gap-y-1">
-                  <span>نوع: {(() => {
-                    switch (attachment.fileType) {
-                      case 'pdf': return 'PDF';
-                      case 'doc': return 'Word';
-                      case 'zip': return 'فایل فشرده';
-                      case 'image': return 'تصویر';
-                      case 'code': return 'کد';
-                      case 'video': return 'ویدیو';
-                      case 'audio': return 'صوت';
-                      default: return 'سایر';
-                    }
-                  })()}</span>
-                  <span>حجم: {attachment.fileSize}</span>
-                  <span>تاریخ: {attachment.uploadDate}</span>
-                </div>
-              </div>
-              
-              <div className="flex-shrink-0 flex items-start ml-2">
-                <button
-                  onClick={() => handleDownload(attachment)}
-                  className="flex items-center justify-center h-10 w-10 rounded-full hover:bg-gray-700 text-gray-400 hover:text-green-400 transition-colors"
-                  title="دانلود فایل"
-                >
-                  <Download className="h-5 w-5" />
-                </button>
-              </div>
+
+      {/* محتوا */}
+      <div className="p-3">
+        {attachments.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-10 text-center">
+            <FileArchive className="h-8 w-8 text-gray-600 mb-2" />
+            <div className="text-gray-400 text-sm">
+              هیچ فایل ضمیمه‌ای برای این قسمت وجود ندارد.
             </div>
-          ))}
-          
-          {/* لینک‌های مفید */}
-          <div className="mt-6 pt-4 border-t border-gray-700">
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {attachments.map((attachment) => {
+              const { icon, color, bgColor, label } = getFileTypeInfo(attachment.fileType);
+              
+              return (
+                <div 
+                  key={attachment.id}
+                  className="flex bg-gray-800/20 hover:bg-gray-800/40 border border-gray-700/30 rounded-md transition-colors overflow-hidden"
+                >
+                  {/* آیکون فایل */}
+                  <div className={`flex-shrink-0 flex items-center justify-center w-12 ${bgColor}`}>
+                    <div className={color}>{icon}</div>
+                  </div>
+                  
+                  {/* اطلاعات فایل */}
+                  <div className="p-3 flex-1">
+                    <div className="flex items-center">
+                      <h4 className="text-sm font-medium text-white">{attachment.title}</h4>
+                      {attachment.isNew && (
+                        <span className="mr-2 inline-flex items-center rounded-sm px-1.5 py-0.5 text-xs bg-green-500/10 text-green-400">
+                          جدید
+                        </span>
+                      )}
+                    </div>
+                    
+                    {attachment.description && (
+                      <p className="text-xs text-gray-400 mt-1 line-clamp-1">{attachment.description}</p>
+                    )}
+                    
+                    <div className="flex mt-2 text-xs text-gray-500 space-x-4 space-x-reverse">
+                      <div className="flex items-center">
+                        <span className={`inline-block w-2 h-2 rounded-full ${color.replace('text', 'bg')} mr-1.5`}></span>
+                        <span>{label}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span>{attachment.fileSize}</span>
+                      </div>
+                      <div className="flex items-center">
+                        <span>{attachment.uploadDate}</span>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* دکمه دانلود */}
+                  <div className="flex-shrink-0 flex items-center pr-3">
+                    <button
+                      onClick={() => handleDownload(attachment)}
+                      className="inline-flex items-center gap-1 text-gray-400 hover:text-white transition-colors"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span className="text-xs">دانلود</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        
+        {/* لینک‌های مفید */}
+        {attachments.length > 0 && (
+          <div className="mt-4 pt-4 border-t border-gray-700/50">
             <h4 className="text-sm font-medium text-white mb-3">لینک‌های مفید</h4>
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
               <a 
                 href="https://example.com/docs" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center text-blue-400 hover:text-blue-300 text-sm"
+                className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                <span>مستندات تکمیلی</span>
+                <ExternalLink className="h-4 w-4 ml-2 text-blue-400" />
+                <span className="text-sm">مستندات تکمیلی</span>
               </a>
               <a 
                 href="https://example.com/forum" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center text-blue-400 hover:text-blue-300 text-sm"
+                className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                <span>انجمن پرسش و پاسخ</span>
+                <ExternalLink className="h-4 w-4 ml-2 text-purple-400" />
+                <span className="text-sm">انجمن پرسش و پاسخ</span>
               </a>
               <a 
                 href="https://example.com/github" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="flex items-center text-blue-400 hover:text-blue-300 text-sm"
+                className="flex items-center p-2 bg-gray-800/20 hover:bg-gray-800/40 rounded text-gray-300 hover:text-white transition-colors"
               >
-                <ExternalLink className="h-4 w-4 mr-2" />
-                <span>مخزن گیت‌هاب پروژه</span>
+                <ExternalLink className="h-4 w-4 ml-2 text-amber-400" />
+                <span className="text-sm">مخزن گیت‌هاب</span>
               </a>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 } 

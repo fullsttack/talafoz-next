@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { CheckCircle, UserPlus, Gift, Crown, Loader2 } from 'lucide-react';
+import { CheckCircle, Gift, Crown, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Course } from '@/components/data/course';
 
@@ -179,15 +179,15 @@ export default function CourseEnrollCard({
             disabled
           >
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            <span>در حال ثبت‌نام...</span>
+            <span>در حال ثبت‌ نام...</span>
           </Button>
         ) : shouldShowEnrollButton ? (
           <Button 
             className="w-full" 
             onClick={handleEnroll}
           >
-            <UserPlus className="mr-1 h-5 w-5" />
-            <span>ثبت‌نام در دوره</span>
+            
+            <span>ثبت‌ نام در دروه</span>
           </Button>
         ) : (
           <Button className="w-full bg-green-600 hover:bg-green-700" disabled>
