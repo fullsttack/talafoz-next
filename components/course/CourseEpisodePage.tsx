@@ -324,19 +324,21 @@ export default function CourseEpisodePage({
         </div>
       )}
 
-      {/* لینک بازگشت به صفحه دوره در موبایل */}
-      <div className="fixed top-4 left-4 z-50 md:hidden">
-        <Link
-          href={`/courses/${course.id}`}
-          className="flex h-10 w-10 items-center justify-center rounded-full  backdrop-blur-md "
-        >
-          <ArrowLeft className="h-5 w-5" />
-        </Link>
-      </div>
+      <div className="h-screen w-full flex flex-col md:flex-row overflow-hidden">
+        {/* هدر موبایل */}
+        <div className="flex md:hidden items-center justify-between p-4 border-b bg-muted/30">
+          <h2 className="font-bold text-base line-clamp-1">{course.title}</h2>
+          <Link 
+            href={`/courses/${course.id}`}
+            className="flex items-center gap-2 text-white bg-green-600 hover:bg-green-700 px-3 py-1.5 rounded-lg transition-all shadow-sm"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            <span className="text-xs font-medium">بازگشت</span>
+          </Link>
+        </div>
 
-      <div className="h-screen w-full flex overflow-hidden ">
-        {/* بخش ویدیو پلیر - سمت راست */}
-        <div className="flex-1 h-full overflow-hidden flex flex-col">
+        {/* بخش ویدیو پلیر - سمت راست در دسکتاپ و بالا در موبایل */}
+        <div className="flex-1 h-[45vh] md:h-full overflow-hidden flex flex-col">
           {/* هدر کوچک در بالای ویدیو پلیر - فقط در نمایش دسکتاپ */}
           <div className="hidden md:flex items-center justify-between py-3.5 px-4 border-b">
             {/* بخش سمت راست - بازگشت، عنوان و اطلاعات اپیزود */}
@@ -380,7 +382,7 @@ export default function CourseEpisodePage({
           <div className="flex-1 bg-black overflow-hidden relative flex items-center justify-center">
             {hasAccess ? (
               <>
-                <div className="w-full h-full" style={{ aspectRatio: '16/9', maxHeight: 'calc(100vh - 64px)' }}>
+                <div className="w-full h-full md:absolute md:inset-0">
                   <CourseEpisodePlayer
                     episode={episode}
                     onProgressChange={handleVideoProgress}
@@ -509,16 +511,16 @@ export default function CourseEpisodePage({
           </div>
         </div>
 
-        {/* سایدبار - سمت چپ */}
-        <div className="w-full md:w-[380px] lg:w-[400px] xl:w-[450px] h-screen flex flex-col border-r  overflow-hidden">
-          {/* نام دوره و عنوان اپیزود در موبایل */}
-          <div className="md:hidden p-4 border-b  ">
-            <h2 className="font-bold text-lg mb-1">{course.title}</h2>
-            <h3 className="text-sm text-gray-300">{episode.title}</h3>
+        {/* سایدبار - سمت چپ در دسکتاپ و پایین در موبایل */}
+        <div className="md:w-[380px] lg:w-[400px] xl:w-[450px] flex-1 md:flex-none md:h-screen h-[calc(100vh-45vh-56px)] flex flex-col border-r border-t md:border-t-0 overflow-hidden">
+          {/* نام دوره و عنوان اپیزود - فقط در دسکتاپ */}
+          <div className="hidden md:block p-4 border-b">
+            <h2 className="font-bold text-lg mb-1 line-clamp-1">{course.title}</h2>
+            <h3 className="text-sm text-muted-foreground line-clamp-1">{episode.title}</h3>
           </div>
 
           {/* تب‌های سایدبار */}
-          <div className=" border-b ">
+          <div className="border-b sticky top-0 bg-background z-10">
             <div className="flex justify-between overflow-x-auto px-0.5 pt-1">
               {tabs.map((tab) => {
                 // تعیین وضعیت قفل برای هر تب
