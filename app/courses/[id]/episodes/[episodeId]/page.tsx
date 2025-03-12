@@ -6,7 +6,7 @@ import CourseEpisodePage from '@/components/course/CourseEpisodePage';
 // اسکلتون لودینگ برای صفحه اپیزود
 function EpisodePageSkeleton() {
   return (
-    <div className="container mx-auto px-4 py-8 animate-pulse">
+    <div className="animate-pulse">
       <div className="mb-6">
         <div className="h-5 bg-gray-200 dark:bg-gray-800 rounded w-1/3"></div>
       </div>
@@ -34,6 +34,23 @@ function EpisodePageSkeleton() {
     </div>
   );
 }
+
+// Style override برای حذف تأثیر container از layout دوره‌ها
+const containerOverride = {
+  position: 'fixed' as const,
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  width: '100vw',
+  height: '100vh',
+  maxWidth: 'none',
+  padding: 0,
+  margin: 0,
+  overflow: 'hidden' as const,
+  zIndex: 50,
+  backgroundColor: '#000'
+};
 
 interface EpisodePageProps {
   params: {
@@ -126,12 +143,14 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
   }
   
   return (
-    <Suspense fallback={<EpisodePageSkeleton />}>
-      <CourseEpisodePage 
-        course={course} 
-        episode={targetEpisode} 
-        chapter={targetChapter} 
-      />
-    </Suspense>
+    <div style={containerOverride}>
+      <Suspense fallback={<EpisodePageSkeleton />}>
+        <CourseEpisodePage 
+          course={course} 
+          episode={targetEpisode} 
+          chapter={targetChapter} 
+        />
+      </Suspense>
+    </div>
   );
 } 

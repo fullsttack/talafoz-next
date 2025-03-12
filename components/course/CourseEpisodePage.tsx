@@ -276,46 +276,19 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   };
 
   return (
-    <>
+    <div className="h-screen w-full overflow-hidden bg-black">
       {/* پیام توست */}
       {showSuccessMessage && (
         <div className={`fixed top-16 right-2 z-50 animate-fade-in rounded-lg p-4 text-center shadow-lg w-[90%] sm:w-[450px] max-w-md
           ${showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید') 
             ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40' 
             : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/40'
-          }`}>
-          
-          <div className="flex items-center justify-center gap-2 mb-1">
-            {showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید') ? (
-              <Lock className="h-5 w-5 flex-shrink-0" />
-            ) : (
-              <Check className="h-5 w-5 flex-shrink-0" />
-            )}
-            <span className="font-medium">{showSuccessMessage}</span>
-          </div>
-          
-          {/* دکمه‌های خرید فقط برای پیام‌های مربوط به عدم دسترسی */}
-          {(showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید')) && (
-            <div className="flex gap-2 justify-center mt-3">
-              <button 
-                onClick={togglePurchaseStatus}
-                className="bg-amber-600 hover:bg-amber-700 text-white text-xs py-1.5 px-3 rounded transition-colors"
-              >
-                خرید دوره
-              </button>
-              {course.isFreePremium && (
-                <button 
-                  onClick={togglePremiumStatus}
-                  className="bg-gray-600 hover:bg-gray-700 text-white text-xs py-1.5 px-3 rounded transition-colors"
-                >
-                  تهیه اشتراک ویژه
-                </button>
-              )}
-            </div>
-          )}
+          }`}
+        >
+          {showSuccessMessage}
         </div>
       )}
-
+      
       {/* لینک بازگشت به صفحه دوره در موبایل */}
       <div className="fixed top-4 left-4 z-50 md:hidden">
         <Link
@@ -326,7 +299,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
         </Link>
       </div>
 
-      <div className="h-screen w-full flex overflow-hidden bg-gray-900">
+      <div className="h-screen w-full flex overflow-hidden bg-gray-950">
         {/* بخش ویدیو پلیر - سمت راست */}
         <div className="flex-1 h-full overflow-hidden flex flex-col">
           {/* هدر کوچک در بالای ویدیو پلیر - فقط در نمایش دسکتاپ */}
@@ -766,6 +739,6 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 } 

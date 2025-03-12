@@ -1,6 +1,6 @@
 import React from 'react';
 import { Metadata } from 'next';
-import Header from '@/components/layout/Header';
+
 
 export const metadata: Metadata = {
   title: 'دوره‌های آموزشی | تالافز',
@@ -14,7 +14,7 @@ export default function CoursesLayout({
 }) {
   return (
     <section className="">
-        <Header />  
+        
       <div className="container max-w-7xl mx-auto py-8 md:py-12 px-2">
         {children}
       </div>
