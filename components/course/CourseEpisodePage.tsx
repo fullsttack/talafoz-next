@@ -408,72 +408,71 @@ export default function CourseEpisodePage({
 
                 {/* دیالوگ اتمام ویدیو */}
                 {showCompletionDialog && (
-                  <div className="absolute inset-0 bg-background/95 flex items-center justify-center z-30 backdrop-blur-sm">
-                    <div className="w-full max-w-md bg-card p-6 rounded-lg border shadow-md animate-fade-in">
-                      {/* بازگرداندن تایمر دایره‌ای */}
-                      <div className="relative mx-auto mb-6">
-                        <div className="w-20 h-20 mx-auto relative">
+                  <div className="absolute inset-0 bg-black/50 flex items-center justify-center z-30 backdrop-blur-sm">
+                    <div className="w-full max-w-md bg-background p-6 rounded-xl border shadow-md animate-fade-in">
+                      {/* تایمر دایره‌ای ساده */}
+                      <div className="flex justify-center mb-5">
+                        <div className="w-16 h-16 relative">
                           <svg
-                            className="w-20 h-20 transform -rotate-90"
+                            className="w-16 h-16 transform -rotate-90"
                             viewBox="0 0 100 100"
                           >
                             <circle
                               cx="50"
                               cy="50"
-                              r="45"
+                              r="44"
                               className="stroke-muted fill-none"
-                              strokeWidth="8"
+                              strokeWidth="10"
                             />
                             <circle
                               cx="50"
                               cy="50"
-                              r="45"
+                              r="44"
                               className="stroke-green-500 fill-none"
-                              strokeWidth="8"
-                              strokeDasharray="283"
+                              strokeWidth="10"
+                              strokeDasharray="276"
                               strokeDashoffset={
-                                283 - (283 * completionTimerProgress) / 100
+                                276 - (276 * completionTimerProgress) / 100
                               }
                               strokeLinecap="round"
                             />
                           </svg>
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-2xl font-bold">
+                            <span className="text-xl font-bold">
                               {Math.ceil(10 - completionTimerProgress / 10)}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      {/* پیام تبریک و امتیاز */}
+                      {/* پیام تبریک */}
                       <div className="text-center mb-6">
-                        <div className="mb-3 inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-500/10 border border-green-500">
+                        <div className="mb-4 inline-flex justify-center items-center w-14 h-14 rounded-full bg-green-500/10 border border-green-500">
                           <Check className="h-7 w-7 text-green-500" />
                         </div>
-                        
-                        <h3 className="text-xl font-bold mb-2">تبریک! قسمت با موفقیت تکمیل شد</h3>
-                        
-                        <div className="mt-4 py-3 px-4 bg-muted/50 rounded-lg flex items-center justify-between">
-                          <div className="text-left">
-                            <p className="text-sm text-muted-foreground">امتیاز دریافتی</p>
-                            <div className="flex items-center gap-1 text-green-500 font-bold text-lg">
-                              <span>+۱۰</span>
-                              <svg 
-                                className="w-5 h-5" 
-                                viewBox="0 0 24 24" 
-                                fill="currentColor">
-                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                              </svg>
+                        <h3 className="text-xl font-bold mb-2">تبریک!</h3>
+                        <p className="text-muted-foreground">این قسمت با موفقیت تکمیل شد</p>
+                      </div>
+
+                      {/* امتیاز */}
+                      <div className="border rounded-lg p-4 mb-6">
+                        <div className="flex items-center justify-between mb-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center">
+                              <span className="text-green-500 font-bold">+۱۰</span>
+                            </div>
+                            <div>
+                              <p className="font-medium">امتیاز کسب شده</p>
+                              <p className="text-xs text-muted-foreground">از تکمیل این قسمت</p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="text-sm text-muted-foreground">امتیاز کل شما</p>
-                            <span className="font-bold">۱۲۰ / ۵۰۰</span>
+                            <p className="text-sm">امتیاز کل</p>
+                            <p className="font-bold">۱۲۰ / ۵۰۰</p>
                           </div>
                         </div>
                         
-                        {/* نوار پیشرفت ساده */}
-                        <div className="h-1.5 mt-1 bg-muted rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-muted rounded-full">
                           <div className="h-full bg-green-500 rounded-full w-[24%]"></div>
                         </div>
                       </div>
@@ -482,16 +481,16 @@ export default function CourseEpisodePage({
                       <div className="flex gap-3">
                         <button
                           onClick={navigateToNextEpisode}
-                          className="flex-1 flex items-center justify-center gap-1 bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded transition-colors"
+                          className="flex-1 bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
                         >
                           <span>قسمت بعدی</span>
                           <ChevronLeft className="w-4 h-4" />
                         </button>
                         <button
                           onClick={cancelCompletionTimer}
-                          className="py-2.5 px-4 rounded transition-colors hover:bg-muted border"
+                          className="px-4 py-2.5 rounded-lg hover:bg-muted border transition-colors"
                         >
-                          بستن
+                          انصراف
                         </button>
                       </div>
                     </div>
