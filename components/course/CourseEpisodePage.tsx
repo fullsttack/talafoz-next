@@ -142,13 +142,10 @@ export default function CourseEpisodePage({
     }
 
     setCompletionTimerProgress(0);
-    // نمایش امتیاز با تاخیر برای ایجاد افکت - حذف شده چون دیگر نیازی نیست
-    // setTimeout(() => {
-    //   setShowEarnedPoints(true);
-    // }, 1000);
+
 
     const startTime = Date.now();
-    const duration = 10000; // 10 ثانیه
+    const duration = 10000; 
 
     completionTimerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -513,11 +510,7 @@ export default function CourseEpisodePage({
 
         {/* سایدبار - سمت چپ در دسکتاپ و پایین در موبایل */}
         <div className="md:w-[380px] lg:w-[400px] xl:w-[450px] flex-1 md:flex-none md:h-screen h-[calc(100vh-45vh-56px)] flex flex-col border-r border-t md:border-t-0 overflow-hidden">
-          {/* نام دوره و عنوان اپیزود - فقط در دسکتاپ */}
-          <div className="hidden md:block p-4 border-b">
-            <h2 className="font-bold text-lg mb-1 line-clamp-1">{course.title}</h2>
-            <h3 className="text-sm text-muted-foreground line-clamp-1">{episode.title}</h3>
-          </div>
+          
 
           {/* تب‌های سایدبار */}
           <div className="border-b sticky top-0 bg-background z-10">
