@@ -1,55 +1,23 @@
-'use client';
+import React from 'react';
+import { Metadata } from 'next';
+import Header from '@/components/layout/Header';
 
-import Header from "@/components/layout/Header";
-import { courses } from '@/components/data/course';
-import CourseFilterSidebar from '@/components/course/CourseFilterSidebar';
-import { usePathname } from 'next/navigation';
-import { Course as SidebarCourse } from '@/components/course/CourseFilterSidebar';
-
-// متادیتا به فایل جداگانه منتقل شده است
-// import './metadata'; // Next.js 15 به صورت خودکار آن را پیدا می‌کند
+export const metadata: Metadata = {
+  title: 'دوره‌های آموزشی | تالافز',
+  description: 'مجموعه دوره‌های آموزشی برنامه‌نویسی و طراحی وب در زمینه‌های مختلف',
+};
 
 export default function CoursesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  
-  // چک کردن مسیر URL برای شناسایی صفحات مختلف
-  const isMainCoursePage = pathname === '/courses' || pathname === '/courses/';
-  
-  // چک کردن آیا در صفحه اپیزود هستیم یا خیر
-  const isEpisodePage = pathname.includes('/episodes/');
-  
-  // اگر در صفحه اپیزود هستیم، بدون هیچ قالب‌بندی اضافی محتوا را نمایش می‌دهیم
-  if (isEpisodePage) {
-    return children;
-  }
-  
-  // برای سایر صفحات، قالب‌بندی معمولی را اعمال می‌کنیم
   return (
-    <div>
-      <Header />
-      <div className="container w-full max-w-7xl mx-auto px-2 py-8">
-        {isMainCoursePage ? (
-          // صفحه لیست دوره‌ها - با سایدبار
-          <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-            {/* Sidebar for filters */}
-            <div className="w-full lg:w-72 flex-shrink-0">
-              <div className="lg:sticky lg:top-24 lg:h-fit">
-                <CourseFilterSidebar courses={courses as unknown as SidebarCourse[]} />
-              </div>
-            </div>
-            
-            {/* Main content */}
-            <div className="flex-1">{children}</div>
-          </div>
-        ) : (
-          // صفحه جزئیات دوره - بدون سایدبار
-          <div>{children}</div>
-        )}
+    <section className="">
+        <Header />  
+      <div className="container max-w-7xl mx-auto py-8 md:py-12 px-2">
+        {children}
       </div>
-    </div>
+    </section>
   );
 }

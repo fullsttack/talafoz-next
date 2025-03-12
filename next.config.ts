@@ -12,9 +12,16 @@ const nextConfig: NextConfig = {
     // your project has ESLint errors.
     ignoreDuringBuilds: true,
   },
-  output: 'export',
+  // Dynamic rendering is required for pages using searchParams and dynamic features
+  // output: 'export', // Removing this for dynamic rendering
   images: {
-    unoptimized: true,
+    domains: ['localhost'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**',
+      },
+    ],
   },
 };
 

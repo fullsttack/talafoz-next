@@ -1,15 +1,34 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { Check, Lock } from 'lucide-react';
 import type { Course } from '@/components/data/course';
-import CourseEpisodePlayer from '@/components/course/CourseEpisodePlayer';
-import CourseInfo from '@/components/course/CourseInfo';
-import CourseChapters from '@/components/course/CourseChapters';
-import CourseEnrollCard from '@/components/course/CourseEnrollCard';
-import CourseReviews from '@/components/course/CourseReviews';
-import CourseInstructorCard from '@/components/course/CourseInstructorCard';
-import CourseCertificateCard from '@/components/course/CourseCertificateCard';
+
+// لود با تاخیر کامپوننت‌های سنگین (Lazy Loading)
+const CourseEpisodePlayer = lazy(() => import('@/components/course/CourseEpisodePlayer'));
+const CourseInfo = lazy(() => import('@/components/course/CourseInfo'));
+const CourseChapters = lazy(() => import('@/components/course/CourseChapters'));
+const CourseReviews = lazy(() => import('@/components/course/CourseReviews'));
+const CourseEnrollCard = lazy(() => import('@/components/course/CourseEnrollCard'));
+const CourseInstructorCard = lazy(() => import('@/components/course/CourseInstructorCard'));
+const CourseCertificateCard = lazy(() => import('@/components/course/CourseCertificateCard'));
+
+// Fallback components for lazy-loaded components
+const PlayerSkeleton = () => (
+  <div className="aspect-video relative w-full bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>
+);
+
+const InfoSkeleton = () => (
+  <div className="space-y-4">
+    <div className="h-6 bg-gray-200 dark:bg-gray-800 rounded-md w-1/3 animate-pulse"></div>
+    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded-md w-full animate-pulse"></div>
+    <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded-md w-5/6 animate-pulse"></div>
+  </div>
+);
+
+const CardSkeleton = () => (
+  <div className="h-64 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>
+);
 
 interface CourseContentProps {
   course: Course;
@@ -123,8 +142,8 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
     }
   }, [showSuccessMessage]);
   
-  // تغییر وضعیت کاربر به عضو ویژه
-  const togglePremiumStatus = () => {
+  // Memoize the toggle functions to prevent re-renders
+  const togglePremiumStatus = useRef(() => {
     setIsPremiumUser(prev => {
       const newStatus = !prev;
       if (newStatus) {
@@ -132,12 +151,12 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
       }
       return newStatus;
     });
-  };
+  }).current;
   
-  // تغییر وضعیت خرید دوره (بدون نمایش پیام موفقیت)
-  const togglePurchaseStatus = () => {
+  // Toggle purchase status (without showing success message)
+  const togglePurchaseStatus = useRef(() => {
     setHasPurchasedCourse(prev => !prev);
-  };
+  }).current;
 
   // مدیریت پیشرفت ویدیو
   const handleVideoProgress = (progressPercent: number, currentTime?: number) => {
@@ -231,13 +250,15 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
                 {/* کامپوننت پخش‌کننده */}
                 <div className="aspect-video relative w-full bg-black rounded-lg overflow-hidden">
                   {hasAccess || activeEpisode.isFree || activeEpisode.isPreview ? (
-                    <CourseEpisodePlayer 
-                      episode={activeEpisode} 
-                      onProgressChange={handleVideoProgress}
-                      initialProgress={watchedProgress[activeEpisode.id] || 0}
-                      showNavigationControls={false}
-                      autoPlay={shouldAutoPlay}
-                    />
+                    <Suspense fallback={<PlayerSkeleton />}>
+                      <CourseEpisodePlayer 
+                        episode={activeEpisode} 
+                        onProgressChange={handleVideoProgress}
+                        initialProgress={watchedProgress[activeEpisode.id] || 0}
+                        showNavigationControls={false}
+                        autoPlay={shouldAutoPlay}
+                      />
+                    </Suspense>
                   ) : (
                     <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
                       <div className="mb-4 rounded-full bg-gray-800 p-4">
@@ -276,61 +297,73 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
           
           {/* اطلاعات دوره - توضیحات، پیش‌نیازها و اهداف */}
           <div className="mb-10">
-            <CourseInfo course={course} />
+            <Suspense fallback={<InfoSkeleton />}>
+              <CourseInfo course={course} />
+            </Suspense>
           </div>
           
           {/* فصل‌ها و قسمت‌های دوره */}
           <div className="mb-10">
-            <CourseChapters 
-              chapters={course.chapters || []} 
-              isPremiumUser={isPremiumUser}
-              hasPurchasedCourse={hasPurchasedCourse}
-              activeEpisode={activeEpisodeId}
-              onSelectEpisode={handleEpisodeSelect}
-              courseId={course.id}
-              useLinks={true}
-            />
+            <Suspense fallback={<div className="h-40 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>}>
+              <CourseChapters 
+                chapters={course.chapters || []} 
+                isPremiumUser={isPremiumUser}
+                hasPurchasedCourse={hasPurchasedCourse}
+                activeEpisode={activeEpisodeId}
+                onSelectEpisode={handleEpisodeSelect}
+                courseId={course.id}
+                useLinks={true}
+              />
+            </Suspense>
           </div>
           
           {/* نظرات و امتیاز‌ها */}
           <div className="mb-10">
-            <CourseReviews 
-              courseId={course.id} 
-              courseRating={course.rating}
-              reviewsCount={course.studentsCount > 200 ? Math.floor(course.studentsCount * 0.4) : 0}
-            />
+            <Suspense fallback={<div className="h-60 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse"></div>}>
+              <CourseReviews 
+                courseId={course.id} 
+                courseRating={course.rating}
+                reviewsCount={course.studentsCount > 200 ? Math.floor(course.studentsCount * 0.4) : 0}
+              />
+            </Suspense>
           </div>
         </div>
         
         {/* سایدبار - کارت ثبت‌نام/خرید */}
         <div className="lg:col-span-1">
           <div className="space-y-6">
-            <CourseEnrollCard 
-              course={course} 
-              isPremiumUser={isPremiumUser}
-              hasPurchasedCourse={hasPurchasedCourse}
-              onPurchase={togglePurchaseStatus}
-            />
+            <Suspense fallback={<CardSkeleton />}>
+              <CourseEnrollCard 
+                course={course} 
+                isPremiumUser={isPremiumUser}
+                hasPurchasedCourse={hasPurchasedCourse}
+                onPurchase={togglePurchaseStatus}
+              />
+            </Suspense>
             
             {/* کارت مشخصات مدرس */}
-            <CourseInstructorCard 
-              instructor={course.instructor}
-              role="مدرس و متخصص این دوره"
-              bio="متخصص و مدرس با تجربه در زمینه آموزش برنامه‌نویسی و توسعه نرم‌افزار با بیش از ۵ سال سابقه تدریس."
-              socialLinks={{
-                linkedin: "https://linkedin.com/in/example",
-                twitter: "https://twitter.com/example",
-                instagram: "https://instagram.com/example",
-                github: "https://github.com/example"
-              }}
-            />
+            <Suspense fallback={<CardSkeleton />}>
+              <CourseInstructorCard 
+                instructor={course.instructor}
+                role="مدرس و متخصص این دوره"
+                bio="متخصص و مدرس با تجربه در زمینه آموزش برنامه‌نویسی و توسعه نرم‌افزار با بیش از ۵ سال سابقه تدریس."
+                socialLinks={{
+                  linkedin: "https://linkedin.com/in/example",
+                  twitter: "https://twitter.com/example",
+                  instagram: "https://instagram.com/example",
+                  github: "https://github.com/example"
+                }}
+              />
+            </Suspense>
             
             {/* کارت گواهی پایان دوره */}
-            <CourseCertificateCard 
-              courseCompleted={isCourseCompleted()}
-              courseCompletionPercentage={calculateCourseCompletionPercentage()}
-              onRequestCertificate={handleRequestCertificate}
-            />
+            <Suspense fallback={<CardSkeleton />}>
+              <CourseCertificateCard 
+                courseCompleted={isCourseCompleted()}
+                courseCompletionPercentage={calculateCourseCompletionPercentage()}
+                onRequestCertificate={handleRequestCertificate}
+              />
+            </Suspense>
           </div>
         </div>
       </div>
