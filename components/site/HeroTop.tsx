@@ -1,15 +1,44 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import HeroJson1 from "@/components/tools/HeroJson1";
 import Link from "next/link";
 import { ChevronLeft, BadgeCheck, User, ArrowLeft } from "lucide-react";
 
+// Componente optimizado con memo para evitar re-renders innecesarios
+const FeatureItem = memo(({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) => (
+  <div className="flex items-start gap-3">
+    <div className="flex-shrink-0">
+      <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/10">
+        {icon}
+      </div>
+    </div>
+    <div>
+      <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">{title}</h3>
+      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{description}</p>
+    </div>
+  </div>
+));
+
+// Optimizando el nombre del componente para evitar cambios de referencia
+FeatureItem.displayName = 'FeatureItem';
+
 export default function HeroTop() {
   const [isVisible, setIsVisible] = useState(false);
 
+  // Usa useCallback para funciones que se pasan como props
+  const handleGetStarted = useCallback(() => {
+    // Navegar a la página de registro o iniciar una acción
+    console.log('Get started clicked');
+  }, []);
+
   useEffect(() => {
-    setIsVisible(true);
+    // Retrasar ligeramente la animación para priorizar la carga de contenido principal
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 100);
+    
+    return () => clearTimeout(timer);
   }, []);
 
   return (

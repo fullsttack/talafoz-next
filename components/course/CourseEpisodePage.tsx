@@ -276,7 +276,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
   };
 
   return (
-    <div className="h-screen w-full overflow-hidden bg-black">
+    <div className="h-screen w-full overflow-hidden ">
       {/* پیام توست */}
       {showSuccessMessage && (
         <div className={`fixed top-16 right-2 z-50 animate-fade-in rounded-lg p-4 text-center shadow-lg w-[90%] sm:w-[450px] max-w-md
@@ -293,17 +293,17 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
       <div className="fixed top-4 left-4 z-50 md:hidden">
         <Link
           href={`/courses/${course.id}`}
-          className="flex h-10 w-10 items-center justify-center rounded-full bg-black/20 backdrop-blur-md text-white hover:bg-black/30"
+          className="flex h-10 w-10 items-center justify-center rounded-full  backdrop-blur-md "
         >
           <ArrowLeft className="h-5 w-5" />
         </Link>
       </div>
 
-      <div className="h-screen w-full flex overflow-hidden bg-gray-950">
+      <div className="h-screen w-full flex overflow-hidden ">
         {/* بخش ویدیو پلیر - سمت راست */}
         <div className="flex-1 h-full overflow-hidden flex flex-col">
           {/* هدر کوچک در بالای ویدیو پلیر - فقط در نمایش دسکتاپ */}
-          <div className="hidden md:flex items-center justify-between py-2 px-4 bg-gray-900 border-b border-gray-700 text-white">
+          <div className="hidden md:flex items-center justify-between py-2 px-4  border-b ">
             {/* بخش سمت راست - بازگشت، عنوان و اطلاعات اپیزود */}
             <div className="flex items-center gap-3">
               <Link 
@@ -315,18 +315,18 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                 <span className="text-sm font-medium">بازگشت به دوره</span>
               </Link>
               
-              <div className="h-4 w-px bg-gray-700"></div>
+              <div className="h-4 w-px "></div>
               
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-medium line-clamp-1 text-white max-w-[300px]">{episode.title}</h2>
+                <h2 className="text-sm font-medium line-clamp-1  max-w-[300px]">{episode.title}</h2>
                 <div className="flex items-center text-gray-400 gap-1 text-xs">
                   <Clock className="h-3 w-3" />
                   <span>{episode.duration || '۲۵:۳۰'}</span>
                 </div>
               </div>
               
-              <div className="hidden lg:flex items-center gap-2 text-xs text-gray-400">
-                <div className="h-4 w-px bg-gray-700 mx-1"></div>
+              <div className="hidden lg:flex items-center gap-2 text-xs ">
+                <div className="h-4 w-px  mx-1"></div>
                 <span>فصل {(chapter as { index?: string | number }).index || '1'}</span>
                 <span>•</span>
                 <span>قسمت {(episode as { index?: string | number }).index || '1'}/{chapter.episodes.length}</span>
@@ -337,14 +337,14 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
             <div className="flex items-center gap-4">
               {/* پیشرفت اپیزود فعلی - طرح ساده و گویا */}
               <div 
-                className="flex items-center gap-2 px-2 py-1 bg-gray-800/50 rounded-lg border border-gray-700" 
+                className="flex items-center gap-2 px-2 py-1  rounded-lg border " 
                 title="پیشرفت پخش اپیزود فعلی"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-4 h-4 text-green-500">
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <div className="w-16 h-1.5 bg-gray-700 rounded-full overflow-hidden">
+                <div className="w-16 h-1.5  rounded-full overflow-hidden">
                   <div 
                     className="h-full bg-green-500 rounded-full"
                     style={{ width: `${watchedProgress[episode.id] || 0}%` }}
@@ -364,7 +364,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
               ) : (
                 <Link 
                   href={`/courses/${course.id}/checkout`}
-                  className="flex items-center justify-center h-8 w-8 text-amber-400 rounded-full hover:bg-gray-800/70 transition-colors"
+                  className="flex items-center justify-center h-8 w-8 text-amber-400 rounded-full transition-colors"
                   title="قفل شده - خرید دوره"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -388,8 +388,8 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                 
                 {/* دیالوگ اتمام ویدیو */}
                 {showCompletionDialog && (
-                  <div className="absolute inset-0 bg-black/80 flex items-center justify-center z-30 backdrop-blur-sm">
-                    <div className="bg-gradient-to-b from-gray-800 to-gray-900 p-8 rounded-2xl max-w-md text-center shadow-2xl border border-gray-700 animate-fade-in relative overflow-hidden">
+                  <div className="absolute inset-0  flex items-center justify-center z-30 backdrop-blur-sm">
+                    <div className=" p-8 rounded-2xl max-w-md text-center shadow-2xl border  animate-fade-in relative overflow-hidden">
                       {/* خط تزئینی بالا */}
                       <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-400 via-green-500 to-green-400"></div>
                       
@@ -434,7 +434,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                           <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
                           
                           {/* کارت امتیاز */}
-                          <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-5 border border-green-500/30 shadow-[0_0_15px_rgba(74,222,128,0.15)] overflow-hidden">
+                          <div className="relative  rounded-xl p-5 border  shadow-[0_0_15px_rgba(74,222,128,0.15)] overflow-hidden">
                             {/* افکت نور */}
                             <div className="absolute -top-10 -right-10 w-20 h-20 bg-green-500/20 blur-2xl rounded-full"></div>
                             <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-green-500/20 blur-2xl rounded-full"></div>
@@ -465,7 +465,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                             
                             {/* نوار پیشرفت کلی */}
                             <div className="mt-4 pt-3 border-t border-gray-700">
-                              <div className="flex justify-between text-xs text-gray-400 mb-1.5">
+                              <div className="flex justify-between text-xs  mb-1.5">
                                 <span>پیشرفت امتیازات شما</span>
                                 <span className="text-green-400">۱۲۰ / ۵۰۰</span>
                               </div>
@@ -498,17 +498,17 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
               </>
             ) : (
               <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
-                <div className="mb-4 rounded-full bg-gray-800 p-4">
+                <div className="mb-4 rounded-full bg-black p-4">
                   <Lock className="h-10 w-10 text-amber-400" />
                 </div>
-                <h3 className="mb-2 text-xl font-bold text-white">این محتوا قفل شده است</h3>
-                <p className="mb-6 text-gray-400 max-w-md">
+                <h3 className="mb-2 text-xl font-bold text-white">شما دسترسی به این قسمت را ندارید</h3>
+                <p className="mb-6  max-w-md text-white">
                   برای مشاهده این قسمت، باید دوره را خریداری کنید یا عضو ویژه باشید.
                 </p>
                 <div className="flex flex-wrap gap-3 justify-center">
                   <button 
                     onClick={togglePurchaseStatus}
-                    className="rounded-md bg-primary px-6 py-2.5 text-white hover:bg-primary/90 transition-colors"
+                    className="rounded-md bg-primary px-6 py-2.5  text-white transition-colors"
                   >
                     خرید دوره
                   </button>
@@ -517,7 +517,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                       onClick={togglePremiumStatus}
                       className="rounded-md border border-amber-500 bg-transparent px-6 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors"
                     >
-                      فعال‌سازی عضویت ویژه
+                      تهیه اشتراک
                     </button>
                   )}
                 </div>
@@ -529,7 +529,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
         {/* سایدبار - سمت چپ */}
         <div className="w-full md:w-[380px] lg:w-[400px] xl:w-[450px] h-screen flex flex-col bg-gray-800 border-r border-gray-700 overflow-hidden">
           {/* نام دوره و عنوان اپیزود در موبایل */}
-          <div className="md:hidden p-4 border-b border-gray-700 bg-gray-800 text-white">
+          <div className="md:hidden p-4 border-b border-gray-700 bg-gray-800 ">
             <h2 className="font-bold text-lg mb-1">{course.title}</h2>
             <h3 className="text-sm text-gray-300">{episode.title}</h3>
           </div>
@@ -571,10 +571,10 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
           </div>
           
           {/* محتوای تب‌ها */}
-          <div className="flex-1 overflow-y-auto py-5 px-4 bg-gray-800">
+          <div className="flex-1 overflow-y-auto py-5 px-4 ">
             {/* تب فصل‌ها */}
             {activeTab === 'chapters' && (
-              <div className="divide-y divide-gray-700">
+              <div className="divide-y ">
                 {course.chapters && course.chapters.map(ch => {
                   const chapterProgress = calculateChapterProgress(ch);
                   return (
@@ -582,11 +582,11 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
                       {/* سرفصل */}
                       <button
                         onClick={() => toggleChapter(ch.id)}
-                        className="flex w-full items-center justify-between p-4 text-right hover:bg-gray-700/60"
+                        className="flex w-full items-center justify-between p-4 text-right "
                       >
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
-                            <h3 className="font-bold text-white">{ch.title}</h3>
+                            <h3 className="font-bold ">{ch.title}</h3>
                             <div className="flex items-center">
                               {expandedChapters[ch.id] ? 
                                 <ChevronUp className="h-5 w-5 text-gray-400" /> : 
@@ -717,7 +717,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
             
             {/* تب فایل‌های ضمیمه */}
             {activeTab === 'attachments' && hasAccess && (
-              <div className="p-3 bg-gray-900/60 rounded-lg">
+              <div className="p-3  rounded-lg">
                 <EpisodeAttachments 
                   episodeId={episode.id} 
                   courseId={course.id} 
@@ -728,7 +728,7 @@ export default function CourseEpisodePage({ course, episode, chapter }: CourseEp
             
             {/* تب نظرات */}
             {activeTab === 'comments' && hasAccess && (
-              <div className="p-3 bg-gray-900/60 rounded-lg">
+              <div className="p-3  rounded-lg">
                 <EpisodeComments 
                   episodeId={episode.id} 
                   courseId={course.id} 

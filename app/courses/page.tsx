@@ -69,7 +69,7 @@ export default async function CoursesPage({
   return (
     <div>
       <Header />
-      <div className="flex flex-col md:flex-row gap-8">
+      <div className="container max-w-7xl mx-auto py-8 md:py-16 px-2 flex flex-col md:flex-row gap-8">
         {/* Sidebar - Filters */}
         <aside className="w-full md:w-1/4 md:max-w-xs  rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700 h-fit sticky top-24">
           <div className="mb-6">

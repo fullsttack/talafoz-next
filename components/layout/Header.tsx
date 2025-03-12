@@ -1,35 +1,88 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, memo, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Bell, Menu, ShoppingCart, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "../tools/ModeToggle";
 
-export const Header = () => {
+// NavLink optimizado con memo para desktop
+const DesktopNavLink = memo(({ href, label, isActive }: { href: string; label: string; isActive: boolean }) => (
+  <Link
+    href={href}
+    className={`relative py-2 transition-colors duration-200 text-sm font-medium 
+    ${
+      isActive
+        ? "font-bold"
+        : "text-foreground hover:text-primary"
+    }`}
+  >
+    {label}
+    {isActive && (
+      <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/50 to-primary rounded-full" />
+    )}
+  </Link>
+));
+
+DesktopNavLink.displayName = 'DesktopNavLink';
+
+// NavLink optimizado con memo para mobile
+const MobileNavLink = memo(({ href, label, isActive, onClick }: { href: string; label: string; isActive: boolean; onClick: () => void }) => (
+  <Link
+    href={href}
+    onClick={onClick}
+    className={`py-4 border-b border-border/10 text-xl font-medium transition-colors ${
+      isActive
+        ? "text-primary font-bold"
+        : "text-foreground/70 hover:text-primary"
+    }`}
+  >
+    {label}
+  </Link>
+));
+
+MobileNavLink.displayName = 'MobileNavLink';
+
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  
+  // Usar useRef para evitar renderizados innecesarios en valores que no afectan la UI directamente
+  const lastScrollY = useRef(0);
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-    if (isMenuOpen) {
-      document.body.style.overflow = "auto";
-    } else {
-      document.body.style.overflow = "hidden";
-    }
-  };
+  const toggleMenu = useCallback(() => {
+    setIsMenuOpen(prev => {
+      const newState = !prev;
+      document.body.style.overflow = newState ? "hidden" : "auto";
+      return newState;
+    });
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
-      const offset = window.scrollY;
-      setScrolled(offset > 10);
+      const currentScrollY = window.scrollY;
+      
+      // Solo actualizar si realmente necesitamos (optimización de rendimiento)
+      if ((currentScrollY > 10 && !scrolled) || (currentScrollY <= 10 && scrolled)) {
+        setScrolled(currentScrollY > 10);
+      }
+      
+      lastScrollY.current = currentScrollY;
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [scrolled]);
+
+  // Cerrar el menú cuando cambia la ruta
+  useEffect(() => {
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+      document.body.style.overflow = "auto";
+    }
+  }, [pathname, isMenuOpen]);
 
   return (
     <div
@@ -81,21 +134,7 @@ export const Header = () => {
               ].map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`relative py-2 transition-colors duration-200 text-sm font-medium 
-                    ${
-                      isActive
-                        ? "font-bold"
-                        : "text-foreground hover:text-primary"
-                    }`}
-                  >
-                    {link.label}
-                    {isActive && (
-                      <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-gradient-to-r from-primary/50 to-primary rounded-full" />
-                    )}
-                  </Link>
+                  <DesktopNavLink key={link.href} href={link.href} label={link.label} isActive={isActive} />
                 );
               })}
             </nav>
@@ -196,18 +235,7 @@ export const Header = () => {
               ].map((link) => {
                 const isActive = pathname === link.href;
                 return (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={toggleMenu}
-                    className={`py-4 border-b border-border/10 text-xl font-medium transition-colors ${
-                      isActive
-                        ? "text-primary font-bold"
-                        : "text-foreground/70 hover:text-primary"
-                    }`}
-                  >
-                    {link.label}
-                  </Link>
+                  <MobileNavLink key={link.href} href={link.href} label={link.label} isActive={isActive} onClick={toggleMenu} />
                 );
               })}
             </nav>

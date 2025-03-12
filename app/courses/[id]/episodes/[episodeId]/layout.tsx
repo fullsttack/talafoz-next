@@ -13,7 +13,7 @@ export default function EpisodeLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="fixed inset-0 w-screen h-screen max-w-none p-0 m-0 overflow-hidden bg-black">
+    <main className="fixed inset-0 w-screen h-screen max-w-none p-0 m-0 overflow-hidden ">
       {children}
     </main>
   );
