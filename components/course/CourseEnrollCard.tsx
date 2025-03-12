@@ -131,7 +131,7 @@ export default function CourseEnrollCard({
   const shouldShowEnrollButton = !isEnrolled && !hasPurchasedCourse;
   
   return (
-    <div className="sticky top-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-800 dark:bg-gray-900">
+    <div className="sticky top-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]">
       {/* نمایش پیام موفقیت */}
       {showSuccessToast && (
         <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">

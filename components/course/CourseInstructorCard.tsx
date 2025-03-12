@@ -1,4 +1,5 @@
 import { Linkedin, Twitter, Instagram, Github, BookOpen } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CourseInstructorCardProps {
   instructor: string;
@@ -26,7 +27,13 @@ export default function CourseInstructorCard({
   }
 }: CourseInstructorCardProps) {
   return (
-    <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 shadow-md">
+    <div className={cn(
+      "relative overflow-hidden rounded-xl border shadow-md",
+      // light styles
+      "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
+      // dark styles
+      "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+    )}>
       {/* نوار تزئینی بالای کارت */}
       <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-500 via-green-400 to-green-500"></div>
       
@@ -40,7 +47,7 @@ export default function CourseInstructorCard({
             
             {/* قاب عکس */}
             <div className="relative h-32 w-32 rounded-full bg-gradient-to-br from-green-500 to-green-600 p-1 shadow-lg">
-              <div className="h-full w-full overflow-hidden rounded-full border-2 border-white dark:border-gray-800">
+              <div className="h-full w-full overflow-hidden rounded-full border-2 border-white dark:border-gray-50/[.1]">
                 <img 
                   src={avatarUrl} 
                   alt={instructor} 
@@ -64,7 +71,13 @@ export default function CourseInstructorCard({
         </div>
         
         {/* بیوگرافی با طراحی جذاب */}
-        <div className="mb-5 rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50 text-center">
+        <div className={cn(
+          "mb-5 rounded-lg p-4 text-center",
+          // light styles
+          "border-gray-950/[.1] bg-gray-950/[.01]",
+          // dark styles
+          "dark:border-gray-50/[.1] dark:bg-gray-50/[.10]"
+        )}>
           <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm">
             {bio}
           </p>
@@ -72,7 +85,13 @@ export default function CourseInstructorCard({
         
         {/* نوار تزئینی */}
         <div className="relative my-5 h-px w-full bg-gradient-to-r from-transparent via-green-300 to-transparent opacity-50">
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 dark:bg-gray-900">
+          <div className={cn(
+            "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-3",
+            // light styles
+            "bg-white",
+            // dark styles
+            "dark:bg-gray-50/[.10]"
+          )}>
             <BookOpen className="h-5 w-5 text-green-500 dark:text-green-400" />
           </div>
         </div>
@@ -84,10 +103,16 @@ export default function CourseInstructorCard({
               href={socialLinks.linkedin} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group relative overflow-hidden rounded-full p-0.5 bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600"
+              className="group relative overflow-hidden rounded-full p-0.5 bg-gradient-to-r from-gray-300 to-gray-200 dark:border-gray-50/[.1] dark:bg-gray-50/[.10]"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:bg-transparent dark:bg-gray-900">
+              <div className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
+                // light styles
+                "bg-white",
+                // dark styles
+                "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+              )}>
                 <Linkedin className="h-5 w-5 text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-white" />
               </div>
             </a>
@@ -98,10 +123,16 @@ export default function CourseInstructorCard({
               href={socialLinks.twitter} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group relative overflow-hidden rounded-full p-0.5 bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600"
+              className="group relative overflow-hidden rounded-full p-0.5 bg-gradient-to-r from-gray-300 to-gray-200 dark:border-gray-50/[.1] dark:bg-gray-50/[.10]"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:bg-transparent dark:bg-gray-900">
+              <div className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
+                // light styles
+                "bg-white",
+                // dark styles
+                "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+              )}>
                 <Twitter className="h-5 w-5 text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-white" />
               </div>
             </a>
@@ -112,10 +143,16 @@ export default function CourseInstructorCard({
               href={socialLinks.instagram} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group relative overflow-hidden rounded-full p-0.5 bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600"
+              className="group relative overflow-hidden rounded-full p-0.5 bg-gradient-to-r from-gray-300 to-gray-200 dark:border-gray-50/[.1] dark:bg-gray-50/[.10]"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:bg-transparent dark:bg-gray-900">
+              <div className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
+                // light styles
+                "bg-white",
+                // dark styles
+                "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+              )}>
                 <Instagram className="h-5 w-5 text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-white" />
               </div>
             </a>
@@ -126,10 +163,16 @@ export default function CourseInstructorCard({
               href={socialLinks.github} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="group relative overflow-hidden rounded-full p-0.5 bg-gradient-to-r from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600"
+              className="group relative overflow-hidden rounded-full p-0.5 bg-gradient-to-r from-gray-300 to-gray-200 dark:border-gray-50/[.1] dark:bg-gray-50/[.10]"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-green-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white transition-all duration-300 group-hover:bg-transparent dark:bg-gray-900">
+              <div className={cn(
+                "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
+                // light styles
+                "bg-white",
+                // dark styles
+                "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+              )}>
                 <Github className="h-5 w-5 text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-white" />
               </div>
             </a>

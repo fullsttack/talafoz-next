@@ -1,4 +1,5 @@
 import { Award, Check, Certificate, Medal, Trophy } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface CourseCertificateCardProps {
   courseCompleted: boolean;
@@ -13,7 +14,13 @@ export default function CourseCertificateCard({
 }: CourseCertificateCardProps) {
   
   return (
-    <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900 shadow-md">
+    <div className={cn(
+      "relative overflow-hidden rounded-xl border shadow-md",
+      // light styles
+      "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
+      // dark styles
+      "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+    )}>
       {/* نوار تزئینی بالای کارت */}
       <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500"></div>
       
@@ -44,7 +51,13 @@ export default function CourseCertificateCard({
         </div>
         
         {/* مزایای گواهی */}
-        <div className="mb-6 rounded-lg bg-gray-50 p-4 dark:bg-gray-800/50">
+        <div className={cn(
+          "mb-6 rounded-lg p-4",
+          // light styles
+          "border-gray-950/[.1] bg-gray-950/[.01]",
+          // dark styles
+          "dark:border-gray-50/[.1] dark:bg-gray-50/[.10]"
+        )}>
           <ul className="space-y-2">
             <li className="flex items-start gap-3">
               <div className="mt-0.5 rounded-full bg-green-100 p-1 dark:bg-green-900/30">
@@ -69,7 +82,13 @@ export default function CourseCertificateCard({
         
         {/* نوار طلایی تزئینی */}
         <div className="relative my-5 h-px w-full bg-gradient-to-r from-transparent via-amber-300 to-transparent opacity-60">
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white px-3 dark:bg-gray-900">
+          <div className={cn(
+            "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 px-3",
+            // light styles
+            "bg-white",
+            // dark styles
+            "dark:bg-gray-50/[.10]"
+          )}>
             <Award className="h-5 w-5 text-amber-400" />
           </div>
         </div>
@@ -81,7 +100,13 @@ export default function CourseCertificateCard({
             className="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 p-0.5 shadow-md"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-amber-400 to-amber-500 transition-transform duration-300 group-hover:translate-y-full"></div>
-            <div className="relative flex items-center justify-center gap-2 rounded-md bg-white py-3 px-4 font-medium text-gray-900 transition-all duration-300 group-hover:bg-transparent group-hover:text-white dark:bg-gray-900 dark:text-white">
+            <div className={cn(
+              "relative flex items-center justify-center gap-2 rounded-md py-3 px-4 font-medium text-gray-900 transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
+              // light styles
+              "bg-white",
+              // dark styles
+              "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+            )}>
               <Award className="h-5 w-5" />
               <span>دریافت گواهی پایان دوره</span>
             </div>
@@ -89,9 +114,21 @@ export default function CourseCertificateCard({
         ) : (
           <button
             onClick={() => {}}
-            className="group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-gray-200 to-gray-100 p-0.5 shadow-md dark:from-gray-700 dark:to-gray-800"
+            className={cn(
+              "group relative w-full overflow-hidden rounded-lg p-0.5 shadow-md",
+              // light styles
+              "bg-gradient-to-r from-gray-200 to-gray-100",
+              // dark styles
+              "dark:border-gray-50/[.1] dark:bg-gray-50/[.10]"
+            )}
           >
-            <div className="relative flex items-center justify-center gap-2 rounded-md bg-white py-3 px-4 font-medium text-gray-500 dark:bg-gray-900 dark:text-gray-400">
+            <div className={cn(
+              "relative flex items-center justify-center gap-2 rounded-md py-3 px-4 font-medium text-gray-500",
+              // light styles
+              "bg-white",
+              // dark styles
+              "dark:bg-gray-50/[.10] dark:text-gray-400"
+            )}>
               <Award className="h-5 w-5" />
               <span>با تکمیل دوره، گواهی دریافت کنید</span>
             </div>
