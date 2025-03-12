@@ -61,7 +61,7 @@ export default function CourseSearch() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="h-10 w-full rounded-lg border border-gray-300 bg-white py-2 pr-10 pl-10 text-right text-gray-900 placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary dark:border-gray-700 dark:bg-gray-900 dark:text-white dark:placeholder-gray-400"
+          className="h-10 w-full rounded-lg border  py-2 pr-10 pl-10 text-right  placeholder-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary  dark:placeholder-gray-400 z-50"
           placeholder="جستجو در دوره‌ها..."
         />
         {searchQuery && (

@@ -23,7 +23,6 @@ export default function CourseEnrollCard({
   const router = useRouter();
   const [isEnrolled, setIsEnrolled] = useState(hasPurchasedCourse);
   const [isLoading, setIsLoading] = useState(false);
-  const [showSuccessToast, setShowSuccessToast] = useState(false);
   
   // به‌روزرسانی وضعیت ثبت‌نام با تغییر prop
   useEffect(() => {
@@ -31,17 +30,6 @@ export default function CourseEnrollCard({
       setIsEnrolled(hasPurchasedCourse);
     }
   }, [hasPurchasedCourse, isLoading]);
-  
-  // مدیریت نمایش پیام موفقیت
-  useEffect(() => {
-    if (showSuccessToast) {
-      const timer = setTimeout(() => {
-        setShowSuccessToast(false);
-      }, 3000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, [showSuccessToast]);
   
   const {
     id,
@@ -82,19 +70,13 @@ export default function CourseEnrollCard({
     
     // شبیه‌سازی ارسال درخواست به سرور
     setTimeout(() => {
-      // نمایش پیام موفقیت
-      setShowSuccessToast(true);
-      
       // تغییر وضعیت به ثبت‌نام شده
       setIsEnrolled(true);
       
       // فراخوانی callback پس از انجام عملیات
       onPurchase?.();
       
-      // حالت لودینگ را همچنان فعال نگه می‌داریم
-      // زیرا در حال هدایت به صفحه دیگر هستیم
-      
-      // هدایت به صفحه اپیزودها بعد از 3 ثانیه
+      // هدایت به صفحه اپیزودها بعد از کمی تأخیر
       if (id) {
         // پیدا کردن اولین اپیزود رایگان برای نمایش
         let firstEpisodeId = '';
@@ -115,14 +97,14 @@ export default function CourseEnrollCard({
           }
         }
         
-        // هدایت با تأخیر 3 ثانیه
+        // هدایت با کمی تأخیر
         setTimeout(() => {
           if (firstEpisodeId) {
             router.push(`/courses/${id}/episodes/${firstEpisodeId}`);
           } else {
             router.push(`/courses/${id}`);
           }
-        }, 3000);
+        }, 500);
       }
     }, 1000); // شبیه‌سازی زمان پاسخ سرور
   };
@@ -131,17 +113,7 @@ export default function CourseEnrollCard({
   const shouldShowEnrollButton = !isEnrolled && !hasPurchasedCourse;
   
   return (
-    <div className="sticky top-6 rounded-xl border p-6 shadow-md ">
-      {/* نمایش پیام موفقیت */}
-      {showSuccessToast && (
-        <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">
-          <div className="flex items-center gap-2">
-            <CheckCircle className="h-5 w-5" />
-            <span>ثبت‌نام با موفقیت انجام شد</span>
-          </div>
-        </div>
-      )}
-      
+    <div className="sticky top-6 rounded-xl border p-6 shadow-md">
       {/* تصویر دوره */}
       <div className="mb-6 overflow-hidden rounded-lg">
         <Image

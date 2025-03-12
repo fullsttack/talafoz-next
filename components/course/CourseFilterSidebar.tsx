@@ -85,7 +85,7 @@ export default function CourseFilterSidebar({ courses }: CourseFilterSidebarProp
   }, [applyFilters, currentTypeFilter, currentCategoryFilters]);
   
   return (
-    <aside className="w-full rounded-lg border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-gray-900 lg:w-64">
+    <aside className="w-full rounded-lg border p-5 shadow-sm  lg:w-64">
       <h2 className="mb-4 text-lg font-bold">فیلتر دوره‌ها</h2>
       
       {/* فیلتر نوع دوره */}
@@ -156,7 +156,7 @@ export default function CourseFilterSidebar({ courses }: CourseFilterSidebarProp
           <div className="max-h-60 space-y-2 overflow-y-auto pt-2">
             {uniqueCategories.map((category) => (
               <label key={category} className="flex cursor-pointer items-center gap-2">
-                <div className={`flex h-5 w-5 items-center justify-center rounded border ${currentCategoryFilters.includes(category) ? 'border-primary bg-primary text-white' : 'border-gray-300 dark:border-gray-600'}`}>
+                <div className={`flex h-5 w-5 items-center justify-center rounded border ${currentCategoryFilters.includes(category) ? 'border-primary bg-primary ' : 'border-gray-300 dark:border-gray-600'}`}>
                   {currentCategoryFilters.includes(category) && <Check className="h-3.5 w-3.5" />}
                 </div>
                 <input

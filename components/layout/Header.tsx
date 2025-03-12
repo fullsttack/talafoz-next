@@ -61,9 +61,7 @@ export const Header = () => {
           <div className="flex items-center gap-2">
             {/* Logo and Brand */}
             <Link href="/" className="flex items-center">
-              <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-gradient-to-br from-primary/80 to-primary text-white font-bold text-xl">
-                T
-              </div>
+              
               <span className="font-bold text-xl mr-2 bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 تلفظ
               </span>

@@ -36,7 +36,7 @@ export const CourseCard = ({ course, isPremiumUser = false }: CourseCardProps) =
   const isFreeForUser = isFree || (isPremiumUser && isFreePremium);
 
   return (
-    <div className="group relative h-full overflow-hidden rounded-2xl shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl">
+    <div className="group relative h-full overflow-hidden border rounded-2xl shadow-lg transition-all hover:-translate-y-1 hover:shadow-xl">
       {/* Free course badge */}
       {isFree && (
         <div className="absolute left-4 top-4 z-20 flex items-center gap-1 rounded-full bg-green-500 px-3 py-1 text-xs font-bold text-white shadow-md">
@@ -49,13 +49,12 @@ export const CourseCard = ({ course, isPremiumUser = false }: CourseCardProps) =
       {!isFree && isFreePremium && (
         <div className="absolute left-4 top-4 z-20 flex items-center gap-1 rounded-full bg-gradient-to-r from-amber-500 to-yellow-500 px-3 py-1 text-xs font-bold text-white shadow-md">
           <Crown className="h-3.5 w-3.5" />
-          <span>رایگان برای اعضای ویژه</span>
         </div>
       )}
       
       {/* Main card container */}
       <Link href={`/courses/${id}`} className="block h-full">
-        <div className="relative flex h-full flex-col bg-white dark:bg-gray-900">
+        <div className="relative flex h-full flex-col">
           {/* Image section */}
           <div className="relative w-full overflow-hidden pt-[56.25%]"> {/* 16:9 aspect ratio */}
             <Image
