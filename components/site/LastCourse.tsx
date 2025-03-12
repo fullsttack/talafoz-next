@@ -73,8 +73,8 @@ export default function LastCourse() {
       {/* Courses Carousel */}
       {!isClient ? (
         // Simple placeholder while client-side code is initializing
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {latestCourses.slice(0, 4).map((course) => (
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {latestCourses.slice(0, 3).map((course) => (
             <CourseCard
               key={course.id}
               course={course}
@@ -99,7 +99,7 @@ export default function LastCourse() {
               {latestCourses.map((course) => (
                 <CarouselItem
                   key={course.id}
-                  className="basis-[85%] md:basis-[45%] lg:basis-[30%] xl:basis-[23%]"
+                  className="basis-[85%] md:basis-[45%] lg:basis-[30%] xl:basis-[30%]"
                 >
                   <CourseCard course={course} isPremiumUser={isPremiumUser} />
                 </CarouselItem>
