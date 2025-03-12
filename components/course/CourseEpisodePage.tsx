@@ -581,7 +581,7 @@ export default function CourseEpisodePage({
                             onClick={() => toggleChapter(ch.id)}
                             className="flex w-full items-center gap-3 py-2 text-right"
                           >
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/80 to-primary text-white shadow-sm">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/80 to-primary text-background shadow-sm">
                               <span className="font-medium">{chapterIndex + 1}</span>
                             </div>
                             
@@ -612,7 +612,7 @@ export default function CourseEpisodePage({
 
                         {/* اپیزودهای فصل - طراحی تایم‌لاین */}
                         {expandedChapters[ch.id] && (
-                          <div className="relative mr-5 before:absolute before:top-0 before:bottom-0 before:right-[19px] before:w-0.5 before:bg-border">
+                          <div className="relative mr-5 before:absolute before:top-0 before:bottom-0 before:right-[40px] before:w-0.5 before:bg-border">
                             {ch.episodes.map((ep, epIndex) => {
                               // بررسی دسترسی به هر اپیزود
                               const episodeAccess =
@@ -641,7 +641,7 @@ export default function CourseEpisodePage({
                                   }`}
                                 >
                                   {/* دایره روی تایم‌لاین */}
-                                  <div className={`relative z-10 flex-shrink-0 mr-3 w-7 h-7 rounded-full flex items-center justify-center border-2 bg-background shadow-sm ${
+                                  <div className={`relative z-10 flex-shrink-0 mr-5 w-7 h-7 rounded-full flex items-center justify-center border-2 bg-background shadow-sm ${
                                     !episodeAccess 
                                       ? "border-red-200 text-red-500"
                                       : isCompleted
