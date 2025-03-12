@@ -150,7 +150,7 @@ export default function CourseEpisodePage({
     }, 1000);
 
     const startTime = Date.now();
-    const duration = 10000; // 10 ثانیه
+    const duration = 1000; // 10 ثانیه
 
     completionTimerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -332,7 +332,7 @@ export default function CourseEpisodePage({
       {/* پیام توست */}
       {showSuccessMessage && (
         <div
-          className={`fixed top-16 right-2 z-50 animate-fade-in rounded-lg p-4 text-center shadow-lg w-[90%] sm:w-[450px] max-w-md
+          className={`fixed top-16 right-2 z-50 animate-fade-in rounded-lg p-4 text-center shadow-lg w-[90%] sm:w-[400px] max-w-md
           ${
             showSuccessMessage.includes("دسترسی") ||
             showSuccessMessage.includes("خریداری کنید")
@@ -410,7 +410,7 @@ export default function CourseEpisodePage({
 
                 {/* دیالوگ اتمام ویدیو */}
                 {showCompletionDialog && (
-                  <div className="absolute inset-0  flex items-center justify-center z-30 backdrop-blur-sm">
+                  <div className="absolute inset-0 bg-background flex items-center justify-center z-30 backdrop-blur-sm">
                     <div className=" p-8 rounded-2xl max-w-md text-center shadow-2xl border  animate-fade-in relative overflow-hidden">
                       {/* خط تزئینی بالا */}
                       <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-400 via-green-500 to-green-400"></div>
@@ -444,7 +444,7 @@ export default function CourseEpisodePage({
                             />
                           </svg>
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-3xl font-bold text-white">
+                            <span className="text-3xl font-bold ">
                               {Math.ceil(10 - completionTimerProgress / 10)}
                             </span>
                           </div>
@@ -453,14 +453,14 @@ export default function CourseEpisodePage({
 
                       <div className="flex items-center justify-center gap-2 mb-5">
                         <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
-                          <Check className="w-6 h-6 text-white" />
+                          <Check className="w-6 h-6 " />
                         </div>
-                        <h3 className="text-2xl font-bold text-white">
+                        <h3 className="text-2xl font-bold text-muted-foreground">
                           تبریک!
                         </h3>
                       </div>
 
-                      <p className="text-gray-200 mb-5 text-lg">
+                      <p className="text-muted-foreground mb-5 text-lg">
                         شما با موفقیت این قسمت را به پایان رساندید.
                       </p>
 
@@ -620,14 +620,14 @@ export default function CourseEpisodePage({
                       )
                     }
                     className={`flex flex-1 flex-col items-center gap-1 px-1.5 py-2 text-sm font-medium transition-all rounded-t-lg relative ${
-                      activeTab === tab.id ? " text-green-400 shadow-sm" : ""
+                      activeTab === tab.id ? " text-green-500 shadow-sm" : ""
                     }`}
                   >
                     <div className="relative">
                       <div
                         className={`${
                           activeTab === tab.id
-                            ? "text-green-400"
+                            ? "text-green-500"
                             : "text-gray-500"
                         }`}
                       >
@@ -722,19 +722,19 @@ export default function CourseEpisodePage({
                                 >
                                   <div className="shrink-0 mt-0.5">
                                     {!episodeAccess ? (
-                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-700">
+                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black">
                                         <Lock className="h-4 w-4 text-red-500" />
                                       </div>
                                     ) : isCompleted ? (
-                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-green-800/30">
+                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black">
                                         <Check className="h-4 w-4 text-green-400" />
                                       </div>
                                     ) : isActive ? (
-                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/30">
-                                        <Play className="h-4 w-4 text-primary" />
+                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black">
+                                        <Play className="h-4 w-4 text-white" />
                                       </div>
                                     ) : (
-                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-700">
+                                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-black">
                                         <Play className="h-4 w-4 text-gray-300" />
                                       </div>
                                     )}

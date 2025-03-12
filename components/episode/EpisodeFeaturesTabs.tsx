@@ -32,7 +32,7 @@ export default function EpisodeFeaturesTabs({
   return (
     <div className="mt-8">
       {/* Tabs Navigation */}
-      <div className="border-b border-gray-200 dark:border-gray-700">
+      <div className="border-b ">
         <div className="flex overflow-x-auto">
           {tabs.map(tab => (
             <button
@@ -40,7 +40,7 @@ export default function EpisodeFeaturesTabs({
               onClick={() => setActiveTab(tab.id as TabType)}
               className={`flex items-center gap-2 px-4 py-3 text-sm font-medium ${
                 activeTab === tab.id
-                  ? 'border-b-2 border-teal-500 text-teal-600 dark:text-teal-400'
+                  ? 'border-b-2 border-green-500 text-green-600 dark:text-green-400'
                   : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200'
               }`}
             >

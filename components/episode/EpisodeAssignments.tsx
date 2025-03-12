@@ -181,13 +181,13 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
   const renderStatus = (status: Assignment['status']) => {
     switch (status) {
       case 'pending':
-        return <span className="flex items-center text-yellow-400 text-xs"><Clock className="h-3 w-3 mr-1" /> در انتظار ارسال</span>;
+        return <span className="flex items-center text-yellow-400 text-xs"><Clock className="h-3 w-3 ml-1" /> در انتظار ارسال</span>;
       case 'submitted':
-        return <span className="flex items-center text-blue-400 text-xs"><AlertCircle className="h-3 w-3 mr-1" /> در انتظار بررسی</span>;
+        return <span className="flex items-center text-blue-400 text-xs"><AlertCircle className="h-3 w-3 ml-1" /> در انتظار بررسی</span>;
       case 'graded':
-        return <span className="flex items-center text-green-400 text-xs"><CheckCircle className="h-3 w-3 mr-1" /> تأیید شده</span>;
+        return <span className="flex items-center text-green-400 text-xs"><CheckCircle className="h-3 w-3 ml-1" /> تأیید شده</span>;
       case 'rejected':
-        return <span className="flex items-center text-red-400 text-xs"><XCircle className="h-3 w-3 mr-1" /> نیاز به اصلاح</span>;
+        return <span className="flex items-center text-red-400 text-xs"><XCircle className="h-3 w-3 ml-1" /> نیاز به اصلاح</span>;
       default:
         return null;
     }
@@ -203,18 +203,18 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
     return (
       <div className="p-5 text-center">
         <div className="inline-flex items-center justify-center p-3  rounded-full mb-4">
-          <Lock className="h-6 w-6 text-gray-400" />
+          <Lock className="h-6 w-6 text-gray-500" />
         </div>
-        <h3 className="text-lg font-medium text-white mb-2">دسترسی محدود شده</h3>
-        <p className="text-gray-400 text-sm max-w-md mx-auto mb-5">
+        <h3 className="text-lg  mb-2">دسترسی محدود شده</h3>
+        <p className="text-gray-500 text-sm max-w-md mx-auto mb-5">
           برای دسترسی به تمرین‌های این قسمت، لطفاً دوره را خریداری کنید یا اشتراک ویژه تهیه نمایید.
         </p>
         
         <div className="flex justify-center gap-3">
-          <button className="bg-blue-600/90 hover:bg-blue-600 transition-colors text-white py-2 px-4 rounded-md text-sm">
+          <button className="bg-blue-600/90 hover:bg-blue-600 transition-colors  py-2 px-4 rounded-md text-sm">
             خرید دوره
           </button>
-          <button className="border border-gray-600 hover:border-gray-500 transition-colors text-white py-2 px-4 rounded-md text-sm">
+          <button className="border border-gray-600 hover:border-gray-500 transition-colors  py-2 px-4 rounded-md text-sm">
             تهیه اشتراک
           </button>
         </div>
@@ -226,9 +226,9 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
     <div className="flex flex-col min-h-[300px]">
       <div className="flex-1">
         <div className="mb-3 flex items-center justify-between">
-          <h3 className="text-white font-medium">تمرین‌های این قسمت</h3>
+          <h3 className="">تمرین‌های این قسمت</h3>
           {assignments.length > 0 && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs bg-gray-700/50 text-gray-300">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-xs ">
               {assignments.length} تمرین
             </span>
           )}
@@ -238,7 +238,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
         <div className="space-y-4 mb-8">
           {assignments.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-10 text-center">
-              <AlertCircle className="h-8 w-8 text-gray-600 mb-2" />
+              <AlertCircle className="h-8 w-8  mb-2" />
               <div className="text-gray-400 text-sm">
                 تمرینی برای این قسمت تعریف نشده است.
               </div>
@@ -247,24 +247,21 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
             assignments.map(assignment => (
               <div 
                 key={assignment.id} 
-                className={`border border-gray-700/30 rounded-md p-4 transition-colors ${
+                className={`border  rounded-md p-4 transition-colors ${
                   activeAssignment === assignment.id 
                     ? 'border-blue-500/50' 
                     : 'border-gray-700/30'
                 }`}
               >
                 <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-medium text-white">{assignment.title}</h4>
+                  <h4 className="">{assignment.title}</h4>
                   {renderStatus(assignment.status)}
                 </div>
                 
-                <p className="text-sm text-gray-300 mb-3">{assignment.description}</p>
+                <p className="text-xs text-gray-500 mb-3">{assignment.description}</p>
                 
-                <div className="flex flex-wrap justify-between items-center text-xs text-gray-400 mb-3">
-                  <span className="flex items-center">
-                    <Clock className="h-3.5 w-3.5 mr-1" />
-                    مهلت ارسال: {assignment.deadline}
-                  </span>
+                <div className="flex flex-wrap justify-between items-center text-xs text-gray-500 mb-3">
+                  
                   
                   {assignment.submittedAt && (
                     <span>
@@ -281,7 +278,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                       <span className="text-white font-bold">{assignment.grade} از 20</span>
                     </div>
                     {assignment.feedback && (
-                      <p className="text-xs text-gray-300">{assignment.feedback}</p>
+                      <p className="text-xs text-gray-500">{assignment.feedback}</p>
                     )}
                   </div>
                 )}
@@ -293,7 +290,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                       <span className="text-sm font-medium text-red-400">بازخورد استاد:</span>
                     </div>
                     {assignment.feedback && (
-                      <p className="text-xs text-gray-300">{assignment.feedback}</p>
+                      <p className="text-xs text-gray-500">{assignment.feedback}</p>
                     )}
                   </div>
                 )}
@@ -301,30 +298,30 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                 {/* نمایش فایل ارسالی */}
                 {(assignment.status === 'submitted' || assignment.status === 'graded' || assignment.status === 'rejected') && (
                   <div className="mb-3">
-                    <h5 className="text-xs font-medium text-gray-400 mb-1">فایل ارسالی:</h5>
+                    <h5 className="text-xs font-medium text-gray-500 mb-1">فایل ارسالی:</h5>
                     {(() => {
                       const submission = findSubmission(assignment.id);
                       if (submission) {
                         if (submission.type === 'file') {
                           return (
-                            <div className="flex items-center border border-gray-700/30 rounded-md p-2 hover:bg-gray-800/20 transition-colors">
-                              <div className="flex items-center justify-center mr-2 w-8 h-8 rounded-full bg-blue-400/10">
+                            <div className="flex items-center border  rounded-md p-2  transition-colors">
+                              <div className="flex items-center justify-center ml-2 w-8 h-8 rounded-full bg-blue-400/10">
                                 <FileUp className="h-4 w-4 text-blue-400" />
                               </div>
-                              <span className="text-xs text-gray-300 flex-1">{submission.filename}</span>
-                              <button className="text-gray-400 hover:text-white transition-colors p-1">
+                              <span className="text-xs text-gray-500 flex-1">{submission.filename}</span>
+                              <button className="text-gray-500  transition-colors p-1">
                                 <Download className="h-4 w-4" />
                               </button>
                             </div>
                           );
                         } else if (submission.type === 'audio') {
                           return (
-                            <div className="flex items-center border border-gray-700/30 rounded-md p-2 hover:bg-gray-800/20 transition-colors">
-                              <div className="flex items-center justify-center mr-2 w-8 h-8 rounded-full bg-purple-400/10">
+                            <div className="flex items-center border  rounded-md p-2  transition-colors">
+                              <div className="flex items-center justify-center ml-2 w-8 h-8 rounded-full bg-purple-400/10">
                                 <Mic className="h-4 w-4 text-purple-400" />
                               </div>
-                              <span className="text-xs text-gray-300 flex-1">فایل صوتی ({submission.duration})</span>
-                              <button className="text-gray-400 hover:text-white transition-colors p-1">
+                              <span className="text-xs text-gray-500 flex-1">فایل صوتی ({submission.duration})</span>
+                              <button className="text-gray-500  transition-colors p-1">
                                 <Download className="h-4 w-4" />
                               </button>
                             </div>
@@ -342,16 +339,16 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                     activeAssignment === assignment.id ? (
                       <button
                         onClick={() => setActiveAssignment(null)}
-                        className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1.5 rounded-md transition-colors"
+                        className="text-xs border px-3 py-1.5 rounded-md transition-colors"
                       >
-                        انصراف
+                        انصراف تمرین
                       </button>
                     ) : (
                       <button
                         onClick={() => setActiveAssignment(assignment.id)}
-                        className="text-xs bg-blue-600/90 hover:bg-blue-600 text-white px-3 py-1.5 rounded-md transition-colors"
+                        className="text-xs border px-3 py-1.5 rounded-md transition-colors"
                       >
-                        ارسال پاسخ
+                        ارسال تمرین
                       </button>
                     )
                   )}
@@ -365,8 +362,8 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                         onClick={() => setSubmissionType('file')}
                         className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm ${
                           submissionType === 'file'
-                            ? 'border border-blue-500/30 text-blue-400' 
-                            : 'border border-gray-700/50 text-gray-300 hover:text-white'
+                            ? 'border border-green-500/30 text-green-500' 
+                            : 'border border-gray-700/50 text-gray-500'
                         }`}
                       >
                         <FileUp className="h-4 w-4" />
@@ -376,8 +373,8 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                         onClick={() => setSubmissionType('audio')}
                         className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm ${
                           submissionType === 'audio'
-                            ? 'border border-blue-500/30 text-blue-400'
-                            : 'border border-gray-700/50 text-gray-300 hover:text-white'
+                            ? 'border border-green-500/30 text-green-500'
+                            : 'border border-gray-700/50 text-gray-500'
                         }`}
                       >
                         <Mic className="h-4 w-4" />
@@ -397,19 +394,19 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                         
                         {selectedFile ? (
                           <div className="flex items-center border border-gray-700/30 rounded-md p-3 mb-3">
-                            <div className="flex items-center justify-center mr-2 w-10 h-10 rounded-full bg-blue-400/10">
+                            <div className="flex items-center justify-center ml-2 w-10 h-10 rounded-full bg-blue-400/10">
                               <FileUp className="h-5 w-5 text-blue-400" />
                             </div>
                             <div className="flex-1">
-                              <div className="text-sm text-white truncate">{selectedFile.name}</div>
-                              <div className="text-xs text-gray-400">{(selectedFile.size / 1024).toFixed(1)} KB</div>
+                              <div className="text-sm  truncate">{selectedFile.name}</div>
+                              <div className="text-xs text-gray-500">{(selectedFile.size / 1024).toFixed(1)} KB</div>
                             </div>
                             <button 
                               onClick={() => {
                                 setSelectedFile(null);
                                 if (fileInputRef.current) fileInputRef.current.value = '';
                               }}
-                              className="text-gray-400 hover:text-red-400 transition-colors"
+                              className="text-gray-500 hover:text-red-400 transition-colors"
                             >
                               <XCircle className="h-5 w-5" />
                             </button>
@@ -420,7 +417,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                             className="border-2 border-dashed border-gray-700/50 rounded-md p-6 text-center cursor-pointer hover:border-blue-500/40 transition-colors"
                           >
                             <FileUp className="h-8 w-8 text-gray-500 mx-auto mb-2" />
-                            <p className="text-sm text-gray-400 mb-1">فایل خود را اینجا رها کنید یا کلیک کنید</p>
+                            <p className="text-sm text-gray-500 mb-1">فایل خود را اینجا رها کنید یا کلیک کنید</p>
                             <p className="text-xs text-gray-500">حداکثر اندازه: 10MB</p>
                           </div>
                         )}
@@ -445,8 +442,8 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                         ) : recordingTime > 0 ? (
                           <div className="border border-gray-700/50 rounded-md p-4 text-center mb-3">
                             <Mic className="h-6 w-6 text-green-400 mx-auto mb-2" />
-                            <p className="text-sm text-white mb-1">ضبط صدا با موفقیت انجام شد</p>
-                            <p className="text-xs text-gray-400">مدت زمان: {formatTime(recordingTime)}</p>
+                            <p className="text-sm  mb-1">ضبط صدا با موفقیت انجام شد</p>
+                            <p className="text-xs text-gray-500">مدت زمان: {formatTime(recordingTime)}</p>
                           </div>
                         ) : (
                           <div 
@@ -454,7 +451,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                             className="border-2 border-dashed border-gray-700/50 rounded-md p-6 text-center cursor-pointer hover:border-blue-500/40 transition-colors"
                           >
                             <Mic className="h-8 w-8 text-gray-500 mx-auto mb-2" />
-                            <p className="text-sm text-gray-400 mb-1">برای شروع ضبط صدا کلیک کنید</p>
+                            <p className="text-sm text-gray-500 mb-1">برای شروع ضبط صدا کلیک کنید</p>
                             <p className="text-xs text-gray-500">حداکثر زمان: 5 دقیقه</p>
                           </div>
                         )}
@@ -465,10 +462,10 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                       <button
                         onClick={submitAssignment}
                         disabled={(submissionType === 'file' && !selectedFile) || (submissionType === 'audio' && recordingTime === 0)}
-                        className="flex items-center gap-1.5 bg-blue-600/90 hover:bg-blue-600 text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        className="flex items-center gap-1.5 bg-green-600/90 hover:bg-green-600 text-white px-4 py-2 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                       >
                         <Send className="h-4 w-4" />
-                        <span>ارسال تمرین</span>
+                        <span className='text-xs'>ارسال تمرین</span>
                       </button>
                     </div>
                   </div>

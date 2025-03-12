@@ -17,7 +17,7 @@ interface Note {
   createdAt: Date;
 }
 
-export default function EpisodeNotes({ episodeId, courseId, currentTime, isLocked = false }: EpisodeNotesProps) {
+export default function EpisodeNotes({ episodeId, currentTime, isLocked = false }: EpisodeNotesProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [newNote, setNewNote] = useState('');
   const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
@@ -101,7 +101,7 @@ export default function EpisodeNotes({ episodeId, courseId, currentTime, isLocke
   if (isLocked) {
     return (
       <div className="flex flex-col h-full items-center justify-center text-center p-8">
-        <div className="bg-gray-800/60 p-6 rounded-lg border border-gray-700 flex flex-col items-center max-w-md">
+        <div className=" p-6 rounded-lg border flex flex-col items-center max-w-md">
           <div className="bg-yellow-500/20 p-3 rounded-full mb-4">
             <Lock className="h-12 w-12 text-yellow-500" />
           </div>
@@ -125,10 +125,10 @@ export default function EpisodeNotes({ episodeId, courseId, currentTime, isLocke
   return (
     <div className="flex flex-col h-full">
       {/* فرم افزودن یادداشت جدید */}
-      <div className="mb-4 bg-gray-800 rounded-lg p-3 border border-gray-700">
+      <div className="mb-4  rounded-lg p-3 border ">
         <div className="flex items-center gap-2 mb-2">
-          <Clock className="h-4 w-4 text-green-400" />
-          <span className="text-sm text-green-400 font-medium">
+          <Clock className="h-4 w-4 " />
+          <span className="text-sm ">
             افزودن یادداشت در {formatTime(currentTime)}
           </span>
         </div>
@@ -136,7 +136,7 @@ export default function EpisodeNotes({ episodeId, courseId, currentTime, isLocke
           value={newNote}
           onChange={(e) => setNewNote(e.target.value)}
           placeholder="یادداشت خود را اینجا بنویسید..."
-          className="w-full bg-gray-700 text-white rounded-md p-2 text-sm resize-none h-20 focus:outline-none focus:ring-1 focus:ring-green-500 border border-gray-600"
+          className="w-full  rounded-md p-2 text-sm resize-none h-20  border "
         />
         <div className="flex justify-end mt-2">
           <button
@@ -145,30 +145,30 @@ export default function EpisodeNotes({ episodeId, courseId, currentTime, isLocke
             className="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <Plus className="h-4 w-4" />
-            <span>افزودن یادداشت</span>
+            <span className='text-xs'>افزودن یادداشت</span>
           </button>
         </div>
       </div>
 
       {/* لیست یادداشت‌ها */}
       <div className="flex-1 overflow-y-auto">
-        <h3 className="text-sm font-medium text-gray-300 mb-2">یادداشت‌های شما ({notes.length})</h3>
+        <h3 className="text-sm font-medium text-gray-500 mb-2">یادداشت‌های شما ({notes.length})</h3>
         
         {notes.length === 0 ? (
-          <div className="text-center py-8 text-gray-400 text-sm">
+          <div className="text-center py-8 text-gray-500 text-sm">
             هنوز یادداشتی ثبت نکرده‌اید.
           </div>
         ) : (
           <div className="space-y-3">
             {sortedNotes.map(note => (
-              <div key={note.id} className="bg-gray-800/70 rounded-lg p-3 border border-gray-700">
+              <div key={note.id} className=" rounded-lg p-3 border">
                 {editingNoteId === note.id ? (
                   // حالت ویرایش
                   <div>
                     <textarea
                       value={editContent}
                       onChange={(e) => setEditContent(e.target.value)}
-                      className="w-full bg-gray-700 text-white rounded-md p-2 text-sm resize-none h-20 focus:outline-none focus:ring-1 focus:ring-green-500 border border-gray-600 mb-2"
+                      className="w-full text-gray-500 rounded-md p-2 text-sm resize-none h-20  border  mb-2"
                     />
                     <div className="flex justify-end gap-2">
                       <button
@@ -180,7 +180,7 @@ export default function EpisodeNotes({ episodeId, courseId, currentTime, isLocke
                       </button>
                       <button
                         onClick={cancelEdit}
-                        className="flex items-center gap-1 bg-gray-600 hover:bg-gray-700 text-white px-2 py-1 rounded-md text-xs"
+                        className="flex items-center gap-1 border text-gray-500 px-2 py-1 rounded-md text-xs"
                       >
                         <X className="h-3 w-3" />
                         <span>انصراف</span>
@@ -193,7 +193,7 @@ export default function EpisodeNotes({ episodeId, courseId, currentTime, isLocke
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-1.5">
                         <button 
-                          className="flex items-center justify-center bg-green-600/20 text-green-400 rounded px-1.5 py-0.5 text-xs hover:bg-green-600/30 transition-colors"
+                          className="flex items-center justify-center bg-green-600/20 text-green-600 rounded px-1.5 py-0.5 text-xs hover:bg-green-600/30 transition-colors"
                           title="پرش به این زمان"
                         >
                           <Clock className="h-3 w-3 mr-0.5" />
@@ -220,7 +220,7 @@ export default function EpisodeNotes({ episodeId, courseId, currentTime, isLocke
                         </button>
                       </div>
                     </div>
-                    <p className="text-sm text-gray-200 whitespace-pre-wrap">{note.content}</p>
+                    <p className="text-sm text-gray-500 whitespace-pre-wrap">{note.content}</p>
                   </div>
                 )}
               </div>
