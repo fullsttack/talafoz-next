@@ -1,6 +1,6 @@
 import { Linkedin, Twitter, Instagram, Github, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
+import Image from 'next/image';
 interface CourseInstructorCardProps {
   instructor: string;
   role?: string;
@@ -30,12 +30,12 @@ export default function CourseInstructorCard({
     <div className={cn(
       "relative overflow-hidden rounded-xl border shadow-md",
       // light styles
-      "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
+      "",
       // dark styles
-      "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+      ""
     )}>
       {/* نوار تزئینی بالای کارت */}
-      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-500 via-green-400 to-green-500"></div>
+      <div className="absolute top-0 left-0 right-0 h-2 bg-green"></div>
       
       {/* محتوای اصلی */}
       <div className="p-6 pt-8">
@@ -46,9 +46,11 @@ export default function CourseInstructorCard({
             <div className="absolute -inset-2 rounded-full bg-gradient-to-r from-green-200 to-green-100 dark:from-green-800/20 dark:to-green-700/10 blur-md"></div>
             
             {/* قاب عکس */}
-            <div className="relative h-32 w-32 rounded-full bg-gradient-to-br from-green-500 to-green-600 p-1 shadow-lg">
+            <div className="relative h-32 w-32 rounded-full bg-green p-1 shadow-lg">
               <div className="h-full w-full overflow-hidden rounded-full border-2 border-white dark:border-gray-50/[.1]">
-                <img 
+                <Image
+                  width={100}
+                  height={100}
                   src={avatarUrl} 
                   alt={instructor} 
                   className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
@@ -67,7 +69,7 @@ export default function CourseInstructorCard({
           <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-white">
             {instructor}
           </h2>
-          <p className="text-green-600 dark:text-green-400 font-medium">{role}</p>
+          <p className="text-green font-medium">{role}</p>
         </div>
         
         {/* بیوگرافی با طراحی جذاب */}
@@ -109,11 +111,11 @@ export default function CourseInstructorCard({
               <div className={cn(
                 "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
                 // light styles
-                "bg-white",
+                "bg-black",
                 // dark styles
                 "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
               )}>
-                <Linkedin className="h-5 w-5 text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-white" />
+                <Linkedin className="h-5 w-5 text-background transition-colors duration-300 group-hover:text-white" />
               </div>
             </a>
           )}
@@ -129,11 +131,11 @@ export default function CourseInstructorCard({
               <div className={cn(
                 "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
                 // light styles
-                "bg-white",
+                "bg-black",
                 // dark styles
                 "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
               )}>
-                <Twitter className="h-5 w-5 text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-white" />
+                <Twitter className="h-5 w-5 text-background transition-colors duration-300 group-hover:text-white" />
               </div>
             </a>
           )}
@@ -149,11 +151,11 @@ export default function CourseInstructorCard({
               <div className={cn(
                 "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
                 // light styles
-                "bg-white",
+                "bg-black",
                 // dark styles
                 "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
               )}>
-                <Instagram className="h-5 w-5 text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-white" />
+                <Instagram className="h-5 w-5 text-background transition-colors duration-300 group-hover:text-white" />
               </div>
             </a>
           )}
@@ -169,11 +171,11 @@ export default function CourseInstructorCard({
               <div className={cn(
                 "relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300 group-hover:bg-transparent group-hover:text-white",
                 // light styles
-                "bg-white",
+                "bg-black",
                 // dark styles
                 "dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
               )}>
-                <Github className="h-5 w-5 text-gray-600 dark:text-gray-300 transition-colors duration-300 group-hover:text-white" />
+                <Github className="h-5 w-5 text-background transition-colors duration-300 group-hover:text-white" />
               </div>
             </a>
           )}

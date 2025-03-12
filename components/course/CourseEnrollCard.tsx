@@ -131,7 +131,7 @@ export default function CourseEnrollCard({
   const shouldShowEnrollButton = !isEnrolled && !hasPurchasedCourse;
   
   return (
-    <div className="sticky top-6 rounded-xl border border-gray-200 bg-white p-6 shadow-md dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]">
+    <div className="sticky top-6 rounded-xl border p-6 shadow-md ">
       {/* نمایش پیام موفقیت */}
       {showSuccessToast && (
         <div className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 transform rounded-lg bg-green-600 px-6 py-3 text-white shadow-lg">
@@ -172,7 +172,7 @@ export default function CourseEnrollCard({
         ) : (
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-2">
-              <span className="text-2xl font-bold text-gray-900 dark:text-white">
+              <span className="text-2xl font-bold ">
                 {formattedPrice(finalPrice)} تومان
               </span>
               
@@ -229,12 +229,12 @@ export default function CourseEnrollCard({
       <div className="divide-y divide-gray-200 dark:divide-gray-800">
         <div className="flex justify-between py-3">
           <span className="text-sm text-gray-600 dark:text-gray-400">تعداد دانشجویان</span>
-          <span className="font-medium">{studentsCount.toLocaleString()}</span>
+          <span className="">{studentsCount.toLocaleString()}</span>
         </div>
         
         <div className="flex justify-between py-3">
           <span className="text-sm text-gray-600 dark:text-gray-400">سطح دوره</span>
-          <span className="font-medium">
+          <span className="">
             {course.level === 'beginner' ? 'مبتدی' : 
              course.level === 'intermediate' ? 'متوسط' : 'پیشرفته'}
           </span>
@@ -242,13 +242,13 @@ export default function CourseEnrollCard({
         
         <div className="flex justify-between py-3">
           <span className="text-sm text-gray-600 dark:text-gray-400">مدت زمان</span>
-          <span className="font-medium">{course.duration}</span>
+          <span className="">{course.duration}</span>
         </div>
         
         <div className="flex justify-between py-3">
           <span className="text-sm text-gray-600 dark:text-gray-400">امتیاز</span>
           <div className="flex items-center gap-1">
-            <span className="font-medium">{rating}</span>
+            <span className="">{rating}</span>
             <span className="text-yellow-400">★</span>
           </div>
         </div>
@@ -257,12 +257,12 @@ export default function CourseEnrollCard({
       {/* دسته‌بندی‌ها */}
       {categories.length > 0 && (
         <div className="mt-6">
-          <p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">دسته‌بندی‌ها:</p>
+          <p className="mb-2 text-sm  text-gray-700 dark:text-gray-300">دسته‌بندی‌ها:</p>
           <div className="flex flex-wrap gap-2">
             {categories.map((category, index) => (
               <span 
                 key={index}
-                className="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                className="rounded-full  px-3 py-1 text-xs  border"
               >
                 {category}
               </span>

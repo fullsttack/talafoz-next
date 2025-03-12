@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { Star, ThumbsUp, MessageCircle, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import { Star, ThumbsUp, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -130,8 +130,6 @@ interface CourseReviewsProps {
 }
 
 export default function CourseReviews({ courseId, courseRating, reviewsCount = 0 }: CourseReviewsProps) {
-  const [sortBy, setSortBy] = useState<'newest' | 'helpful'>('newest');
-  const [showReviewForm, setShowReviewForm] = useState(false);
   const [newReviewContent, setNewReviewContent] = useState('');
   const [newReviewRating, setNewReviewRating] = useState(5);
   const [showReplies, setShowReplies] = useState<Record<string, boolean>>({});
@@ -164,18 +162,6 @@ export default function CourseReviews({ courseId, courseRating, reviewsCount = 0
     };
   });
   
-  // مرتب‌سازی نظرات
-  const sortedReviews = [...reviews].sort((a, b) => {
-    if (sortBy === 'helpful') {
-      return b.helpfulCount - a.helpfulCount;
-    }
-    
-    // تبدیل تاریخ فارسی به مقداری که بتوان مقایسه کرد (ساده‌سازی شده)
-    const dateA = a.date.split('/').reverse().join('');
-    const dateB = b.date.split('/').reverse().join('');
-    return dateB.localeCompare(dateA);
-  });
-  
   // ارسال نظر جدید
   const handleSubmitReview = () => {
     if (newReviewContent.trim() === '') return;
@@ -188,7 +174,6 @@ export default function CourseReviews({ courseId, courseRating, reviewsCount = 0
     // پاک کردن فرم
     setNewReviewContent('');
     setNewReviewRating(5);
-    setShowReviewForm(false);
   };
   
   const handleSubmitReply = (reviewId: string, replyContent: string) => {
@@ -207,12 +192,12 @@ export default function CourseReviews({ courseId, courseRating, reviewsCount = 0
   };
   
   return (
-    <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+    <div className="rounded-lg border p-6 ">
       <h2 className="mb-6 text-xl font-bold">نظرات کاربران</h2>
       
       {/* خلاصه امتیازات */}
-      <div className="mb-8 flex flex-col gap-6 md:flex-row">
-        <div className="flex-1 space-y-2 border-b pb-4 md:border-b-0 md:border-l md:border-gray-200 md:pb-0 md:pl-6 md:dark:border-gray-700">
+      <div className="mb-8 flex flex-col gap-6">
+        <div className="flex-1 space-y-2 border-b pb-4 dark:border-gray-700">
           {/* امتیاز کلی */}
           <div className="flex items-center gap-3">
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary-100 text-2xl font-bold text-primary">
@@ -252,105 +237,69 @@ export default function CourseReviews({ courseId, courseRating, reviewsCount = 0
           </div>
         </div>
         
-        {/* فرم ثبت نظر جدید */}
-        <div className="mb-8">
-          <button
-            onClick={() => setShowReviewForm(!showReviewForm)}
-            className="mb-4 flex w-full items-center justify-center gap-2 rounded-lg border border-gray-200 bg-white p-3 font-medium transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
-          >
-            <Star className="h-4 w-4" />
-            <span>{showReviewForm ? 'بستن فرم نظر' : 'ثبت نظر جدید'}</span>
-            {showReviewForm ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-          
-          {showReviewForm && (
-            <div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
-              <h3 className="mb-4 text-lg font-bold">نظر خود را ثبت کنید</h3>
-              
-              {/* امتیازدهی */}
-              <div className="mb-4">
-                <p className="mb-2 text-sm font-medium">امتیاز شما:</p>
-                <div className="flex gap-1">
-                  {[1, 2, 3, 4, 5].map((rating) => (
-                    <button
-                      key={rating}
-                      type="button"
-                      onClick={() => setNewReviewRating(rating)}
-                      className="focus:outline-none"
-                    >
-                      <Star
-                        className={`h-6 w-6 ${
-                          rating <= newReviewRating
-                            ? 'fill-yellow-400 text-yellow-400'
-                            : 'fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700'
-                        }`}
-                      />
-                    </button>
-                  ))}
-                  <span className="mr-2 text-sm text-gray-600 dark:text-gray-400">
-                    ({newReviewRating} از 5)
-                  </span>
-                </div>
+        {/* فرم ثبت نظر جدید - همیشه نمایش داده می‌شود */}
+        <div className="mb-4">
+          <div className="rounded-lg border p-6 ">
+            <h3 className="mb-4 text-lg font-bold">نظر خود را ثبت کنید</h3>
+            
+            {/* امتیازدهی */}
+            <div className="mb-4">
+              <p className="mb-2 text-sm font-medium">امتیاز شما:</p>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                  <button
+                    key={rating}
+                    type="button"
+                    onClick={() => setNewReviewRating(rating)}
+                    className="focus:outline-none"
+                  >
+                    <Star
+                      className={`h-6 w-6 ${
+                        rating <= newReviewRating
+                          ? 'fill-yellow-400 text-yellow-400'
+                          : 'fill-gray-200 text-gray-200 dark:fill-gray-700 dark:text-gray-700'
+                      }`}
+                    />
+                  </button>
+                ))}
+                <span className="mr-2 text-sm text-gray-600 dark:text-gray-400">
+                  ({newReviewRating} از 5)
+                </span>
               </div>
-              
-              {/* متن نظر */}
-              <div className="mb-4">
-                <label htmlFor="review-content" className="mb-2 block text-sm font-medium">
-                  نظر شما:
-                </label>
-                <Textarea
-                  id="review-content"
-                  value={newReviewContent}
-                  onChange={(e) => setNewReviewContent(e.target.value)}
-                  rows={4}
-                  placeholder="نظر خود را درباره این دوره بنویسید..."
-                  className="w-full resize-none rounded-lg border border-gray-200 p-3 dark:border-gray-700 dark:bg-gray-800"
-                />
-              </div>
-              
-              {/* دکمه ارسال */}
-              <Button
-                type="button"
-                onClick={handleSubmitReview}
-                disabled={newReviewContent.trim().length < 10}
-                className="flex items-center gap-2"
-              >
-                <span>ثبت نظر</span>
-                <Send className="h-4 w-4" />
-              </Button>
             </div>
-          )}
+            
+            {/* متن نظر */}
+            <div className="mb-4">
+              <label htmlFor="review-content" className="mb-2 block text-sm font-medium">
+                نظر شما:
+              </label>
+              <Textarea
+                id="review-content"
+                value={newReviewContent}
+                onChange={(e) => setNewReviewContent(e.target.value)}
+                rows={4}
+                placeholder="نظر خود را درباره این دوره بنویسید..."
+                className="w-full resize-none rounded-lg border  p-3 "
+              />
+            </div>
+            
+            {/* دکمه ارسال */}
+            <Button
+              type="button"
+              onClick={handleSubmitReview}
+              disabled={newReviewContent.trim().length < 10}
+              className="flex items-center gap-2"
+            >
+              <span>ثبت نظر</span>
+            </Button>
+          </div>
         </div>
-      </div>
-      
-      {/* تب‌های مرتب‌سازی */}
-      <div className="mb-6 flex gap-4 border-b border-gray-200 pb-2 dark:border-gray-700">
-        <button
-          onClick={() => setSortBy('newest')}
-          className={`pb-2 text-sm font-medium ${
-            sortBy === 'newest'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-          }`}
-        >
-          جدیدترین
-        </button>
-        <button
-          onClick={() => setSortBy('helpful')}
-          className={`pb-2 text-sm font-medium ${
-            sortBy === 'helpful'
-              ? 'border-b-2 border-primary text-primary'
-              : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200'
-          }`}
-        >
-          مفیدترین
-        </button>
       </div>
       
       {/* لیست نظرات */}
       <div className="space-y-6">
-        {sortedReviews.length > 0 ? (
-          sortedReviews.map((review) => (
+        {reviews.length > 0 ? (
+          reviews.map((review) => (
             <div key={review.id} className="border-b border-gray-100 pb-6 last:border-0 dark:border-gray-800">
               <div className="mb-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">

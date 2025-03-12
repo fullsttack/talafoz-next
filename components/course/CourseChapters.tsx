@@ -105,9 +105,9 @@ export default function CourseChapters({
     const episodeContent = (
       <>
         <div className="flex flex-1 items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border">
             {!isAccessible ? (
-              <Lock className="h-4 w-4 text-gray-400" />
+              <Lock className="h-4 w-4 text-red-500" />
             ) : isActive ? (
               <CheckCircle className="h-4 w-4 text-primary" />
             ) : (
@@ -184,27 +184,11 @@ export default function CourseChapters({
           </p>
         </div>
         
-        {/* دکمه باز/بسته کردن همه فصل‌ها */}
-        <button
-          onClick={() => {
-            const allExpanded = Object.values(expandedChapters).every(expanded => expanded);
-            const newValue = !allExpanded;
-            
-            const newExpandedChapters: Record<string, boolean> = {};
-            chapters.forEach(chapter => {
-              newExpandedChapters[chapter.id] = newValue;
-            });
-            
-            setExpandedChapters(newExpandedChapters);
-          }}
-          className="rounded-full border border-gray-300 px-4 py-1.5 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
-        >
-          {Object.values(expandedChapters).every(expanded => expanded) ? 'بستن همه فصل‌ها' : 'باز کردن همه فصل‌ها'}
-        </button>
+        
       </div>
       
       {/* لیست فصل‌ها */}
-      <div className="rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+      <div className="rounded-lg border">
         {chapters.map((chapter, chapterIndex) => (
           <div key={chapter.id} className="border-b border-gray-200 last:border-b-0 dark:border-gray-800">
             {/* سر فصل */}
@@ -213,7 +197,7 @@ export default function CourseChapters({
               className="flex w-full cursor-pointer items-center justify-between p-4 text-right hover:bg-gray-50 dark:hover:bg-gray-800/60"
             >
               <div className="flex items-center gap-2">
-                <span className="flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-sm font-medium text-primary">
+                <span className="flex h-6 w-6 items-center justify-center rounded-full  text-sm  text-primary">
                   {chapterIndex + 1}
                 </span>
                 <h3 className="font-medium">{chapter.title}</h3>
@@ -226,7 +210,7 @@ export default function CourseChapters({
             
             {/* قسمت‌های فصل */}
             {expandedChapters[chapter.id] && (
-              <div className="border-t border-gray-100 bg-gray-50 dark:border-gray-800 dark:bg-gray-900/40">
+              <div className="border-t border">
                 {chapter.episodes.map((episode, episodeIndex) => 
                   renderEpisode(episode, episodeIndex)
                 )}

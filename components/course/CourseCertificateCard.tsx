@@ -1,4 +1,4 @@
-import { Award, Check, Certificate, Medal, Trophy } from 'lucide-react';
+import { Award, Check, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface CourseCertificateCardProps {
@@ -9,7 +9,6 @@ interface CourseCertificateCardProps {
 
 export default function CourseCertificateCard({
   courseCompleted = false,
-  courseCompletionPercentage = 0,
   onRequestCertificate = () => console.log('Certificate requested')
 }: CourseCertificateCardProps) {
   
@@ -17,12 +16,10 @@ export default function CourseCertificateCard({
     <div className={cn(
       "relative overflow-hidden rounded-xl border shadow-md",
       // light styles
-      "border-gray-950/[.1] bg-gray-950/[.01] hover:bg-gray-950/[.05]",
-      // dark styles
-      "dark:border-gray-50/[.1] dark:bg-gray-50/[.10] dark:hover:bg-gray-50/[.15]"
+    
     )}>
       {/* نوار تزئینی بالای کارت */}
-      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500"></div>
+      <div className="absolute top-0 left-0 right-0 h-2 bg-yellow"></div>
       
       {/* محتوای اصلی */}
       <div className="p-6 pt-8">
@@ -127,7 +124,7 @@ export default function CourseCertificateCard({
               // light styles
               "bg-white",
               // dark styles
-              "dark:bg-gray-50/[.10] dark:text-gray-400"
+              "dark:bg-gray-50/[.10] dark:text-gray-800"
             )}>
               <Award className="h-5 w-5" />
               <span>با تکمیل دوره، گواهی دریافت کنید</span>
