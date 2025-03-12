@@ -4,6 +4,7 @@ export interface Episode {
   title: string;
   duration: string;
   isFree: boolean;
+  isPreview?: boolean;
   videoUrl?: string;
   description?: string;
 }

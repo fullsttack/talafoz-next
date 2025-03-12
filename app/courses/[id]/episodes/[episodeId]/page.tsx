@@ -1,6 +1,39 @@
 import { notFound } from 'next/navigation';
+import { Suspense } from 'react';
 import { courses } from '@/components/data/course';
 import CourseEpisodePage from '@/components/course/CourseEpisodePage';
+
+// اسکلتون لودینگ برای صفحه اپیزود
+function EpisodePageSkeleton() {
+  return (
+    <div className="container mx-auto px-4 py-8 animate-pulse">
+      <div className="mb-6">
+        <div className="h-5 bg-gray-200 dark:bg-gray-800 rounded w-1/3"></div>
+      </div>
+      
+      <div className="mb-6">
+        <div className="h-8 bg-gray-200 dark:bg-gray-800 rounded w-3/4"></div>
+      </div>
+      
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+        {/* Main content */}
+        <div className="lg:col-span-3">
+          <div className="aspect-video mb-6 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+          <div className="space-y-4">
+            <div className="h-7 bg-gray-200 dark:bg-gray-800 rounded w-1/2"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-full"></div>
+            <div className="h-4 bg-gray-200 dark:bg-gray-800 rounded w-5/6"></div>
+          </div>
+        </div>
+        
+        {/* Sidebar */}
+        <div className="lg:col-span-1">
+          <div className="h-96 bg-gray-200 dark:bg-gray-800 rounded-lg"></div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 interface EpisodePageProps {
   params: {
@@ -31,6 +64,8 @@ export async function generateStaticParams() {
 
 // Set dynamic mode to force-static for static export
 export const dynamic = 'force-static';
+export const revalidate = 3600; // Cache for 1 hour
+export const preferredRegion = 'auto'; // Performance optimization
 
 // Add metadata for the episode page
 export function generateMetadata({ params }: EpisodePageProps) {
@@ -91,10 +126,12 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
   }
   
   return (
-    <CourseEpisodePage 
-      course={course} 
-      episode={targetEpisode} 
-      chapter={targetChapter} 
-    />
+    <Suspense fallback={<EpisodePageSkeleton />}>
+      <CourseEpisodePage 
+        course={course} 
+        episode={targetEpisode} 
+        chapter={targetChapter} 
+      />
+    </Suspense>
   );
 } 
