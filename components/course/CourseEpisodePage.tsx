@@ -509,7 +509,7 @@ export default function CourseEpisodePage({
         </div>
 
         {/* سایدبار - سمت چپ در دسکتاپ و پایین در موبایل */}
-        <div className="md:w-[380px] lg:w-[400px] xl:w-[450px] flex-1 md:flex-none md:h-screen h-[calc(100vh-45vh-56px)] flex flex-col border-r border-t md:border-t-0 overflow-hidden">
+        <div className="md:w-[380px] lg:w-[400px] xl:w-[550px] flex-1 md:flex-none md:h-screen h-[calc(100vh-45vh-56px)] flex flex-col border-r border-t md:border-t-0 overflow-hidden">
           
 
           {/* تب‌های سایدبار */}
