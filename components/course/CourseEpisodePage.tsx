@@ -447,9 +447,6 @@ export default function CourseEpisodePage({
 
                       {/* پیام تبریک */}
                       <div className="text-center mb-6">
-                        <div className="mb-4 inline-flex justify-center items-center w-14 h-14 rounded-full bg-green-500/10 border border-green-500">
-                          <Check className="h-7 w-7 text-green-500" />
-                        </div>
                         <h3 className="text-xl font-bold mb-2">تبریک!</h3>
                         <p className="text-muted-foreground">این قسمت با موفقیت تکمیل شد</p>
                       </div>
@@ -593,8 +590,7 @@ export default function CourseEpisodePage({
             {activeTab === "chapters" && (
               <div className="divide-y ">
                 {course.chapters &&
-                  course.chapters.map((ch) => {
-                    const chapterProgress = calculateChapterProgress(ch);
+                  course.chapters.map((ch, chapterIndex) => {
                     return (
                       <div key={ch.id} className="border-b  last:border-b-0">
                         {/* سرفصل */}
@@ -604,7 +600,12 @@ export default function CourseEpisodePage({
                         >
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
-                              <h3 className="font-bold ">{ch.title}</h3>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-muted-foreground">
+                                  {chapterIndex + 1}.
+                                </span>
+                                <h3 className="font-bold ">{ch.title}</h3>
+                              </div>
                               <div className="flex items-center">
                                 {expandedChapters[ch.id] ? (
                                   <ChevronUp className="h-5 w-5 " />
@@ -614,18 +615,11 @@ export default function CourseEpisodePage({
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-between text-xs ">
+                            <div className="flex items-center justify-end text-xs ">
                               <span>{ch.episodes.length} قسمت</span>
-                              <span>{chapterProgress}% تکمیل شده</span>
                             </div>
 
-                            {/* نوار پیشرفت فصل */}
-                            <div className="mt-2 h-1 w-full overflow-hidden rounded-full ">
-                              <div
-                                className="h-full rounded-full bg-primary"
-                                style={{ width: `${chapterProgress}%` }}
-                              />
-                            </div>
+                            {/* نوار پیشرفت فصل - حذف شده */}
                           </div>
                         </button>
 
