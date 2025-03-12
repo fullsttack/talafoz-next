@@ -51,7 +51,6 @@ export default function CourseEpisodePage({
   const [showCompletionDialog, setShowCompletionDialog] = useState(false);
   const [completionTimerProgress, setCompletionTimerProgress] = useState(0);
   const [isVideoEnded, setIsVideoEnded] = useState(false);
-  const [showEarnedPoints, setShowEarnedPoints] = useState(false);
 
   const router = useRouter();
   const completionTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -144,13 +143,13 @@ export default function CourseEpisodePage({
     }
 
     setCompletionTimerProgress(0);
-    // نمایش امتیاز با تاخیر برای ایجاد افکت
-    setTimeout(() => {
-      setShowEarnedPoints(true);
-    }, 1000);
+    // نمایش امتیاز با تاخیر برای ایجاد افکت - حذف شده چون دیگر نیازی نیست
+    // setTimeout(() => {
+    //   setShowEarnedPoints(true);
+    // }, 1000);
 
     const startTime = Date.now();
-    const duration = 1000; // 10 ثانیه
+    const duration = 10000; // 10 ثانیه
 
     completionTimerRef.current = setInterval(() => {
       const elapsed = Date.now() - startTime;
@@ -171,7 +170,6 @@ export default function CourseEpisodePage({
       completionTimerRef.current = null;
     }
     setShowCompletionDialog(false);
-    setShowEarnedPoints(false);
   };
 
   // پیدا کردن و انتقال به قسمت بعدی
@@ -410,24 +408,20 @@ export default function CourseEpisodePage({
 
                 {/* دیالوگ اتمام ویدیو */}
                 {showCompletionDialog && (
-                  <div className="absolute inset-0 bg-background flex items-center justify-center z-30 backdrop-blur-sm">
-                    <div className=" p-8 rounded-2xl max-w-md text-center shadow-2xl border  animate-fade-in relative overflow-hidden">
-                      {/* خط تزئینی بالا */}
-                      <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-green-400 via-green-500 to-green-400"></div>
-
-                      {/* ایکون دایره ای */}
-                      <div className="relative mx-auto">
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-green-400 to-green-600 animate-pulse opacity-30 w-28 h-28 mx-auto"></div>
-                        <div className="w-28 h-28 mx-auto mb-6 relative">
+                  <div className="absolute inset-0 bg-background/95 flex items-center justify-center z-30 backdrop-blur-sm">
+                    <div className="w-full max-w-md bg-card p-6 rounded-lg border shadow-md animate-fade-in">
+                      {/* بازگرداندن تایمر دایره‌ای */}
+                      <div className="relative mx-auto mb-6">
+                        <div className="w-20 h-20 mx-auto relative">
                           <svg
-                            className="w-28 h-28 transform -rotate-90"
+                            className="w-20 h-20 transform -rotate-90"
                             viewBox="0 0 100 100"
                           >
                             <circle
                               cx="50"
                               cy="50"
                               r="45"
-                              className="stroke-gray-700 fill-none"
+                              className="stroke-muted fill-none"
                               strokeWidth="8"
                             />
                             <circle
@@ -444,114 +438,60 @@ export default function CourseEpisodePage({
                             />
                           </svg>
                           <div className="absolute inset-0 flex items-center justify-center">
-                            <span className="text-3xl font-bold ">
+                            <span className="text-2xl font-bold">
                               {Math.ceil(10 - completionTimerProgress / 10)}
                             </span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-center gap-2 mb-5">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center">
-                          <Check className="w-6 h-6 " />
+                      {/* پیام تبریک و امتیاز */}
+                      <div className="text-center mb-6">
+                        <div className="mb-3 inline-flex items-center justify-center w-14 h-14 rounded-full bg-green-500/10 border border-green-500">
+                          <Check className="h-7 w-7 text-green-500" />
                         </div>
-                        <h3 className="text-2xl font-bold text-muted-foreground">
-                          تبریک!
-                        </h3>
-                      </div>
-
-                      <p className="text-muted-foreground mb-5 text-lg">
-                        شما با موفقیت این قسمت را به پایان رساندید.
-                      </p>
-
-                      {/* نمایش امتیاز */}
-                      <div
-                        className={`mb-6 transform transition-all duration-700 ${
-                          showEarnedPoints
-                            ? "translate-y-0 opacity-100 scale-100"
-                            : "translate-y-8 opacity-0 scale-95"
-                        }`}
-                      >
-                        <div className="relative py-6">
-                          {/* خطوط تزئینی */}
-                          <div className="absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
-
-                          {/* کارت امتیاز */}
-                          <div className="relative  rounded-xl p-5 border  shadow-[0_0_15px_rgba(74,222,128,0.15)] overflow-hidden">
-                            {/* افکت نور */}
-                            <div className="absolute -top-10 -right-10 w-20 h-20 bg-green-500/20 blur-2xl rounded-full"></div>
-                            <div className="absolute -bottom-10 -left-10 w-20 h-20 bg-green-500/20 blur-2xl rounded-full"></div>
-
-                            {/* محتوای اصلی */}
-                            <div className="flex items-center gap-5">
-                              {/* دایره امتیاز */}
-                              <div className="relative flex-shrink-0 w-16 h-16 rounded-full bg-gradient-to-b from-green-500/20 to-green-600/10 flex items-center justify-center border border-green-500/50 shadow-[0_0_10px_rgba(74,222,128,0.3)]">
-                                <span className="text-2xl font-bold text-white">
-                                  +۱۰
-                                </span>
-                                <div className="absolute inset-0 rounded-full border border-green-400/20 animate-ping"></div>
-                              </div>
-
-                              {/* متن امتیاز */}
-                              <div className="flex-1 text-right">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <div className="flex space-x-1 rtl:space-x-reverse">
-                                    {[0, 1, 2, 3, 4].map((star) => (
-                                      <svg
-                                        key={star}
-                                        className="w-4 h-4 text-yellow-400"
-                                        aria-hidden="true"
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        fill="currentColor"
-                                        viewBox="0 0 22 20"
-                                      >
-                                        <path d="M20.924 7.625a1.523 1.523 0 0 0-1.238-1.044l-5.051-.734-2.259-4.577a1.534 1.534 0 0 0-2.752 0L7.365 5.847l-5.051.734A1.535 1.535 0 0 0 1.463 9.2l3.656 3.563-.863 5.031a1.532 1.532 0 0 0 2.226 1.616L11 17.033l4.518 2.375a1.534 1.534 0 0 0 2.226-1.617l-.863-5.03L20.537 9.2a1.523 1.523 0 0 0 .387-1.575Z" />
-                                      </svg>
-                                    ))}
-                                  </div>
-                                  <h4 className="text-xl font-bold text-green-400">
-                                    امتیاز دریافت شد!
-                                  </h4>
-                                </div>
-                                <p className="text-sm text-gray-300">
-                                  تبریک! با تکمیل این درس{" "}
-                                  <span className="text-green-400 font-bold">
-                                    ۱۰ امتیاز
-                                  </span>{" "}
-                                  به مجموع امتیازات شما اضافه شد.
-                                </p>
-                              </div>
-                            </div>
-
-                            {/* نوار پیشرفت کلی */}
-                            <div className="mt-4 pt-3 border-t border-gray-700">
-                              <div className="flex justify-between text-xs  mb-1.5">
-                                <span>پیشرفت امتیازات شما</span>
-                                <span className="text-green-400">
-                                  ۱۲۰ / ۵۰۰
-                                </span>
-                              </div>
-                              <div className="h-2  rounded-full overflow-hidden">
-                                <div className="h-full bg-gradient-to-r from-green-500 to-green-400 rounded-full w-[24%]"></div>
-                              </div>
+                        
+                        <h3 className="text-xl font-bold mb-2">تبریک! قسمت با موفقیت تکمیل شد</h3>
+                        
+                        <div className="mt-4 py-3 px-4 bg-muted/50 rounded-lg flex items-center justify-between">
+                          <div className="text-left">
+                            <p className="text-sm text-muted-foreground">امتیاز دریافتی</p>
+                            <div className="flex items-center gap-1 text-green-500 font-bold text-lg">
+                              <span>+۱۰</span>
+                              <svg 
+                                className="w-5 h-5" 
+                                viewBox="0 0 24 24" 
+                                fill="currentColor">
+                                <path d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                              </svg>
                             </div>
                           </div>
+                          <div className="text-right">
+                            <p className="text-sm text-muted-foreground">امتیاز کل شما</p>
+                            <span className="font-bold">۱۲۰ / ۵۰۰</span>
+                          </div>
+                        </div>
+                        
+                        {/* نوار پیشرفت ساده */}
+                        <div className="h-1.5 mt-1 bg-muted rounded-full overflow-hidden">
+                          <div className="h-full bg-green-500 rounded-full w-[24%]"></div>
                         </div>
                       </div>
 
-                      <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                      {/* دکمه‌ها */}
+                      <div className="flex gap-3">
                         <button
                           onClick={navigateToNextEpisode}
-                          className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white py-3 px-6 rounded-lg flex items-center justify-center gap-1.5 transition-all shadow-lg hover:shadow-xl font-medium"
+                          className="flex-1 flex items-center justify-center gap-1 bg-green-500 hover:bg-green-600 text-white py-2.5 px-4 rounded transition-colors"
                         >
-                          <span>رفتن به قسمت بعدی</span>
+                          <span>قسمت بعدی</span>
                           <ChevronLeft className="w-4 h-4" />
                         </button>
                         <button
                           onClick={cancelCompletionTimer}
-                          className=" text-white py-3 px-6 rounded-lg transition-colors border "
+                          className="py-2.5 px-4 rounded transition-colors hover:bg-muted border"
                         >
-                          ادامه همین قسمت
+                          بستن
                         </button>
                       </div>
                     </div>
@@ -573,7 +513,7 @@ export default function CourseEpisodePage({
                 <div className="flex flex-wrap gap-3 justify-center">
                   <button
                     onClick={togglePurchaseStatus}
-                    className="rounded-md bg-foreground px-6 py-2.5 text-background transition-colors"
+                    className="rounded-md bg-white px-6 py-2.5 text-black transition-colors"
                   >
                     خرید دوره
                   </button>
