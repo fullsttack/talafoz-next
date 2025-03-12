@@ -202,7 +202,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
   if (isLocked) {
     return (
       <div className="p-5 text-center">
-        <div className="inline-flex items-center justify-center p-3 bg-gray-800 rounded-full mb-4">
+        <div className="inline-flex items-center justify-center p-3  rounded-full mb-4">
           <Lock className="h-6 w-6 text-gray-400" />
         </div>
         <h3 className="text-lg font-medium text-white mb-2">دسترسی محدود شده</h3>
@@ -247,7 +247,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
             assignments.map(assignment => (
               <div 
                 key={assignment.id} 
-                className={`bg-gray-800/20 hover:bg-gray-800/30 border border-gray-700/30 rounded-lg p-4 transition-colors ${
+                className={`border border-gray-700/30 rounded-md p-4 transition-colors ${
                   activeAssignment === assignment.id 
                     ? 'border-blue-500/50' 
                     : 'border-gray-700/30'
@@ -275,7 +275,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                 
                 {/* نمایش نمره و بازخورد */}
                 {assignment.status === 'graded' && (
-                  <div className="bg-green-900/20 border border-green-500/30 rounded-md p-2 mb-3">
+                  <div className="border border-green-500/30 rounded-md p-2 mb-3">
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-sm font-medium text-green-400">نمره دریافتی:</span>
                       <span className="text-white font-bold">{assignment.grade} از 20</span>
@@ -288,7 +288,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                 
                 {/* نمایش بازخورد برای تمرین‌های رد شده */}
                 {assignment.status === 'rejected' && (
-                  <div className="bg-red-900/20 border border-red-500/30 rounded-md p-2 mb-3">
+                  <div className="border border-red-500/30 rounded-md p-2 mb-3">
                     <div className="flex items-center mb-1">
                       <span className="text-sm font-medium text-red-400">بازخورد استاد:</span>
                     </div>
@@ -307,7 +307,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                       if (submission) {
                         if (submission.type === 'file') {
                           return (
-                            <div className="flex items-center bg-gray-700/30 rounded-md p-2 hover:bg-gray-700/50 transition-colors">
+                            <div className="flex items-center border border-gray-700/30 rounded-md p-2 hover:bg-gray-800/20 transition-colors">
                               <div className="flex items-center justify-center mr-2 w-8 h-8 rounded-full bg-blue-400/10">
                                 <FileUp className="h-4 w-4 text-blue-400" />
                               </div>
@@ -319,7 +319,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                           );
                         } else if (submission.type === 'audio') {
                           return (
-                            <div className="flex items-center bg-gray-700/30 rounded-md p-2 hover:bg-gray-700/50 transition-colors">
+                            <div className="flex items-center border border-gray-700/30 rounded-md p-2 hover:bg-gray-800/20 transition-colors">
                               <div className="flex items-center justify-center mr-2 w-8 h-8 rounded-full bg-purple-400/10">
                                 <Mic className="h-4 w-4 text-purple-400" />
                               </div>
@@ -365,8 +365,8 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                         onClick={() => setSubmissionType('file')}
                         className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm ${
                           submissionType === 'file'
-                            ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
-                            : 'bg-gray-800/40 text-gray-300 hover:bg-gray-800/60 border border-gray-700/50'
+                            ? 'border border-blue-500/30 text-blue-400' 
+                            : 'border border-gray-700/50 text-gray-300 hover:text-white'
                         }`}
                       >
                         <FileUp className="h-4 w-4" />
@@ -376,8 +376,8 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                         onClick={() => setSubmissionType('audio')}
                         className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-md text-sm ${
                           submissionType === 'audio'
-                            ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30'
-                            : 'bg-gray-800/40 text-gray-300 hover:bg-gray-800/60 border border-gray-700/50'
+                            ? 'border border-blue-500/30 text-blue-400'
+                            : 'border border-gray-700/50 text-gray-300 hover:text-white'
                         }`}
                       >
                         <Mic className="h-4 w-4" />
@@ -396,7 +396,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                         />
                         
                         {selectedFile ? (
-                          <div className="flex items-center bg-gray-800/30 rounded-md p-3 mb-3">
+                          <div className="flex items-center border border-gray-700/30 rounded-md p-3 mb-3">
                             <div className="flex items-center justify-center mr-2 w-10 h-10 rounded-full bg-blue-400/10">
                               <FileUp className="h-5 w-5 text-blue-400" />
                             </div>
@@ -428,7 +428,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                     ) : (
                       <div className="mb-3">
                         {isRecording ? (
-                          <div className="bg-red-900/20 border border-red-500/30 rounded-md p-4 text-center">
+                          <div className="border border-red-500/30 rounded-md p-4 text-center">
                             <div className="animate-pulse mb-2">
                               <Mic className="h-8 w-8 text-red-500 mx-auto" />
                             </div>
@@ -443,7 +443,7 @@ export default function EpisodeAssignments({  isLocked = false }: EpisodeAssignm
                             </button>
                           </div>
                         ) : recordingTime > 0 ? (
-                          <div className="bg-gray-800/30 rounded-md p-4 text-center mb-3">
+                          <div className="border border-gray-700/50 rounded-md p-4 text-center mb-3">
                             <Mic className="h-6 w-6 text-green-400 mx-auto mb-2" />
                             <p className="text-sm text-white mb-1">ضبط صدا با موفقیت انجام شد</p>
                             <p className="text-xs text-gray-400">مدت زمان: {formatTime(recordingTime)}</p>

@@ -789,7 +789,7 @@ export default function CourseEpisodePage({
 
             {/* تب یادداشت‌ها */}
             {activeTab === "notes" && hasAccess && (
-              <div className="p-3 bg-gray-900/60 rounded-lg">
+              <div className="p-3  rounded-lg">
                 <EpisodeNotes
                   episodeId={episode.id}
                   courseId={course.id}
@@ -801,7 +801,7 @@ export default function CourseEpisodePage({
 
             {/* تب تمرین‌ها */}
             {activeTab === "assignments" && hasAccess && (
-              <div className="p-3 bg-gray-900/60 rounded-lg">
+              <div className="p-3  rounded-lg">
                 <EpisodeAssignments
                   episodeId={episode.id}
                   courseId={course.id}
