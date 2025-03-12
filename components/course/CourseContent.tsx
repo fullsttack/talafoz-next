@@ -203,7 +203,7 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
     <>
       {/* پیام موفقیت */}
       {showSuccessMessage && (
-        <div className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-fade-in rounded-lg p-4 text-center shadow-lg w-[90%] sm:w-[450px] max-w-md
+        <div className={`fixed top-4 right-2 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 animate-fade-in rounded-lg p-4 text-center shadow-lg w-[90%] sm:w-[400px] max-w-md
           ${showSuccessMessage.includes('دسترسی') || showSuccessMessage.includes('خریداری کنید') 
             ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800/40' 
             : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800/40'
@@ -241,10 +241,10 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
       )}
       
       {/* محتوای اصلی - پخش‌کننده ویدیو، توضیحات و فصل‌ها */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+        <div className="md:col-span-2">
           {/* پخش‌کننده ویدیو */}
-          <div className="mb-10" ref={playerRef}>
+          <div className="mb-8" ref={playerRef}>
             {activeEpisode ? (
               <div className="space-y-4">
                 {/* کامپوننت پخش‌کننده */}
@@ -260,25 +260,25 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
                       />
                     </Suspense>
                   ) : (
-                    <div className="flex h-full w-full flex-col items-center justify-center p-6 text-center">
+                    <div className="flex h-full w-full flex-col items-center justify-center p-4 md:p-6 text-center">
                       <div className="mb-4 rounded-full bg-gray-800 p-4">
-                        <Lock className="h-10 w-10 text-amber-400" />
+                        <Lock className="h-8 w-8 md:h-10 md:w-10 text-amber-400" />
                       </div>
-                      <h3 className="mb-2 text-xl font-bold text-white">این محتوا قفل شده است</h3>
-                      <p className="mb-6 text-gray-400 max-w-md">
+                      <h3 className="mb-2 text-lg md:text-xl font-bold text-white">این محتوا قفل شده است</h3>
+                      <p className="mb-4 md:mb-6 text-sm md:text-base text-gray-400 max-w-md">
                         برای مشاهده این قسمت، باید دوره را خریداری کنید یا عضو ویژه باشید.
                       </p>
-                      <div className="flex flex-wrap gap-3 justify-center">
+                      <div className="flex flex-col sm:flex-row gap-3 justify-center w-full sm:w-auto">
                         <button 
                           onClick={togglePurchaseStatus}
-                          className="rounded-md bg-primary px-6 py-2.5 text-white hover:bg-primary/90 transition-colors"
+                          className="rounded-md bg-primary px-6 py-2.5 text-white hover:bg-primary/90 transition-colors w-full sm:w-auto"
                         >
                           خرید دوره
                         </button>
                         {course.isFreePremium && (
                           <button 
                             onClick={togglePremiumStatus}
-                            className="rounded-md border border-amber-500 bg-transparent px-6 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors"
+                            className="rounded-md border border-amber-500 bg-transparent px-6 py-2.5 text-amber-500 hover:bg-amber-500/10 transition-colors w-full sm:w-auto"
                           >
                             فعال‌سازی عضویت ویژه
                           </button>
@@ -327,10 +327,71 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
               />
             </Suspense>
           </div>
+          
+          {/* کارت‌های اضافی برای موبایل */}
+          <div className="md:hidden space-y-6 mb-6">
+            {/* کارت مدرس برای موبایل - طراحی ساده‌تر */}
+            <div className="p-4 border rounded-lg bg-card">
+              <h3 className="text-lg font-bold mb-3">مدرس دوره</h3>
+              <div className="flex items-center gap-3">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/70 to-primary flex items-center justify-center text-white text-lg font-bold overflow-hidden">
+                  {course.instructor?.avatar && (
+                    <img 
+                      src={course.instructor.avatar} 
+                      alt={course.instructor?.name || "مدرس دوره"} 
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        // وقتی بارگذاری تصویر با شکست مواجه شود، المان img را حذف می‌کنیم
+                        e.currentTarget.style.display = 'none';
+                        // نمایش حرف اول نام مدرس به جای تصویر
+                        e.currentTarget.parentElement.innerText = course.instructor?.name ? 
+                          course.instructor.name.charAt(0) : "م";
+                      }}
+                    />
+                  ) || (
+                    course.instructor?.name ? course.instructor.name.charAt(0) : "م"
+                  )}
+                </div>
+                <div>
+                  <h4 className="font-bold">{course.instructor?.name || "مدرس دوره"}</h4>
+                  <p className="text-sm text-muted-foreground">مدرس و متخصص این دوره</p>
+                </div>
+              </div>
+            </div>
+            
+            {/* کارت گواهی برای موبایل */}
+            <div className="p-4 border rounded-lg bg-card">
+              <h3 className="text-lg font-bold mb-2">پیشرفت دوره</h3>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex-1">
+                  <div className="h-2 bg-muted rounded-full">
+                    <div 
+                      className="h-full bg-green-500 rounded-full" 
+                      style={{ width: `${calculateCourseCompletionPercentage()}%` }}
+                    ></div>
+                  </div>
+                </div>
+                <span className="text-sm font-medium">{calculateCourseCompletionPercentage()}%</span>
+              </div>
+              
+              {isCourseCompleted() ? (
+                <button
+                  onClick={handleRequestCertificate}
+                  className="w-full py-2 bg-green-500 hover:bg-green-600 text-white rounded-md text-sm font-medium transition-colors"
+                >
+                  درخواست گواهی
+                </button>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  با تکمیل دوره می‌توانید گواهی پایان دوره دریافت کنید.
+                </p>
+              )}
+            </div>
+          </div>
         </div>
         
         {/* سایدبار - کارت ثبت‌نام/خرید */}
-        <div className="lg:col-span-1">
+        <div className="md:col-span-1 order-first md:order-none mb-6 md:mb-0">
           <div className="space-y-6">
             <Suspense fallback={<CardSkeleton />}>
               <CourseEnrollCard 
@@ -341,29 +402,33 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
               />
             </Suspense>
             
-            {/* کارت مشخصات مدرس */}
-            <Suspense fallback={<CardSkeleton />}>
-              <CourseInstructorCard 
-                instructor={course.instructor}
-                role="مدرس و متخصص این دوره"
-                bio="متخصص و مدرس با تجربه در زمینه آموزش برنامه‌نویسی و توسعه نرم‌افزار با بیش از ۵ سال سابقه تدریس."
-                socialLinks={{
-                  linkedin: "https://linkedin.com/in/example",
-                  twitter: "https://twitter.com/example",
-                  instagram: "https://instagram.com/example",
-                  github: "https://github.com/example"
-                }}
-              />
-            </Suspense>
-            
-            {/* کارت گواهی پایان دوره */}
-            <Suspense fallback={<CardSkeleton />}>
-              <CourseCertificateCard 
-                courseCompleted={isCourseCompleted()}
-                courseCompletionPercentage={calculateCourseCompletionPercentage()}
-                onRequestCertificate={handleRequestCertificate}
-              />
-            </Suspense>
+            {/* کارت‌های اضافی فقط در دسکتاپ */}
+            <div className="hidden md:block space-y-6">
+              {/* کارت مشخصات مدرس */}
+              <Suspense fallback={<CardSkeleton />}>
+                <CourseInstructorCard 
+                  instructor={course.instructor?.name || "مدرس دوره"}
+                  avatarUrl={course.instructor?.avatar}
+                  role="مدرس و متخصص این دوره"
+                  bio="متخصص و مدرس با تجربه در زمینه آموزش برنامه‌نویسی و توسعه نرم‌افزار با بیش از ۵ سال سابقه تدریس."
+                  socialLinks={{
+                    linkedin: "https://linkedin.com/in/example",
+                    twitter: "https://twitter.com/example",
+                    instagram: "https://instagram.com/example",
+                    github: "https://github.com/example"
+                  }}
+                />
+              </Suspense>
+              
+              {/* کارت گواهی پایان دوره */}
+              <Suspense fallback={<CardSkeleton />}>
+                <CourseCertificateCard 
+                  courseCompleted={isCourseCompleted()}
+                  courseCompletionPercentage={calculateCourseCompletionPercentage()}
+                  onRequestCertificate={handleRequestCertificate}
+                />
+              </Suspense>
+            </div>
           </div>
         </div>
       </div>

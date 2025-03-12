@@ -36,20 +36,7 @@ export default function RootLayout({
       lang="fa"
       suppressHydrationWarning
     >
-      <head>
-        {/* Precargar fuentes críticas para mejorar LCP */}
-        <link
-          rel="preload"
-          href="/fonts/main-font.woff2"
-          as="font"
-          type="font/woff2"
-          crossOrigin="anonymous"
-        />
-        
-        {/* Preconectar con dominios críticos */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
+      
       <body className="font-sans antialiased">
         <ThemeProvider
           attribute="class"

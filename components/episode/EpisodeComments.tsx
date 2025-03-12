@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { MoreVertical, MessageCircle, Heart, Clock, Reply, Edit, Trash, Send, Lock } from 'lucide-react';
-
+import { MoreVertical, Heart, Clock, Reply, Edit, Trash, Send, Lock } from 'lucide-react';
+import Image from 'next/image';
 interface EpisodeCommentsProps {
   episodeId: string;
   courseId: string;
@@ -34,16 +34,16 @@ interface Reply {
   isEditing?: boolean;
 }
 
-export default function EpisodeComments({ episodeId, courseId, isLocked = false }: EpisodeCommentsProps) {
+export default function EpisodeComments({ isLocked = false }: EpisodeCommentsProps) {
   // در یک پروژه واقعی، این داده‌ها از API دریافت می‌شوند
   const [comments, setComments] = useState<Comment[]>([
     {
       id: '1',
       userId: 'user1',
       username: 'علی محمدی',
-      avatarUrl: 'https://via.placeholder.com/40',
+      avatarUrl: '/avatar/vctrly-notion-people-15.webp',
       content: 'این قسمت واقعاً عالی بود! مفاهیم خیلی واضح توضیح داده شدند.',
-      createdAt: '1402/12/05 14:30',
+      createdAt: '1402/12/05',
       likes: 12,
       userHasLiked: false,
       replies: [
@@ -51,9 +51,9 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
           id: 'reply1',
           userId: 'user2',
           username: 'سارا احمدی',
-          avatarUrl: 'https://via.placeholder.com/40',
+          avatarUrl: '/avatar/vctrly-notion-people-16.webp',
           content: 'کاملاً موافقم! مخصوصاً بخش مربوط به کار با API ها خیلی مفید بود.',
-          createdAt: '1402/12/05 15:15',
+          createdAt: '1402/12/05',
           likes: 3,
           userHasLiked: true
         }
@@ -63,9 +63,9 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
       id: '2',
       userId: 'user3',
       username: 'مهدی رضایی',
-      avatarUrl: 'https://via.placeholder.com/40',
+      avatarUrl: '/avatar/vctrly-notion-people-17.webp',
       content: 'من یک سوال درباره بخش پیاده‌سازی احراز هویت دارم. آیا می‌توان از روش دیگری هم استفاده کرد؟',
-      createdAt: '1402/12/04 10:22',
+      createdAt: '1402/12/04',
       likes: 5,
       userHasLiked: true,
       replies: [
@@ -73,9 +73,9 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
           id: 'reply2',
           userId: 'instructor',
           username: 'استاد دوره',
-          avatarUrl: 'https://via.placeholder.com/40',
+          avatarUrl: '/avatar/vctrly-notion-people-18.webp',
           content: 'بله، شما می‌توانید از JWT هم استفاده کنید. در قسمت بعدی به آن خواهیم پرداخت.',
-          createdAt: '1402/12/04 11:30',
+          createdAt: '1402/12/04',
           likes: 8,
           userHasLiked: false
         },
@@ -83,9 +83,9 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
           id: 'reply3',
           userId: 'user3',
           username: 'مهدی رضایی',
-          avatarUrl: 'https://via.placeholder.com/40',
+          avatarUrl: '/avatar/vctrly-notion-people-19.webp',
           content: 'ممنون از پاسخ شما! منتظر قسمت بعدی هستم.',
-          createdAt: '1402/12/04 12:15',
+          createdAt: '1402/12/04',
           likes: 2,
           userHasLiked: false
         }
@@ -95,9 +95,9 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
       id: '3',
       userId: 'user4',
       username: 'زهرا کریمی',
-      avatarUrl: 'https://via.placeholder.com/40',
+      avatarUrl: '/avatar/vctrly-notion-people-20.webp',
       content: 'من این پروژه رو پیاده‌سازی کردم ولی با یک مشکل مواجه شدم. وقتی کاربر لاگین می‌کنه، احیاناً با ارور مواجه میشم. کسی می‌تونه کمک کنه؟',
-      createdAt: '1402/12/03 19:45',
+      createdAt: '1402/12/03',
       likes: 2,
       userHasLiked: false,
       replies: []
@@ -269,17 +269,17 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
   // رندر کردن منوی عملیات
   const renderActionMenu = (commentId: string, replyId?: string) => {
     return (
-      <div ref={menuRef} className="absolute left-0 top-6 bg-gray-800 border border-gray-700 rounded-md shadow-lg py-1 z-10 w-28">
+      <div ref={menuRef} className="absolute left-0 top-6 border rounded-md shadow-lg py-1 z-10 w-28">
         <button
           onClick={() => startEditing(commentId, replyId)} 
-          className="w-full text-right px-3 py-1.5 text-sm hover:bg-gray-700 flex items-center"
+          className="w-full text-right px-3 py-1.5 text-sm hover:text-green-500 flex items-center"
         >
           <Edit className="h-4 w-4 ml-2" />
           <span>ویرایش</span>
         </button>
         <button
           onClick={() => deleteComment(commentId, replyId)}
-          className="w-full text-right px-3 py-1.5 text-sm text-red-400 hover:bg-gray-700 flex items-center"
+          className="w-full text-right px-3 py-1.5 text-sm hover:text-red-500  flex items-center"
         >
           <Trash className="h-4 w-4 ml-2" />
           <span>حذف</span>
@@ -316,13 +316,13 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
   return (
     <div className="flex flex-col h-full">
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-sm font-medium text-white">نظرات ({comments.length})</h3>
+        <h3 className="text-sm ">نظرات ({comments.length})</h3>
       </div>
       
       {/* فرم ارسال نظر جدید */}
-      <div className="bg-gray-800/70 rounded-lg border border-gray-700 p-3 mb-6">
+      <div className=" rounded-lg border  p-3 mb-6">
         <textarea
-          className="w-full bg-gray-700 rounded-md border border-gray-600 text-white text-sm p-3 h-24 mb-2 placeholder-gray-400 resize-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none"
+          className="w-full rounded-md border  text-sm p-3 h-24 mb-2 placeholder-gray-400 resize-none  focus:outline-none"
           placeholder="نظر خود را درباره این قسمت بنویسید..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
@@ -333,8 +333,8 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
             disabled={!newComment.trim()}
             className={`flex items-center text-sm px-4 py-2 rounded-md ${
               newComment.trim() 
-                ? 'bg-yellow-600 hover:bg-yellow-700 text-white' 
-                : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                ? 'border' 
+                : 'border text-gray-500 cursor-not-allowed'
             } transition-colors`}
           >
             <Send className="h-4 w-4 ml-1 -rotate-90" />
@@ -351,19 +351,21 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
       ) : (
         <div className="space-y-6 overflow-y-auto flex-grow">
           {comments.map(comment => (
-            <div key={comment.id} className="bg-gray-800/70 rounded-lg border border-gray-700 p-4">
+            <div key={comment.id} className=" rounded-lg border  p-4">
               {/* نظر اصلی */}
               <div className="flex">
-                <img
+                <Image
+                  width={32}
+                  height={32}
                   src={comment.avatarUrl}
                   alt={comment.username}
                   className="w-10 h-10 rounded-full ml-3"
                 />
                 <div className="flex-1">
                   <div className="flex justify-between">
-                    <div>
-                      <span className="font-medium text-white">{comment.username}</span>
-                      <span className="text-gray-400 text-xs mr-2 flex items-center">
+                    <div className='w-full flex justify-between items-center'>
+                      <span className="">{comment.username}</span>
+                      <span className="text-gray-500 text-xs mr-2 flex items-center">
                         <Clock className="h-3 w-3 ml-1" />
                         {comment.createdAt}
                       </span>
@@ -373,7 +375,7 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                       <div className="relative">
                         <button
                           onClick={() => toggleMenu(comment.id)}
-                          className="text-gray-400 hover:text-white p-1"
+                          className="text-gray-500  p-1"
                         >
                           <MoreVertical className="h-4 w-4" />
                         </button>
@@ -386,7 +388,7 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                   {comment.isEditing ? (
                     <div className="mt-2">
                       <textarea
-                        className="w-full bg-gray-700 rounded-md border border-gray-600 text-white text-sm p-2 mb-2 resize-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none"
+                        className="w-full  rounded-md border text-sm p-2 mb-2 resize-none focus:outline-none"
                         defaultValue={comment.content}
                         rows={2}
                         autoFocus
@@ -401,21 +403,21 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                         </button>
                         <button
                           onClick={() => setComments(comments.map(c => c.id === comment.id ? { ...c, isEditing: false } : c))}
-                          className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+                          className="text-xs px-3 py-1 rounded-md transition-colors"
                         >
                           انصراف
                         </button>
                       </div>
                     </div>
                   ) : (
-                    <p className="text-gray-300 text-sm mt-1">{comment.content}</p>
+                    <p className="text-gray-500 text-sm mt-1">{comment.content}</p>
                   )}
                   
                   {/* دکمه‌های عملیات */}
-                  <div className="flex items-center mt-3 space-x-4 space-x-reverse">
+                  <div className="flex items-center mt-3 gap-4">
                     <button
                       onClick={() => toggleLike(comment.id)}
-                      className={`flex items-center text-xs ${comment.userHasLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                      className={`flex items-center text-xs ${comment.userHasLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
                     >
                       <Heart className={`h-4 w-4 ml-1 ${comment.userHasLiked ? 'fill-current' : ''}`} />
                       {comment.likes > 0 && comment.likes}
@@ -426,7 +428,7 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                         setReplyingTo(comment.id);
                         setNewReplyContent('');
                       }}
-                      className="flex items-center text-xs text-gray-400 hover:text-blue-400"
+                      className="flex items-center  text-xs text-gray-500 hover:text-green-500"
                     >
                       <Reply className="h-4 w-4 ml-1" />
                       پاسخ
@@ -435,28 +437,28 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                   
                   {/* فرم پاسخ به نظر */}
                   {replyingTo === comment.id && (
-                    <div className="mt-3 bg-gray-700/50 rounded-md p-3 border border-gray-600">
+                    <div className="mt-3  rounded-md p-3 border ">
                       <textarea
-                        className="w-full bg-gray-700 rounded-md border border-gray-600 text-white text-sm p-2 h-16 mb-2 resize-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none"
+                        className="w-full  rounded-md border  text-sm p-2 h-16 mb-2 resize-none  focus:outline-none"
                         placeholder="پاسخ خود را بنویسید..."
                         value={newReplyContent}
                         onChange={(e) => setNewReplyContent(e.target.value)}
                       ></textarea>
-                      <div className="flex justify-end space-x-2 space-x-reverse">
+                      <div className="flex justify-end gap-2">
                         <button
                           onClick={() => handleSubmitReply(comment.id)}
                           disabled={!newReplyContent.trim()}
                           className={`text-xs px-3 py-1 rounded-md ${
                             newReplyContent.trim() 
-                              ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                              : 'bg-gray-700 text-gray-400 cursor-not-allowed'
+                              ? 'border' 
+                              : 'border text-gray-500 cursor-not-allowed'
                           } transition-colors`}
                         >
                           ارسال پاسخ
                         </button>
                         <button
                           onClick={() => setReplyingTo(null)}
-                          className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+                          className="text-xs border px-3 py-1 rounded-md transition-colors"
                         >
                           انصراف
                         </button>
@@ -468,10 +470,12 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
               
               {/* پاسخ‌ها */}
               {comment.replies.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-gray-700 mr-12">
+                <div className="mt-4 pt-3 border-t border-gray-500 mr-12">
                   {comment.replies.map(reply => (
                     <div key={reply.id} className="flex mt-3 first:mt-0">
-                      <img
+                      <Image
+                        width={32}
+                        height={32}
                         src={reply.avatarUrl}
                         alt={reply.username}
                         className="w-8 h-8 rounded-full ml-3"
@@ -479,8 +483,8 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                       <div className="flex-1">
                         <div className="flex justify-between">
                           <div>
-                            <span className="font-medium text-white text-sm">{reply.username}</span>
-                            <span className="text-gray-400 text-xs mr-2 flex items-center">
+                            <span className=" text-sm">{reply.username}</span>
+                            <span className="text-gray-500 text-xs mr-2 flex items-center">
                               <Clock className="h-3 w-3 ml-1" />
                               {reply.createdAt}
                             </span>
@@ -503,7 +507,7 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                         {reply.isEditing ? (
                           <div className="mt-2">
                             <textarea
-                              className="w-full bg-gray-700 rounded-md border border-gray-600 text-white text-sm p-2 mb-2 resize-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500 focus:outline-none"
+                              className="w-full  rounded-md border  text-sm p-2 mb-2 resize-none focus:outline-none"
                               defaultValue={reply.content}
                               rows={2}
                               autoFocus
@@ -512,7 +516,7 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                             <div className="flex justify-end space-x-2 space-x-reverse">
                               <button
                                 onClick={() => saveEdit(comment.id, document.getElementById(`edit-reply-${reply.id}`) as HTMLTextAreaElement ? (document.getElementById(`edit-reply-${reply.id}`) as HTMLTextAreaElement).value : '', reply.id)}
-                                className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition-colors"
+                                className="text-xs border px-3 py-1 rounded-md transition-colors"
                               >
                                 ذخیره
                               </button>
@@ -526,21 +530,21 @@ export default function EpisodeComments({ episodeId, courseId, isLocked = false 
                                     };
                                   }));
                                 }}
-                                className="text-xs bg-gray-700 hover:bg-gray-600 text-white px-3 py-1 rounded-md transition-colors"
+                                className="text-xs border px-3 py-1 rounded-md transition-colors"
                               >
                                 انصراف
                               </button>
                             </div>
                           </div>
                         ) : (
-                          <p className="text-gray-300 text-xs mt-1">{reply.content}</p>
+                          <p className="text-gray-500 text-xs mt-1">{reply.content}</p>
                         )}
                         
                         {/* دکمه‌های عملیات پاسخ */}
                         <div className="flex items-center mt-2">
                           <button
                             onClick={() => toggleLike(comment.id, reply.id)}
-                            className={`flex items-center text-xs ${reply.userHasLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-500'}`}
+                            className={`flex items-center text-xs ${reply.userHasLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
                           >
                             <Heart className={`h-3.5 w-3.5 ml-1 ${reply.userHasLiked ? 'fill-current' : ''}`} />
                             {reply.likes > 0 && reply.likes}

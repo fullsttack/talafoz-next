@@ -39,7 +39,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
   return (
     <div>
       <Header />
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto max-w-7xl px-4 py-8">
         {/* Breadcrumb navigation */}
         <div className="mb-6">
           <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -53,7 +53,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
 
         {/* Course header */}
         <div className="mb-10">
-          <h1 className="mb-4 text-3xl font-extrabold">{course.title}</h1>
+          <h1 className="mb-4 text-xl md:text-3xl font-extrabold text-center md:text-right mt-12">{course.title}</h1>
         </div>
 
         {/* Course content with Suspense for improved loading */}

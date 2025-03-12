@@ -1,6 +1,8 @@
 import { Linkedin, Twitter, Instagram, Github, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Image from 'next/image';
+import { useState } from 'react';
+
 interface CourseInstructorCardProps {
   instructor: string;
   role?: string;
@@ -18,7 +20,7 @@ export default function CourseInstructorCard({
   instructor,
   role = 'مدرس و برنامه‌نویس',
   bio = 'متخصص در زمینه آموزش برنامه‌نویسی و توسعه نرم‌افزار',
-  avatarUrl = '/image/avatar.jpg',
+  avatarUrl,
   socialLinks = {
     linkedin: 'https://linkedin.com',
     twitter: 'https://twitter.com',
@@ -26,6 +28,14 @@ export default function CourseInstructorCard({
     github: 'https://github.com',
   }
 }: CourseInstructorCardProps) {
+  // استفاده از state برای مدیریت خطای بارگذاری تصویر
+  const [imgError, setImgError] = useState(false);
+  
+  // ایجاد آواتار متنی برای مواقعی که تصویر وجود ندارد
+  const generateInitialsAvatar = () => {
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(instructor)}&background=0D8ABC&color=fff`;
+  };
+
   return (
     <div className={cn(
       "relative overflow-hidden rounded-xl border shadow-md",
@@ -48,17 +58,21 @@ export default function CourseInstructorCard({
             {/* قاب عکس */}
             <div className="relative h-32 w-32 rounded-full bg-green p-1 shadow-lg">
               <div className="h-full w-full overflow-hidden rounded-full border-2 border-white dark:border-gray-50/[.1]">
-                <Image
-                  width={100}
-                  height={100}
-                  src={avatarUrl} 
-                  alt={instructor} 
-                  className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
-                  onError={(e) => {
-                    // اگر تصویر لود نشد، آواتار پیش‌فرض نمایش بده
-                    (e.target as HTMLImageElement).src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(instructor) + '&background=0D8ABC&color=fff';
-                  }}
-                />
+                {avatarUrl && !imgError ? (
+                  <Image
+                    width={100}
+                    height={100}
+                    src={avatarUrl} 
+                    alt={instructor} 
+                    className="h-full w-full object-cover transition-transform duration-500 hover:scale-110"
+                    onError={() => setImgError(true)}
+                    priority={true}
+                  />
+                ) : (
+                  <div className="h-full w-full flex items-center justify-center bg-green-500 text-white text-3xl font-bold">
+                    {instructor.charAt(0)}
+                  </div>
+                )}
               </div>
             </div>
           </div>

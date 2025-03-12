@@ -290,7 +290,7 @@ export default function EpisodeAttachments({
       </div>
 
       {/* لینک‌های مفید */}
-      <div className="absolute bottom-10  pt-4 border-t">
+      <div className="md:absolute md:bottom-10  pt-4 border-t">
         <h4 className="text-sm font-medium  mb-3">لینک‌های مفید</h4>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <a
