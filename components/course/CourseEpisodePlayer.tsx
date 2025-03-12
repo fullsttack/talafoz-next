@@ -54,7 +54,19 @@ export default function CourseEpisodePlayer({
     // در یک پروژه واقعی، URL ویدیو از API دریافت می‌شود
     const defaultVideoUrl = 'https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4';
     setVideoUrl(episode.videoUrl || defaultVideoUrl);
-  }, [episode]);
+    
+    // ریست کردن حالت‌های پلیر هنگام تغییر اپیزود
+    setProgress(initialProgress);
+    setCurrentTime(0);
+    setHasInitializedProgress(false);
+    
+    // اگر autoPlay فعال است، پخش را شروع کن
+    if (autoPlay) {
+      setIsPlaying(true);
+      // ریست کردن وضعیت توقف کاربر هنگام تغییر اپیزود
+      userPausedRef.current = false;
+    }
+  }, [episode.id, initialProgress, autoPlay]);
   
   // تنظیم موقعیت اولیه ویدیو بر اساس پیشرفت قبلی
   useEffect(() => {
@@ -67,8 +79,13 @@ export default function CourseEpisodePlayer({
   
   // Toggle play/pause
   const togglePlay = useCallback(() => {
-    setIsPlaying(!isPlaying);
-  }, [isPlaying]);
+    // تنظیم وضعیت پخش/توقف
+    setIsPlaying(prevState => {
+      // اگر در حال تغییر به توقف هستیم، ثبت می‌کنیم که کاربر آن را متوقف کرده است
+      userPausedRef.current = prevState;
+      return !prevState;
+    });
+  }, []);
   
   // Toggle mute/unmute
   const toggleMute = useCallback(() => {
@@ -353,10 +370,26 @@ export default function CourseEpisodePlayer({
     togglePlay();
   };
   
-  // effect برای اعمال autoPlay در زمان تغییر اپیزود
+  // یک متغیر برای ردیابی اینکه آیا کاربر به صورت دستی ویدیو را متوقف کرده است
+  const userPausedRef = useRef(false);
+  
+  // وقتی کاربر پخش را تغییر می‌دهد، وضعیت را ذخیره می‌کنیم
   useEffect(() => {
-    setIsPlaying(autoPlay);
-  }, [autoPlay, episode.id]);
+    // اگر ویدیو در حال پخش نیست، یعنی کاربر آن را متوقف کرده است
+    if (!isPlaying) {
+      userPausedRef.current = true;
+    }
+  }, [isPlaying]);
+  
+  // effect برای اعمال autoPlay فقط در زمان تغییر اپیزود یا تغییر اولیه
+  useEffect(() => {
+    // این effect فقط یک بار در زمان تغییر اپیزود اجرا می‌شود
+    // و اگر userPausedRef.current برابر با true باشد (کاربر ویدیو را متوقف کرده)
+    // هیچ عملی انجام نمی‌دهد
+    if (!userPausedRef.current) {
+      setIsPlaying(autoPlay);
+    }
+  }, [episode.id, autoPlay]);
   
   return (
     <div 
@@ -368,6 +401,7 @@ export default function CourseEpisodePlayer({
       {videoUrl ? (
         <div className="w-full h-full" onClick={handleVideoClick}>
           <ReactPlayer
+            key={episode.id}
             ref={playerRef}
             url={videoUrl}
             width="100%"

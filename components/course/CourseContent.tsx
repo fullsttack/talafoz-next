@@ -8,6 +8,8 @@ import CourseInfo from '@/components/course/CourseInfo';
 import CourseChapters from '@/components/course/CourseChapters';
 import CourseEnrollCard from '@/components/course/CourseEnrollCard';
 import CourseReviews from '@/components/course/CourseReviews';
+import CourseInstructorCard from '@/components/course/CourseInstructorCard';
+import CourseCertificateCard from '@/components/course/CourseCertificateCard';
 
 interface CourseContentProps {
   course: Course;
@@ -30,6 +32,9 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
   
   // مدیریت انتخاب قسمت
   const handleEpisodeSelect = (episodeId: string) => {
+    // اگر همان اپیزود فعلی است، کاری انجام نده
+    if (episodeId === activeEpisodeId) return;
+    
     setActiveEpisodeId(episodeId);
     
     // تنظیم پخش خودکار برای اپیزود انتخاب شده
@@ -138,6 +143,7 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
   const handleVideoProgress = (progressPercent: number, currentTime?: number) => {
     if (!activeEpisode) return;
     
+    // ذخیره پیشرفت اپیزود فعلی
     setWatchedProgress(prev => ({
       ...prev,
       [activeEpisode.id]: progressPercent
@@ -147,6 +153,31 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
     if (currentTime !== undefined) {
       setCurrentPlayerTime(currentTime);
     }
+  };
+  
+  // محاسبه درصد تکمیل دوره
+  const calculateCourseCompletionPercentage = () => {
+    if (!course.chapters || course.chapters.length === 0) return 0;
+    
+    const allEpisodes = course.chapters.flatMap(ch => ch.episodes);
+    if (allEpisodes.length === 0) return 0;
+    
+    // شمارش اپیزودهایی که بیش از 90% پیشرفت دارند
+    const completedEpisodes = Object.entries(watchedProgress)
+      .filter(([_, progress]) => progress >= 90)
+      .length;
+    
+    return Math.round((completedEpisodes / allEpisodes.length) * 100);
+  };
+
+  // آیا دوره تکمیل شده است؟
+  const isCourseCompleted = () => {
+    return calculateCourseCompletionPercentage() >= 90;
+  };
+  
+  // درخواست گواهی
+  const handleRequestCertificate = () => {
+    setShowSuccessMessage('درخواست گواهی با موفقیت ثبت شد. گواهی به زودی برای شما ارسال خواهد شد.');
   };
   
   return (
@@ -190,57 +221,6 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
         </div>
       )}
       
-      {/* دکمه‌های تغییر وضعیت کاربر */}
-      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <button
-          onClick={togglePremiumStatus}
-          className={`flex items-center justify-between rounded-lg border p-3 transition-colors ${
-            isPremiumUser 
-              ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-800/50 dark:bg-amber-900/20 dark:text-amber-400' 
-              : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700'
-          }`}
-        >
-          <span className="flex items-center gap-2 font-medium">
-            <span className="relative flex h-3 w-3">
-              <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${isPremiumUser ? 'bg-amber-400/75' : 'bg-gray-400/30'} opacity-75`}></span>
-              <span className={`relative inline-flex h-3 w-3 rounded-full ${isPremiumUser ? 'bg-amber-500' : 'bg-gray-500/50'}`}></span>
-            </span>
-            <span>عضویت ویژه</span>
-          </span>
-          <span className={`rounded-full px-2 py-1 text-xs font-medium ${
-            isPremiumUser 
-              ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300' 
-              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-          }`}>
-            {isPremiumUser ? 'فعال' : 'غیرفعال'}
-          </span>
-        </button>
-        
-        <button
-          onClick={togglePurchaseStatus}
-          className={`flex items-center justify-between rounded-lg border p-3 transition-colors ${
-            hasPurchasedCourse 
-              ? 'border-green-200 bg-green-50 text-green-800 dark:border-green-800/50 dark:bg-green-900/20 dark:text-green-400' 
-              : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700'
-          }`}
-        >
-          <span className="flex items-center gap-2 font-medium">
-            <span className="relative flex h-3 w-3">
-              <span className={`absolute inline-flex h-full w-full animate-ping rounded-full ${hasPurchasedCourse ? 'bg-green-400/75' : 'bg-gray-400/30'} opacity-75`}></span>
-              <span className={`relative inline-flex h-3 w-3 rounded-full ${hasPurchasedCourse ? 'bg-green-500' : 'bg-gray-500/50'}`}></span>
-            </span>
-            <span>خرید دوره</span>
-          </span>
-          <span className={`rounded-full px-2 py-1 text-xs font-medium ${
-            hasPurchasedCourse 
-              ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' 
-              : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-          }`}>
-            {hasPurchasedCourse ? 'خریداری شده' : 'خریداری نشده'}
-          </span>
-        </button>
-      </div>
-      
       {/* محتوای اصلی - پخش‌کننده ویدیو، توضیحات و فصل‌ها */}
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2">
@@ -248,9 +228,6 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
           <div className="mb-10" ref={playerRef}>
             {activeEpisode ? (
               <div className="space-y-4">
-                {/* عنوان قسمت فعال */}
-                <h2 className="text-xl font-bold">{activeEpisode.title}</h2>
-                
                 {/* کامپوننت پخش‌کننده */}
                 <div className="aspect-video relative w-full bg-black rounded-lg overflow-hidden">
                   {hasAccess || activeEpisode.isFree || activeEpisode.isPreview ? (
@@ -327,12 +304,34 @@ export default function CourseContent({ course, initialEpisodeId }: CourseConten
         
         {/* سایدبار - کارت ثبت‌نام/خرید */}
         <div className="lg:col-span-1">
-          <CourseEnrollCard 
-            course={course} 
-            isPremiumUser={isPremiumUser}
-            hasPurchasedCourse={hasPurchasedCourse}
-            onPurchase={togglePurchaseStatus}
-          />
+          <div className="space-y-6">
+            <CourseEnrollCard 
+              course={course} 
+              isPremiumUser={isPremiumUser}
+              hasPurchasedCourse={hasPurchasedCourse}
+              onPurchase={togglePurchaseStatus}
+            />
+            
+            {/* کارت مشخصات مدرس */}
+            <CourseInstructorCard 
+              instructor={course.instructor}
+              role="مدرس و متخصص این دوره"
+              bio="متخصص و مدرس با تجربه در زمینه آموزش برنامه‌نویسی و توسعه نرم‌افزار با بیش از ۵ سال سابقه تدریس."
+              socialLinks={{
+                linkedin: "https://linkedin.com/in/example",
+                twitter: "https://twitter.com/example",
+                instagram: "https://instagram.com/example",
+                github: "https://github.com/example"
+              }}
+            />
+            
+            {/* کارت گواهی پایان دوره */}
+            <CourseCertificateCard 
+              courseCompleted={isCourseCompleted()}
+              courseCompletionPercentage={calculateCourseCompletionPercentage()}
+              onRequestCertificate={handleRequestCertificate}
+            />
+          </div>
         </div>
       </div>
     </>
