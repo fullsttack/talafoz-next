@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   ChevronLeft,
   Lock,
-  Play,
   Check,
   ChevronDown,
   Clock,
@@ -686,14 +685,7 @@ export default function CourseEpisodePage({
                                     </div>
                                   </div>
                                   
-                                  {/* دکمه پخش */}
-                                  {episodeAccess && !isCompleted && (
-                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white shadow-sm">
-                                        <Play className="h-3 w-3" />
-                                      </div>
-                                    </div>
-                                  )}
+                                  
                                 </Link>
                               );
                             })}
