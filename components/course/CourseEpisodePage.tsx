@@ -570,41 +570,49 @@ export default function CourseEpisodePage({
           <div className="flex-1 overflow-y-auto py-5 px-4 ">
             {/* تب فصل‌ها */}
             {activeTab === "chapters" && (
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {course.chapters &&
                   course.chapters.map((ch, chapterIndex) => {
                     return (
-                      <div key={ch.id} className="border rounded-lg overflow-hidden shadow-sm">
-                        {/* سرفصل */}
-                        <button
-                          onClick={() => toggleChapter(ch.id)}
-                          className="flex w-full items-center justify-between p-4 text-right transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 flex items-center justify-center w-8 h-8 rounded-full bg-muted border border-border/60 text-muted-foreground">
-                              <span className="text-xs font-medium">{chapterIndex + 1}</span>
+                      <div key={ch.id} className="group relative">
+                        {/* سرفصل - طراحی جدید با خط عمودی */}
+                        <div className="mb-3">
+                          <button
+                            onClick={() => toggleChapter(ch.id)}
+                            className="flex w-full items-center gap-3 py-2 text-right"
+                          >
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-primary/80 to-primary text-white shadow-sm">
+                              <span className="font-medium">{chapterIndex + 1}</span>
                             </div>
-                            <div>
-                              <h3 className="font-medium text-sm">{ch.title}</h3>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs text-muted-foreground px-1.5 py-0.5 rounded-full bg-muted">
+                            
+                            <div className="flex-1">
+                              <h3 className="font-semibold text-base group-hover:text-primary/90 transition-colors">{ch.title}</h3>
+                              <div className="flex items-center gap-3 mt-1">
+                                <span className="text-xs text-muted-foreground">
                                   {ch.episodes.length} قسمت
+                                </span>
+                                
+                                <span className="inline-flex items-center text-xs">
+                                  {expandedChapters[ch.id] ? (
+                                    <span className="inline-flex items-center gap-1 text-primary">
+                                      <ChevronDown className="h-3.5 w-3.5" />
+                                      <span>بستن</span>
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center gap-1 text-muted-foreground">
+                                      <ChevronLeft className="h-3.5 w-3.5" />
+                                      <span>مشاهده</span>
+                                    </span>
+                                  )}
                                 </span>
                               </div>
                             </div>
-                          </div>
-                          <div className="flex-shrink-0 bg-muted/40 rounded-full p-1">
-                            {expandedChapters[ch.id] ? (
-                              <ChevronDown className="h-4 w-4 text-muted-foreground" />
-                            ) : (
-                              <ChevronLeft className="h-4 w-4 text-muted-foreground" />
-                            )}
-                          </div>
-                        </button>
+                          </button>
+                        </div>
 
-                        {/* اپیزودهای فصل */}
+                        {/* اپیزودهای فصل - طراحی تایم‌لاین */}
                         {expandedChapters[ch.id] && (
-                          <div className="border-t divide-y divide-dashed">
+                          <div className="relative mr-5 before:absolute before:top-0 before:bottom-0 before:right-[19px] before:w-0.5 before:bg-border">
                             {ch.episodes.map((ep, epIndex) => {
                               // بررسی دسترسی به هر اپیزود
                               const episodeAccess =
@@ -624,67 +632,73 @@ export default function CourseEpisodePage({
                                 <Link
                                   href={`/courses/${course.id}/episodes/${ep.id}`}
                                   key={ep.id}
-                                  className={`flex items-center p-3 transition-colors ${
+                                  className={`group flex items-start p-2 mb-2 rounded-lg transition-all ${
                                     isActive
-                                      ? "bg-muted"
+                                      ? "bg-muted/50 shadow-sm"
                                       : episodeAccess
-                                      ? "hover:bg-muted/20"
+                                      ? "hover:bg-muted/30"
                                       : "opacity-70"
                                   }`}
                                 >
-                                  <div className="flex-shrink-0 mr-3 w-6 h-6 rounded-full border border-border/50 flex items-center justify-center">
-                                    <span className="text-xs text-muted-foreground">{epIndex + 1}</span>
+                                  {/* دایره روی تایم‌لاین */}
+                                  <div className={`relative z-10 flex-shrink-0 mr-3 w-7 h-7 rounded-full flex items-center justify-center border-2 bg-background shadow-sm ${
+                                    !episodeAccess 
+                                      ? "border-red-200 text-red-500"
+                                      : isCompleted
+                                      ? "border-green-500 text-green-500" 
+                                      : isActive
+                                      ? "border-primary text-primary"
+                                      : "border-muted-foreground/30 text-muted-foreground/70"
+                                  }`}>
+                                    {!episodeAccess ? (
+                                      <Lock className="h-3 w-3" />
+                                    ) : isCompleted ? (
+                                      <Check className="h-3.5 w-3.5" />
+                                    ) : (
+                                      <span className="text-xs font-medium">{epIndex + 1}</span>
+                                    )}
                                   </div>
 
-                                  <div className="flex-1 min-w-0">
-                                    <div className="flex items-center justify-between mb-1">
-                                      <p
-                                        className={`truncate text-sm ${
-                                          isActive ? "font-medium" : ""
-                                        }`}
-                                      >
-                                        {ep.title}
-                                      </p>
-                                      
-                                      <div className="flex-shrink-0 flex items-center ml-2">
-                                        {!episodeAccess ? (
-                                          <div className="w-5 h-5 flex items-center justify-center rounded-full bg-red-500/10">
-                                            <Lock className="h-3 w-3 text-red-500" />
-                                          </div>
-                                        ) : isCompleted ? (
-                                          <div className="w-5 h-5 flex items-center justify-center rounded-full bg-green-500/10">
-                                            <Check className="h-3 w-3 text-green-500" />
-                                          </div>
-                                        ) : (
-                                          <div className="w-5 h-5 flex items-center justify-center rounded-full bg-primary/10">
-                                            <Play className="h-3 w-3 text-primary" />
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
+                                  {/* محتوای اپیزود */}
+                                  <div className="flex-1 min-w-0 rtl:mr-2 ltr:ml-2">
+                                    <p
+                                      className={`truncate text-sm ${
+                                        isActive ? "font-medium" : ""
+                                      } ${isCompleted ? "text-green-600 dark:text-green-400" : ""}`}
+                                    >
+                                      {ep.title}
+                                    </p>
                                     
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-xs text-muted-foreground">
-                                        {ep.duration || "00:00"}
-                                      </span>
+                                    <div className="flex items-center justify-between mt-1">
+                                      <div className="flex items-center gap-2">
+                                        <Clock className="h-3 w-3 text-muted-foreground" />
+                                        <span className="text-xs text-muted-foreground">
+                                          {ep.duration || "00:00"}
+                                        </span>
+                                      </div>
                                       
                                       {episodeAccess && progressPercent > 0 && progressPercent < 95 && (
-                                        <span className="text-xs text-primary">
+                                        <span className="text-xs bg-primary/10 px-1.5 py-0.5 rounded-full text-primary">
                                           {Math.round(progressPercent)}%
                                         </span>
                                       )}
+                                      
+                                      {isCompleted && (
+                                        <span className="text-xs bg-green-500/10 px-1.5 py-0.5 rounded-full text-green-500">
+                                          تکمیل شده
+                                        </span>
+                                      )}
                                     </div>
-                                    
-                                    {/* نوار پیشرفت */}
-                                    {episodeAccess && progressPercent > 0 && (
-                                      <div className="mt-1.5 h-1 w-full rounded-full bg-muted overflow-hidden">
-                                        <div
-                                          className={`h-full rounded-full ${isCompleted ? "bg-green-500" : "bg-primary"}`}
-                                          style={{ width: `${progressPercent}%` }}
-                                        />
-                                      </div>
-                                    )}
                                   </div>
+                                  
+                                  {/* دکمه پخش */}
+                                  {episodeAccess && !isCompleted && (
+                                    <div className="opacity-0 group-hover:opacity-100 transition-opacity">
+                                      <div className="flex h-6 w-6 items-center justify-center rounded-full bg-primary text-white shadow-sm">
+                                        <Play className="h-3 w-3" />
+                                      </div>
+                                    </div>
+                                  )}
                                 </Link>
                               );
                             })}
