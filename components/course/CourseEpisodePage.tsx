@@ -338,7 +338,7 @@ export default function CourseEpisodePage({
         {/* بخش ویدیو پلیر - سمت راست */}
         <div className="flex-1 h-full overflow-hidden flex flex-col">
           {/* هدر کوچک در بالای ویدیو پلیر - فقط در نمایش دسکتاپ */}
-          <div className="hidden md:flex items-center justify-between py-3.5 px-4  border-b ">
+          <div className="hidden md:flex items-center justify-between py-3.5 px-4 border-b">
             {/* بخش سمت راست - بازگشت، عنوان و اطلاعات اپیزود */}
             <div className="flex items-center gap-3">
               <Link
@@ -374,19 +374,19 @@ export default function CourseEpisodePage({
                 </span>
               </div>
             </div>
-
-            
           </div>
 
           {/* ویدیو پلیر */}
-          <div className="flex-1 flex bg-black overflow-hidden relative">
+          <div className="flex-1 bg-black overflow-hidden relative flex items-center justify-center">
             {hasAccess ? (
               <>
-                <CourseEpisodePlayer
-                  episode={episode}
-                  onProgressChange={handleVideoProgress}
-                  initialProgress={watchedProgress[episode.id] || 0}
-                />
+                <div className="w-full h-full" style={{ aspectRatio: '16/9', maxHeight: 'calc(100vh - 64px)' }}>
+                  <CourseEpisodePlayer
+                    episode={episode}
+                    onProgressChange={handleVideoProgress}
+                    initialProgress={watchedProgress[episode.id] || 0}
+                  />
+                </div>
 
                 {/* دیالوگ اتمام ویدیو */}
                 {showCompletionDialog && (

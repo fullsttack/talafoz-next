@@ -394,12 +394,13 @@ export default function CourseEpisodePlayer({
   return (
     <div 
       ref={playerWrapperRef}
-      className="w-full h-full relative bg-black flex items-center justify-center select-none"
+      className="w-full h-full relative bg-black overflow-hidden"
       dir="ltr"
+      style={{ aspectRatio: '16/9' }}
     >
       {/* ویدیو پلیر */}
       {videoUrl ? (
-        <div className="w-full h-full" onClick={handleVideoClick}>
+        <div className="w-full h-full absolute inset-0" onClick={handleVideoClick}>
           <ReactPlayer
             key={episode.id}
             ref={playerRef}
@@ -414,13 +415,23 @@ export default function CourseEpisodePlayer({
             onProgress={handleProgress}
             onDuration={handleDuration}
             onEnded={handleVideoEnded}
+            style={{ position: 'absolute', top: 0, left: 0 }}
+            className="react-player"
             config={{
               file: {
                 attributes: {
                   controlsList: 'nodownload',
                   disablePictureInPicture: true,
                 },
+                forceVideo: true
               },
+              youtube: {
+                playerVars: { 
+                  disablekb: 1,
+                  fs: 0,
+                  modestbranding: 1
+                }
+              }
             }}
           />
         </div>
