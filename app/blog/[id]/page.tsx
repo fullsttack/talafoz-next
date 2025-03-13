@@ -6,7 +6,7 @@ import { ChevronLeft, Clock, Calendar, User, Tag } from 'lucide-react';
 
 import { blogs } from '@/components/data/blog';
 import Header from '@/components/layout/Header';
-
+import Footer from '@/components/layout/Footer';
 // تغییر تنظیمات رندرینگ به حالت استاتیک برای سرعت بیشتر
 export const dynamic = "force-static";
 export const revalidate = 3600; // کش کردن برای یک ساعت
@@ -182,6 +182,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
 
         
       </div>
+      <Footer />
     </div>
   );
 } 
