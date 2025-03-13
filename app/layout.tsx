@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   },
   description: "یادگیری برنامه‌نویسی، طراحی و بیشتر با دوره‌های تعاملی",
   creator: "Talafoz Team",
-  manifest: "/manifest.json",
+  // manifest: "/manifest.json",
 };
 
 // Optimizar para dispositivos móviles
