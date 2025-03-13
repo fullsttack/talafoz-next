@@ -54,10 +54,7 @@ export default function BannerDiscount() {
 
   if (!mounted) return null;
   
-  // Get appropriate classes based on theme
-  const bgClasses = resolvedTheme === 'dark' 
-    ? 'bg-gradient-to-br from-green to-yellow' 
-    : 'bg-gradient-to-br from-green to-yellow';
+
     
   const secondaryBgClasses = resolvedTheme === 'dark'
     ? 'bg-white-10'
@@ -77,7 +74,7 @@ export default function BannerDiscount() {
 
   return (
     <div className="w-full max-w-7xl mx-auto px-4">
-      <div className={`relative overflow-hidden rounded-3xl ${bgClasses} shadow-xl border border-white/10`}>
+      <div className={`relative overflow-hidden rounded-3xl  shadow-xl border border-white/10`}>
         {/* Decorative elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute h-32 w-32 -top-10 -right-10 bg-white opacity-20 rounded-full blur-3xl"></div>
