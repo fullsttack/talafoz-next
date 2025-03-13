@@ -15,7 +15,7 @@ import { courses } from "@/components/data/course";
 import CourseList from "@/components/course/CourseList";
 import Form from "next/form";
 import Header from "@/components/layout/Header";
-
+import Footer from "@/components/layout/Footer";
 // Helper function to extract unique categories from courses
 function getUniqueCategories(
   courses: typeof import("@/components/data/course").courses
@@ -328,6 +328,7 @@ export default async function CoursesPage({
           </div>
         </main>
       </div>
+      <Footer />
     </div>
   );
 }

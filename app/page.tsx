@@ -1,6 +1,7 @@
 import { Suspense, lazy } from "react";
 import Header from "@/components/layout/Header";
 import BannerDiscount from "@/components/site/BannerDiscount";
+import Footer from "@/components/layout/Footer";
 // Lazy load components for better performance
 const HeroTop = lazy(() => import("@/components/site/HeroTop"));
 const LastCourse = lazy(() => import("@/components/site/LastCourse"));
@@ -95,6 +96,8 @@ export default function Home() {
           <LastBlog />
         </Suspense>
       </div>
+
+      <Footer />
     </div>
   );
 }

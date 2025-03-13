@@ -2,7 +2,7 @@ import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ChevronLeft, Clock, Calendar, User, Tag, Share } from 'lucide-react';
+import { ChevronLeft, Clock, Calendar, User, Tag } from 'lucide-react';
 
 import { blogs } from '@/components/data/blog';
 import Header from '@/components/layout/Header';
@@ -180,36 +180,7 @@ export default function BlogPostPage({ params }: { params: { id: string } }) {
           </div>
         )}
 
-        {/* اشتراک‌گذاری */}
-        <div className="border-t border-gray-200 dark:border-gray-700 pt-8 mb-12">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <h3 className="font-semibold">این مقاله را به اشتراک بگذارید:</h3>
-            <div className="flex items-center gap-3">
-              <button className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-500 hover:bg-blue-600 text-white transition-colors">
-                <Share className="h-5 w-5" />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-full bg-green-500 hover:bg-green-600 text-white transition-colors">
-                <Share className="h-5 w-5" />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors">
-                <Share className="h-5 w-5" />
-              </button>
-              <button className="w-10 h-10 flex items-center justify-center rounded-full bg-blue-700 hover:bg-blue-800 text-white transition-colors">
-                <Share className="h-5 w-5" />
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* بازگشت به لیست مقالات */}
-        <div className="text-center">
-          <Link 
-            href="/blog" 
-            className="inline-flex items-center gap-2 px-6 py-3 bg-primary rounded-xl font-medium text-white hover:bg-primary/90 transition-colors"
-          >
-            <span>بازگشت به لیست مقالات</span>
-          </Link>
-        </div>
+        
       </div>
     </div>
   );
