@@ -24,18 +24,18 @@ export default function BannerDiscount() {
             {/* Top badge */}
             <div className="inline-flex items-center bg-white/10 backdrop-blur-xs border border-white/10 rounded-full px-4 py-1.5 text-white/80 text-sm mb-8">
               <span className="flex h-2 w-2 rounded-full bg-emerald-500 mr-2"></span>
-              <span>کلاس‌های آنلاین زنده در حال برگزاری هستند</span>
+              <span>تخفیف‌های شگفت‌انگیز فصل تابستان فعال شد</span>
             </div>
             
             {/* Main headline */}
             <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 tracking-tight max-w-2xl leading-tight">
-              مسیر یادگیری برنامه‌نویسی را با کلاس‌های 
-              <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 to-cyan-400 ml-2">آنلاین</span> 
-              ما شروع کنید
+              تخفیف‌های 
+              <span className="text-transparent bg-clip-text bg-linear-to-r from-emerald-400 to-cyan-400 ml-2">شگفت‌انگیز</span> 
+              دوره‌های برنامه‌نویسی را از دست ندهید
             </h2>
             
             <p className="text-white/70 text-lg max-w-2xl mb-10">
-              تجربه آموزش زنده، تعاملی و کارآمد با مدرسین مجرب و برنامه‌نویسان حرفه‌ای در یک محیط حمایتی
+              بهترین فرصت برای سرمایه‌گذاری در مهارت‌های خود با قیمت‌های استثنایی و دسترسی به محتوای آموزشی با کیفیت، فقط برای مدت محدود
             </p>
             
 
@@ -44,17 +44,17 @@ export default function BannerDiscount() {
               <div className="relative group">
                 <div className="absolute -inset-0.5 bg-linear-to-r from-emerald-500 to-cyan-500 rounded-lg blur-sm opacity-60 group-hover:opacity-80 transition"></div>
                 <Button className="relative bg-black hover:bg-black/80 text-white border border-white/10 rounded-lg py-6 px-8 text-base font-semibold">
-                  شروع یادگیری
+                  مشاهده دوره‌های تخفیف‌دار
                   <ArrowUpRight className="h-5 w-5 ml-2" />
                 </Button>
               </div>
               
               <div className="flex items-center">
                 <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-                  ۳۰٪ تخفیف ویژه
+                  تا ۵۰٪ تخفیف ویژه
                 </Badge>
                 <span className="mx-3 text-white/50">|</span>
-                <span className="text-white/70">شروع ثبت‌نام از اول تیرماه</span>
+                <span className="text-white/70">فقط تا پایان تیرماه</span>
               </div>
             </div>
             
@@ -63,8 +63,8 @@ export default function BannerDiscount() {
               <div className="w-60 h-60 rotate-12 bg-linear-to-br from-emerald-500/20 to-cyan-500/30 rounded-2xl backdrop-blur-md border border-emerald-500/20 p-2">
                 <div className="w-full h-full border border-white/20 rounded-xl flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-emerald-400 font-bold text-4xl">۱۰۰+</div>
-                    <div className="text-white/70 mt-1">دانشجوی موفق</div>
+                    <div className="text-emerald-400 font-bold text-4xl">۲۰+</div>
+                    <div className="text-white/70 mt-1">دوره با تخفیف ویژه</div>
                   </div>
                 </div>
               </div>
