@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, memo } from "react";
 import HeroJson1 from "@/components/tools/HeroJson1";
 import Link from "next/link";
 import { ChevronLeft, BadgeCheck, User, ArrowLeft } from "lucide-react";
@@ -26,11 +26,7 @@ FeatureItem.displayName = 'FeatureItem';
 export default function HeroTop() {
   const [isVisible, setIsVisible] = useState(false);
 
-  // Usa useCallback para funciones que se pasan como props
-  const handleGetStarted = useCallback(() => {
-    // Navegar a la página de registro o iniciar una acción
-    console.log('Get started clicked');
-  }, []);
+
 
   useEffect(() => {
     // Retrasar ligeramente la animación para priorizar la carga de contenido principal
