@@ -1,14 +1,39 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import HeroJson2 from "@/components/tools/HeroJson2";
-import { 
-  BookOpen, 
-  ArrowRight, 
-  Stars, 
-  Brain,
-  Target
-} from "lucide-react";
+
+// Componente optimizado con memo para evitar re-renders innecesarios
+const FeatureItem = memo(
+  ({
+    icon,
+    title,
+    description,
+  }: {
+    icon: React.ReactNode;
+    title: string;
+    description: string;
+  }) => (
+    <div className="flex items-start gap-3 sm:gap-4 p-3 sm:p-4 border-b border-gray-100 dark:border-gray-800">
+      <div className="flex-shrink-0">
+        <div className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center text-green">
+          {icon}
+        </div>
+      </div>
+      <div>
+        <h3 className="text-sm sm:text-base font-semibold text-gray-900 dark:text-gray-100">
+          {title}
+        </h3>
+        <p className="mt-1 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+          {description}
+        </p>
+      </div>
+    </div>
+  )
+);
+
+// Optimizando el nombre del componente para evitar cambios de referencia
+FeatureItem.displayName = "FeatureItem";
 
 export default function HeroTop() {
   const [isVisible, setIsVisible] = useState(false);
@@ -22,129 +47,64 @@ export default function HeroTop() {
   }, []);
 
   return (
-    <section className="py-16 bg-white overflow-hidden">
-      <div className="container mx-auto px-4">
-        {/* Hero section */}
-        <div className={`mb-20 ${isVisible ? "opacity-100" : "opacity-0"} transition-opacity duration-700`}>
-          <div className="flex flex-col md:flex-row items-center gap-10">
-            <div className="md:w-1/2" dir="rtl">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                روشی <span className="text-green">ساده</span> برای <br />یادگیری عمیق
+    <section className="relative py-8 sm:py-10 md:py-16 overflow-hidden w-full">
+      {/* Subtle background element */}
+      <div className="absolute top-0 right-0 -z-10 w-56 sm:w-72 h-56 sm:h-72 bg-green/5 rounded-full blur-3xl"></div>
+      
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8 lg:gap-10">
+          {/* Content Side */}
+          <div
+            className={`w-full lg:w-1/2 ${
+              isVisible
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 -translate-x-10"
+            } transition-all duration-500 ease-out`}
+            dir="rtl"
+          >
+            <div className="space-y-3 sm:space-y-4 md:space-y-6">
+              {/* Badge */}
+              <div className="inline-flex items-center py-1 px-2 sm:px-3 bg-green/10 rounded-full">
+                <span className="w-1.5 sm:w-2 h-1.5 sm:h-2 rounded-full bg-green ml-1.5 sm:ml-2"></span>
+                <span className="text-xs sm:text-sm font-medium text-green">
+                  فضای تمرین و پیشرفت تخصصی
+                </span>
+              </div>
+
+              {/* Main heading */}
+              <h1 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-gray-900 dark:text-white leading-tight">
+                رشد با{" "}
+                <span className="text-green">
+                  تمرین‌های هدفمند
+                </span>{" "}
+                و پیگیری پیشرفت خود
               </h1>
-              <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-                سیستم هوشمند ما با استفاده از الگوریتم‌های پیشرفته، مسیر یادگیری را برای شما بهینه‌سازی می‌کند.
-              </p>
-              <button className="bg-green hover:bg-green-600 text-white rounded-lg px-8 py-3 text-base font-medium transition-colors">
-                شروع یادگیری
-              </button>
             </div>
-            
-            <div className="md:w-1/2 border border-gray-100 rounded-2xl p-6 shadow-sm bg-gray-50">
+
+            {/* Animation in mobile view */}
+            <div className="block lg:hidden mt-6 sm:mt-8 mb-6 sm:mb-8 max-w-xs sm:max-w-sm mx-auto">
+              <HeroJson2 />
+            </div>
+
+            <div className="space-y-4 sm:space-y-6 mt-4 sm:mt-6">
+              {/* Description with clean typography */}
+              <p className="text-sm sm:text-base text-gray-600 dark:text-gray-300 leading-relaxed">
+                با تمرین‌های متنوع و چالش‌های متناسب با سطح خود، مهارت‌های خود
+                را تقویت کنید. سیستم پیشرفته‌ی پیگیری عملکرد، نقاط قوت و ضعف شما
+                را شناسایی کرده و مسیر یادگیری را بر اساس نیازهای شما شخصی‌سازی
+                می‌کند. با تمرین روزانه و مداوم، پیشرفت مشهودی را تجربه کنید.
+              </p>
+
+
+            </div>
+          </div>
+
+          {/* Animation Side - Only on desktop */}
+          <div className="hidden lg:block lg:w-1/2">
+            <div className="mx-auto">
               <HeroJson2 />
             </div>
           </div>
-        </div>
-        
-        {/* Content cards */}
-        <div dir="rtl">
-          <div className={`mb-16 text-center ${isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"} transition-all duration-700 delay-300`}>
-            <h2 className="text-3xl font-bold text-gray-900 mb-3">ویژگی‌های برتر</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">روش‌های هوشمند یادگیری که به شما کمک می‌کند سریع‌تر و مؤثرتر مهارت‌های جدید را فرا بگیرید</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {[
-              {
-                title: "تمرین هوشمند",
-                description: "سیستم هوشمند ما تمرین‌ها را بر اساس نقاط ضعف و قوت شما تنظیم می‌کند",
-                icon: <Target className="w-6 h-6" />,
-                delay: "300"
-              },
-              {
-                title: "آموزش شخصی‌سازی شده",
-                description: "هر فرد روش یادگیری منحصر به فردی دارد. ما روش شما را کشف و تقویت می‌کنیم",
-                icon: <Brain className="w-6 h-6" />,
-                delay: "400"
-              },
-              {
-                title: "محتوای استاندارد",
-                description: "همه محتوای آموزشی توسط متخصصان باتجربه تهیه و استانداردسازی شده است",
-                icon: <BookOpen className="w-6 h-6" />,
-                delay: "500"
-              }
-            ].map((feature, index) => (
-              <div 
-                key={index} 
-                className={`bg-white p-8 rounded-xl border border-gray-100 hover:border-green/20 hover:shadow-md transition-all ${
-                  isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-                }`}
-                style={{ transitionDelay: `${feature.delay}ms`, transitionDuration: "700ms" }}
-              >
-                <div className="bg-green/5 rounded-full w-12 h-12 flex items-center justify-center mb-6 text-green">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                <p className="text-gray-600 mb-6">{feature.description}</p>
-                <a href="#" className="text-green flex items-center font-medium">
-                  بیشتر بدانید
-                  <ArrowRight className="mr-2 w-4 h-4" />
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-        
-        {/* Testimonial section */}
-        <div 
-          className={`bg-gray-50 rounded-2xl p-10 mb-16 ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          } transition-all duration-700 delay-700`}
-          dir="rtl"
-        >
-          <div className="flex flex-col md:flex-row gap-8 items-center">
-            <div className="md:w-2/3">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">تجربه دانش‌آموزان ما</h2>
-              <blockquote className="text-lg text-gray-600 mb-6 italic">
-                &ldquo;استفاده از این سیستم آموزشی تغییر بزرگی در روند یادگیری من ایجاد کرد. در مدت کوتاهی توانستم پیشرفت قابل توجهی داشته باشم.&rdquo;
-              </blockquote>
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-green/20 rounded-full mr-3"></div>
-                <div>
-                  <p className="font-semibold">سارا محمدی</p>
-                  <p className="text-sm text-gray-500">دانشجوی مهندسی کامپیوتر</p>
-                </div>
-              </div>
-            </div>
-            <div className="md:w-1/3 flex justify-center">
-              <div className="flex flex-col items-center">
-                <div className="flex mb-4">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <div key={star} className="text-yellow-400">
-                      <Stars className="w-6 h-6" />
-                    </div>
-                  ))}
-                </div>
-                <p className="text-3xl font-bold">۴.۸ / ۵</p>
-                <p className="text-sm text-gray-500">میانگین امتیاز کاربران</p>
-              </div>
-            </div>
-          </div>
-        </div>
-        
-        {/* Call to action */}
-        <div 
-          className={`text-center ${
-            isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          } transition-all duration-700 delay-1000`}
-          dir="rtl"
-        >
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">آماده شروع یادگیری هستید؟</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto mb-8">
-            همین امروز اولین قدم را برای یادگیری هوشمند و مؤثر بردارید
-          </p>
-          <button className="bg-green hover:bg-green-600 text-white rounded-lg px-8 py-3 text-base font-medium transition-colors">
-            ثبت‌نام رایگان
-          </button>
         </div>
       </div>
     </section>
