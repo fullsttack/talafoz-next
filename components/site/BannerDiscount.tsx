@@ -97,7 +97,7 @@ export default function BannerDiscount() {
             </div>
             
             {/* Main heading - large and bold */}
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tight text-muted-foreground leading-tight">
+            <h2 className="text-2xl md:text-5xl lg:text-6xl font-black mb-4 tracking-tight text-muted-foreground leading-tight">
               <span>جشنواره </span>
               <span className={`${accentClasses}`}>تابستانه </span>
               <span className="relative inline-block">
