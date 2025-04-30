@@ -6,7 +6,6 @@ export const metadata: Metadata = {
   description: 'پلتفرم آموزش آنلاین تلفظ',
 };
 
-// فقط bypass کردن layout دوره‌ها و استفاده از layout اصلی
 export default function EpisodeLayout({
   children,
 }: {

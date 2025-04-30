@@ -45,8 +45,7 @@ export default function HeroTop() {
         <div className="absolute bottom-10 left-[5%] w-72 h-72 rounded-full bg-indigo-500/5 blur-3xl"></div>
         <div className="absolute top-1/4 left-1/3 w-96 h-96 rounded-full bg-yellow-500/5 blur-3xl"></div>
 
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[url('/images/grid-pattern.svg')] bg-center opacity-[0.015]"></div>
+
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">

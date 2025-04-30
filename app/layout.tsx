@@ -1,4 +1,4 @@
-import type { Metadata, Viewport } from "next";
+import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/tools/theme-provider";
 import { Toaster } from "sonner";
@@ -14,16 +14,7 @@ export const metadata: Metadata = {
   // manifest: "/manifest.json",
 };
 
-// Optimizar para dispositivos móviles
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#111111" }
-  ],
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-};
+
 
 export default function RootLayout({
   children,
@@ -40,7 +31,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >

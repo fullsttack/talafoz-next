@@ -4,9 +4,6 @@ import { courses } from '@/components/data/course';
 import CourseEpisodePage from '@/components/course/CourseEpisodePage';
 
 
-
-
-
 interface EpisodePageProps {
   params: {
     id: string;
@@ -34,7 +31,7 @@ export async function generateStaticParams() {
   return params;
 }
 
-// Set dynamic mode to force-static for static export
+
 export const dynamic = 'force-static';
 export const revalidate = 3600; // Cache for 1 hour
 export const preferredRegion = 'auto'; // Performance optimization
@@ -69,15 +66,13 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
   const courseId = params.id;
   const episodeId = params.episodeId;
   
-  // پیدا کردن دوره بر اساس ID
   const course = courses.find(course => course.id === courseId);
   
-  // اگر دوره پیدا نشد، صفحه 404 نمایش داده می‌شود
+
   if (!course) {
     notFound();
   }
   
-  // پیدا کردن اپیزود و فصل مربوطه
   let targetEpisode = null;
   let targetChapter = null;
   
@@ -92,7 +87,7 @@ export default async function EpisodePage({ params }: EpisodePageProps) {
     }
   }
   
-  // اگر اپیزود پیدا نشد، صفحه 404 نمایش داده می‌شود
+
   if (!targetEpisode || !targetChapter) {
     notFound();
   }

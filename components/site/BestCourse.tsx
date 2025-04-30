@@ -5,15 +5,10 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import { courses } from "@/components/data/course";
-import CourseCard from "@/components/course/CourseCard";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-} from "@/components/ui/carousel";
+
+import BestCourseCarousel from '../blog/BestCourseCarousel.client';
 
 export default function BestCourse() {
-  const [isPremiumUser] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -67,49 +62,7 @@ export default function BestCourse() {
         </div>
       </div>
 
-      {/* Courses Carousel */}
-      {!isClient ? (
-        // Simple placeholder while client-side code is initializing
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {bestCourses.slice(0, 3).map((course) => (
-            <CourseCard
-              key={course.id}
-              course={course}
-              isPremiumUser={isPremiumUser}
-            />
-          ))}
-        </div>
-      ) : bestCourses.length > 0 ? (
-        <div className="relative" dir="rtl">
-          <Carousel
-            opts={{
-              align: "start",
-              loop: true,
-              containScroll: "keepSnaps",
-              dragFree: true,
-              direction: "rtl",
-            }}
-            className="w-full overflow-visible"
-            dir="rtl"
-          >
-            <CarouselContent className="gap-4" ref={carouselRef}>
-              {bestCourses.map((course) => (
-                <CarouselItem
-                  key={course.id}
-                  className="basis-[85%] md:basis-[45%] lg:basis-[30%] xl:basis-[30%]"
-                >
-                  <CourseCard course={course} isPremiumUser={isPremiumUser} />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
-        </div>
-      ) : (
-        // No courses available
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
-          در حال حاضر دوره‌ای برای نمایش وجود ندارد.
-        </div>
-      )}
+      <BestCourseCarousel courses={bestCourses} />
     </section>
   );
 } 

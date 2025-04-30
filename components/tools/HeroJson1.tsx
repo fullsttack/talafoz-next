@@ -66,7 +66,7 @@ export default function HeroJson1() {
   }, []);
 
   if (loading) {
-    return <div>Loading animation...</div>;
+    return <div>Loading ...</div>;
   }
 
   if (error) {
