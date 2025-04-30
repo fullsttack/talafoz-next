@@ -1,7 +1,6 @@
 export const experimental_ppr = true;
 import { Suspense } from "react";
 import Header from "@/components/layout/Header";
-import BannerDiscount from "@/components/site/BannerDiscount";
 import Footer from "@/components/layout/Footer";
 import PracticeBox from "@/components/site/PracticeBox";
 import HeroTop from "@/components/site/HeroTop";
@@ -30,9 +29,6 @@ export default function Home() {
           <LastCourse />
         </Suspense>
 
-        <Suspense fallback={<div>در حال بارگذاری تخفیف...</div>}>
-          <BannerDiscount />
-        </Suspense>
 
         <Suspense fallback={<div>در حال بارگذاری بهترین دوره‌ها...</div>}>
           <BestCourse />
