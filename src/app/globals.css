@@ -19,6 +19,8 @@ body {
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  --color-base-1: #3564ff;
+  --color-yellow: #e7b657;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);

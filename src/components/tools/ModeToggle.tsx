@@ -36,11 +36,11 @@ export function ModeToggle() {
       onClick={toggleTheme}
       variant="outline"
       size="icon"
-      className="relative rounded-full border-none hover:bg-secondary transition-colors duration-300 h-8 w-8 sm:h-9 sm:w-9"
+      className="relative rounded-full border-none shadow-lg hover:bg-secondary transition-colors duration-300 h-8 w-8 sm:h-9 sm:w-9"
       aria-label="تغییر حالت نمایش"
     >
       {theme === "dark" ? (
-        <Sun className="h-4 w-4 text-yellow-500" />
+        <Sun className="h-4 w-4 text-white " />
       ) : (
         <Moon className="h-4 w-4 text-slate-700" />
       )}
