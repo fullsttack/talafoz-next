@@ -1,8 +1,46 @@
-import React from "react";
-import { courses } from "../../_data/course";
-import CourseCard from "../course/CourseCard";
+"use client"
 
-const CourseList: React.FC = () => {
+import { useRef, useEffect } from "react";
+import CourseCard from "../course/CourseCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselPrevious,
+  CarouselNext,
+} from "../ui/carousel";
+import { Course } from "../../_data/course";
+
+interface CourseListProps {
+  courses: Course[];
+}
+
+const CourseList: React.FC<CourseListProps> = ({ courses }) => {
+  const carouselRef = useRef<HTMLDivElement>(null);
+  // اگر نیاز به تعیین نوع کاربر داری، اینجا مقداردهی کن
+  // const isPremiumUser = false;
+
+  useEffect(() => {
+    if (carouselRef.current) {
+      const timer = setTimeout(() => {
+        if (carouselRef.current) {
+          const currentScroll = carouselRef.current.scrollLeft;
+          carouselRef.current.scrollLeft = 1;
+          carouselRef.current.scrollLeft = currentScroll;
+        }
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
+  if (!courses || courses.length === 0) {
+    return (
+      <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+        در حال حاضر دوره‌ای برای نمایش وجود ندارد.
+      </div>
+    );
+  }
+
   return (
     <div className="w-full flex flex-col container mx-auto px-4 md:px-12 gap-6 pt-24 md:pt-4 py-4">
       <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -14,23 +52,32 @@ const CourseList: React.FC = () => {
             جدیدترین دوره‌ها را از اینجا مشاهده کنید
           </p>
         </div>
-
       </div>
-      <div className="w-full  grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
-        {courses.map((course) => (
-          <CourseCard
-            key={course.id}
-            image={course.image}
-            title={course.title}
-            instructor={course.instructor}
-            description={course.description}
-            price={course.price}
-            episodes={course.episodes}
-            duration={course.duration}
-            isFree={course.isFree}
-            isVipFree={course.isVipFree}
-          />
-        ))}
+      <div className="relative" dir="rtl">
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+            containScroll: "keepSnaps",
+            dragFree: true,
+            direction: "rtl",
+          }}
+          className="w-full overflow-visible"
+          dir="rtl"
+        >
+          <CarouselContent className="gap-4" ref={carouselRef}>
+            {courses.map((course) => (
+              <CarouselItem
+                key={course.id}
+                className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-[22%]"
+              >
+                <CourseCard {...course} />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ export default function Slider() {
         <h1 className="text-lg md:text-3xl font-extrabold text-base-1 mb-4 leading-tight">
           یادگیری خود را با بهره‌گیری از هوش مصنوعی آغاز کنید
         </h1>
-        <p className="text-sm md:text-base text-gray-600 dark:text-gray-300 mb-6 text-center md:text-right">
+        <p className="text-sm md:text-base max-w-xl text-gray-600 dark:text-gray-300 mb-6 text-center md:text-right">
          با استفاده از جدیدترین فناوری‌های هوش مصنوعی و ارائه برترین دوره‌های آموزشی , مسیر پیشرفت و موفقیت شما را هموار می‌سازیم.  همین امروز شروع کنید
         </p>
 
