@@ -40,7 +40,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 
 // کامپوننت لینک‌های منوی ناوبری دسکتاپ با بهینه‌سازی memo
@@ -261,16 +261,11 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [scrolled]);
 
-  // بستن منو هنگام تغییر مسیر
   useEffect(() => {
-    if (isMenuOpen) {
-      setIsMenuOpen(false);
-      document.body.style.overflow = "auto";
-    }
-    if (isSearchOpen) {
-      setIsSearchOpen(false);
-    }
-  }, [pathname, isMenuOpen, isSearchOpen]);
+    setIsMenuOpen(false);
+    setIsSearchOpen(false);
+    document.body.style.overflow = "auto";
+  }, [pathname]);
 
   return (
     <header
@@ -589,7 +584,11 @@ const Header = () => {
                     <Menu className="w-4 h-4" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-[85%] sm:w-[350px] p-0">
+                <SheetContent side="left" className="w-[85%] sm:w-[350px] p-0" aria-describedby="mobile-menu-description">
+                  <SheetTitle className="sr-only">منوی موبایل</SheetTitle>
+                  <div id="mobile-menu-description" className="sr-only">
+                    منوی موبایل سایت تلفظ. این منو شامل لینک‌های اصلی سایت است.
+                  </div>
                   <div className="flex flex-col h-full">
                     <div className="p-4 flex items-center justify-between border-b">
                       <Link
@@ -602,14 +601,7 @@ const Header = () => {
                         </span>
                       </Link>
 
-                      <Button
-                        className="border-none p-2 rounded-full bg-background/50 text-foreground hover:bg-secondary transition-colors duration-300 h-8 w-8"
-                        variant="outline"
-                        size="icon"
-                        onClick={() => setIsMenuOpen(false)}
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
+                     
                     </div>
 
                     <div className="p-4 flex flex-col gap-2 flex-grow overflow-auto">
