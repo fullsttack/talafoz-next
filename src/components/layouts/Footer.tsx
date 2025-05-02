@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { MessageSquareCode, Instagram, Twitter, Linkedin, Mail, Phone, MapPin } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+
 
 const Footer = () => {
   return (
