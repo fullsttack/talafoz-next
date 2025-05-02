@@ -433,7 +433,6 @@ const Header = () => {
                   : "opacity-0 pointer-events-none"
               }`}
               role="search"
-              aria-expanded={isSearchOpen}
               aria-label="جستجو در وب‌سایت"
             >
               <div className="relative w-full max-w-2xl mx-auto">
