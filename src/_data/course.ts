@@ -34,7 +34,7 @@ export const courses: Course[] = [
     episodes: 30,
     duration: '15:24:32',
     isFree: false,
-    isVipFree: false,
+    isVipFree: true,
   },
   {
     id: 3,
