@@ -1,5 +1,4 @@
-"use client";
-
+"use client"
 import { useRef, useEffect } from "react";
 import CourseCard from "../course/CourseCard";
 import {
@@ -9,17 +8,10 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "../ui/carousel";
-import { Course } from "../../_data/course";
+import { courses } from "../../_data/course";
 import Link from "next/link";
-
-interface CourseListProps {
-  courses: Course[];
-}
-
-const CourseList: React.FC<CourseListProps> = ({ courses }) => {
+const CourseList: React.FC = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
-  // اگر نیاز به تعیین نوع کاربر داری، اینجا مقداردهی کن
-  // const isPremiumUser = false;
 
   useEffect(() => {
     if (carouselRef.current) {
@@ -43,25 +35,19 @@ const CourseList: React.FC<CourseListProps> = ({ courses }) => {
   }
 
   return (
-    <div className="w-full flex flex-col container mx-auto px-4 md:px-12 gap-6 pt-24 md:pt-4 py-4">
+    <div className="w-full flex flex-col container mx-auto px-4 md:px-12 gap-6 pt-24 md:pt-36 py-8">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
-            آخرین دوره‌ های آموزشی
+            جدید ترین دوره ‌ها
           </h2>
-          <p className=" mt-2 text-gray-600 dark:text-gray-400 text-xs">
+          <p className="mt-2 text-gray-600 dark:text-gray-400 text-xs">
             جدیدترین دوره‌ها را از اینجا مشاهده کنید
           </p>
         </div>
-
-        <div>
-          <Link
-            href="/courses"
-            className="text-sm text-gray-600 dark:text-gray-400"
-          >
-            مشاهده همه
-          </Link>
-        </div>
+        <Link href="/courses" className="text-sm text-gray-600 dark:text-gray-400">
+          مشاهده همه
+        </Link>
       </div>
       <div className="relative" dir="rtl">
         <Carousel
