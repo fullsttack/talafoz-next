@@ -2,7 +2,7 @@
 
 import React from "react";
 import Image from "next/image";
-export default function CartPage() {
+export default function CoursesPage() {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center text-gray-600 dark:text-gray-300">
       <Image src="/vector/courses.svg" alt="courses" className="" width={500} height={500} />
