@@ -338,7 +338,7 @@ const Header = () => {
 
               {/* منوی ناوبری دسکتاپ */}
               <div className="hidden md:flex items-center mr-12">
-                <NavigationMenu dir="rtl">
+                <NavigationMenu>
                   <NavigationMenuList>
                     <NavigationMenuItem>
                       <NavigationMenuLink

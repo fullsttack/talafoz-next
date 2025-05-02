@@ -31,6 +31,7 @@ export default function Slider() {
             className="w-full h-full"
             width={500}
             height={500}
+            priority
           />
         </Suspense>
       </div>
