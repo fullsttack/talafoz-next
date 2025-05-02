@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { faqs, Faq } from "../../_data/faq";
+import { faqs, Faq } from "../../data/faq";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { Skeleton } from "@/components/ui/skeleton";
 

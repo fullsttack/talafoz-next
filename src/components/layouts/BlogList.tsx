@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { blogs } from "../../_data/blog";
+import { blogs } from "../../data/blog";
 import BlogCard from "../blog/BlogCard";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";

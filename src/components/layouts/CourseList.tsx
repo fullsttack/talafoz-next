@@ -8,7 +8,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "../ui/carousel";
-import { courses } from "../../_data/course";
+import { courses } from "../../data/course";
 import Link from "next/link";
 import { Skeleton } from "@/components/ui/skeleton";
 
