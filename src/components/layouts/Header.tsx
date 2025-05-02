@@ -232,8 +232,10 @@ const Header = () => {
   const [isLoggedIn] = useState(false);
   const [circles, setCircles] = useState<{ cx: number; cy: number; r: number; fill: string }[]>([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     // Only run on client
     const generated = Array.from({ length: 30 }).map((_, i) => ({
       cx: Math.random() * 1440,
@@ -302,7 +304,7 @@ const Header = () => {
           {/* لایه بلور رنگی ملایم */}
           <div className="absolute right-1/12 top-0 w-10/12 h-32 rounded-full bg-gradient-to-r from-base1 via-yellow-100/40 to-sky-500/40 blur-2xl"></div>
           {/* پترن نقطه‌ای */}
-          {circles.length > 0 && (
+          {isClient && circles.length > 0 && (
             <svg
               className="absolute inset-0 w-full h-full"
               width="100%"

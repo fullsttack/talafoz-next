@@ -30,6 +30,7 @@ export default function AboutIndex() {
             className="w-12/12"
             width={500}
             height={500}
+            priority
           />
         </Suspense>
       </div>
