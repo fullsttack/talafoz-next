@@ -1,5 +1,5 @@
 "use client"
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, Suspense } from "react";
 import CourseCard from "../course/CourseCard";
 import {
   Carousel,
@@ -10,6 +10,8 @@ import {
 } from "../ui/carousel";
 import { courses } from "../../_data/course";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
+
 const BestCourse: React.FC = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -50,30 +52,40 @@ const BestCourse: React.FC = () => {
         </Link>
       </div>
       <div className="relative" dir="rtl">
-        <Carousel
-          opts={{
-            align: "start",
-            loop: true,
-            containScroll: "keepSnaps",
-            dragFree: true,
-            direction: "rtl",
-          }}
-          className="w-full overflow-visible"
-          dir="rtl"
+        <Suspense
+          fallback={
+            <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} className="h-80 w-full rounded-2xl" />
+              ))}
+            </div>
+          }
         >
-          <CarouselContent className="gap-4" ref={carouselRef}>
-            {courses.map((course) => (
-              <CarouselItem
-                key={course.id}
-                className="basis-[80%] md:basis-1/3 lg:basis-1/4 xl:basis-[22%]"
-              >
-                <CourseCard {...course} />
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="hidden md:flex" />
-          <CarouselNext className="hidden md:flex" />
-        </Carousel>
+          <Carousel
+            opts={{
+              align: "start",
+              loop: true,
+              containScroll: "keepSnaps",
+              dragFree: true,
+              direction: "rtl",
+            }}
+            className="w-full overflow-visible"
+            dir="rtl"
+          >
+            <CarouselContent className="gap-4" ref={carouselRef}>
+              {courses.map((course) => (
+                <CarouselItem
+                  key={course.id}
+                  className="basis-[80%] md:basis-1/3 lg:basis-1/4 xl:basis-[22%]"
+                >
+                  <CourseCard {...course} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="hidden md:flex" />
+            <CarouselNext className="hidden md:flex" />
+          </Carousel>
+        </Suspense>
       </div>
     </div>
   );

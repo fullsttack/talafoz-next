@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Slider() {
   return (
@@ -22,13 +24,15 @@ export default function Slider() {
       </div>
 
       <div className="w-full md:w-1/2 flex justify-center">
-        <Image
-          src="/vector/main.svg"
-          alt="slider"
-          className="w-full h-full"
-          width={500}
-          height={500}
-        />
+        <Suspense fallback={<Skeleton className="w-[500px] h-[500px] rounded-xl" />}>
+          <Image
+            src="/vector/main.svg"
+            alt="slider"
+            className="w-full h-full"
+            width={500}
+            height={500}
+          />
+        </Suspense>
       </div>
     </div>
   );

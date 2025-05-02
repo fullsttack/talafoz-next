@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, memo } from "react";
+import { useState, useEffect, useCallback, memo, Suspense } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -42,6 +42,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 
 // کامپوننت لینک‌های منوی ناوبری دسکتاپ با بهینه‌سازی memo
 const DesktopNavLink = memo(
@@ -229,6 +230,7 @@ const Header = () => {
   const pathname = usePathname();
   const [isLoggedIn] = useState(false);
   const [circles, setCircles] = useState<{ cx: number; cy: number; r: number; fill: string }[]>([]);
+  const [loadingMenu, setLoadingMenu] = useState(false);
 
   useEffect(() => {
     // Only run on client
@@ -266,6 +268,17 @@ const Header = () => {
     setIsSearchOpen(false);
     document.body.style.overflow = "auto";
   }, [pathname]);
+
+  // شبیه‌سازی لودینگ منو موبایل
+  useEffect(() => {
+    if (isMenuOpen) {
+      setLoadingMenu(true);
+      const timer = setTimeout(() => setLoadingMenu(false), 1200);
+      return () => clearTimeout(timer);
+    } else {
+      setLoadingMenu(false);
+    }
+  }, [isMenuOpen]);
 
   return (
     <header
@@ -600,8 +613,6 @@ const Header = () => {
                           تلفظ
                         </span>
                       </Link>
-
-                     
                     </div>
 
                     <div className="p-4 flex flex-col gap-2 flex-grow overflow-auto">
@@ -610,48 +621,65 @@ const Header = () => {
                       </div>
 
                       <div className="space-y-1">
-                        <MobileNavLink
-                          href="/"
-                          label="خانه"
-                          isActive={pathname === "/"}
-                          icon={<LayoutDashboard className="h-5 w-5" />}
-                          onClick={() => setIsMenuOpen(false)}
-                        />
-                        <MobileNavLink
-                          href="/courses"
-                          label="دوره‌ها"
-                          isActive={pathname.includes("/courses")}
-                          icon={<BookOpen className="h-5 w-5" />}
-                          onClick={() => setIsMenuOpen(false)}
-                        />
-                        <MobileNavLink
-                          href="/roadmap"
-                          label="مسیر آموزشی"
-                          isActive={pathname === "/roadmap"}
-                          icon={<GraduationCap className="h-5 w-5" />}
-                          onClick={() => setIsMenuOpen(false)}
-                        />
-                        <MobileNavLink
-                          href="/blog"
-                          label="وبلاگ"
-                          isActive={pathname === "/blog"}
-                          icon={<BookOpen className="h-5 w-5" />}
-                          onClick={() => setIsMenuOpen(false)}
-                        />
-                        <MobileNavLink
-                          href="/about"
-                          label="درباره ما"
-                          isActive={pathname === "/about"}
-                          icon={<User className="h-5 w-5" />}
-                          onClick={() => setIsMenuOpen(false)}
-                        />
-                        <MobileNavLink
-                          href="/contact"
-                          label="تماس با ما"
-                          isActive={pathname === "/contact"}
-                          icon={<Settings className="h-5 w-5" />}
-                          onClick={() => setIsMenuOpen(false)}
-                        />
+                        <Suspense
+                          fallback={
+                            <>
+                              <Skeleton className="h-12 w-full mb-2" />
+                              <Skeleton className="h-12 w-full mb-2" />
+                              <Skeleton className="h-12 w-full mb-2" />
+                              <Skeleton className="h-12 w-full mb-2" />
+                              <Skeleton className="h-12 w-full mb-2" />
+                              <Skeleton className="h-12 w-full mb-2" />
+                            </>
+                          }
+                        >
+                          {loadingMenu ? null : (
+                            <>
+                              <MobileNavLink
+                                href="/"
+                                label="خانه"
+                                isActive={pathname === "/"}
+                                icon={<LayoutDashboard className="h-5 w-5" />}
+                                onClick={() => setIsMenuOpen(false)}
+                              />
+                              <MobileNavLink
+                                href="/courses"
+                                label="دوره‌ها"
+                                isActive={pathname.includes("/courses")}
+                                icon={<BookOpen className="h-5 w-5" />}
+                                onClick={() => setIsMenuOpen(false)}
+                              />
+                              <MobileNavLink
+                                href="/roadmap"
+                                label="مسیر آموزشی"
+                                isActive={pathname === "/roadmap"}
+                                icon={<GraduationCap className="h-5 w-5" />}
+                                onClick={() => setIsMenuOpen(false)}
+                              />
+                              <MobileNavLink
+                                href="/blog"
+                                label="وبلاگ"
+                                isActive={pathname === "/blog"}
+                                icon={<BookOpen className="h-5 w-5" />}
+                                onClick={() => setIsMenuOpen(false)}
+                              />
+                              <MobileNavLink
+                                href="/about"
+                                label="درباره ما"
+                                isActive={pathname === "/about"}
+                                icon={<User className="h-5 w-5" />}
+                                onClick={() => setIsMenuOpen(false)}
+                              />
+                              <MobileNavLink
+                                href="/contact"
+                                label="تماس با ما"
+                                isActive={pathname === "/contact"}
+                                icon={<Settings className="h-5 w-5" />}
+                                onClick={() => setIsMenuOpen(false)}
+                              />
+                            </>
+                          )}
+                        </Suspense>
                       </div>
                     </div>
 

@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { Suspense } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AboutIndex() {
   return (
@@ -21,13 +23,15 @@ export default function AboutIndex() {
       </div>
 
       <div className="w-full">
-        <Image
-          src="/vector/about.svg"
-          alt="about"
-          className="w-12/12"
-          width={500}
-          height={500}
-        />
+        <Suspense fallback={<Skeleton className="w-[500px] h-[500px] rounded-xl" />}>
+          <Image
+            src="/vector/about.svg"
+            alt="about"
+            className="w-12/12"
+            width={500}
+            height={500}
+          />
+        </Suspense>
       </div>
     </div>
   );

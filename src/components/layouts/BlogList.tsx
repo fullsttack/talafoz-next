@@ -1,7 +1,8 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { blogs } from "../../_data/blog";
 import BlogCard from "../blog/BlogCard";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const BlogList: React.FC = () => {
   return (
@@ -19,21 +20,31 @@ const BlogList: React.FC = () => {
           مشاهده همه
         </Link>
       </div>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
-        {blogs.map((blog) => (
-          <BlogCard
-            key={blog.id}
-            id={blog.id}
-            image={blog.image}
-            title={blog.title}
-            author={blog.author}
-            description={blog.description}
-            date={blog.date}
-            likes={blog.likes}
-            comments={blog.comments}
-          />
-        ))}
-      </div>
+      <Suspense
+        fallback={
+          <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} className="h-80 w-full rounded-2xl" />
+            ))}
+          </div>
+        }
+      >
+        <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 ">
+          {blogs.map((blog) => (
+            <BlogCard
+              key={blog.id}
+              id={blog.id}
+              image={blog.image}
+              title={blog.title}
+              author={blog.author}
+              description={blog.description}
+              date={blog.date}
+              likes={blog.likes}
+              comments={blog.comments}
+            />
+          ))}
+        </div>
+      </Suspense>
     </div>
   );
 };

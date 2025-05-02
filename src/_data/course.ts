@@ -15,9 +15,9 @@ export const courses: Course[] = [
   {
     id: 1,
     image: '/course/1.webp',
-    title: 'آموزش ری‌اکت',
+    title: 'آموزش React',
     instructor: 'علی رضایی',
-    description: 'یادگیری React از صفر تا صد به صورت حرفه ای با پروژه عملی. یادگیری ری‌اکت از صفر تا صد به صورت حرفه ای با پروژه عملی.',
+    description: 'یادگیری React از صفر تا صد به صورت حرفه ای با پروژه عملی. یادگیری React از صفر تا صد به صورت حرفه ای با پروژه عملی.',
     price: '۳۵۰٬۰۰۰ تومان',
     episodes: 24,
     duration: '12:15:30',
