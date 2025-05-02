@@ -5,7 +5,7 @@ import BestCourse from "@/components/layouts/BestCourse";
 import AboutIndex from "@/components/layouts/AboutIndex";
 import BlogList from "@/components/layouts/BlogList";
 import FaqIndex from "@/components/layouts/FaqIndex";
-
+import Footer from "@/components/layouts/Footer";
 
 
 export default function Home() {
@@ -18,7 +18,7 @@ export default function Home() {
     <AboutIndex />
     <BlogList />
     <FaqIndex />
-
+    <Footer />
    </div>
   );
 }
