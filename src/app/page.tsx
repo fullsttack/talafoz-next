@@ -4,7 +4,7 @@ import CourseList from "@/components/layouts/CourseList";
 import BestCourse from "@/components/layouts/BestCourse";
 import AboutIndex from "@/components/layouts/AboutIndex";
 import BlogList from "@/components/layouts/BlogList";
-
+import Footer from "@/components/layouts/Footer";
 
 
 export default function Home() {
@@ -16,6 +16,7 @@ export default function Home() {
     <BestCourse />
     <AboutIndex />
     <BlogList />
+    <Footer />
    </div>
   );
 }
