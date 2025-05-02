@@ -1,8 +1,13 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-body {
+
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  position: relative;
   font-family: 'Yekan', 'font-sans', sans-serif;
+
 }
 
 @font-face {

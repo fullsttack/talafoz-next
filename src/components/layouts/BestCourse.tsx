@@ -9,7 +9,7 @@ import {
   CarouselNext,
 } from "../ui/carousel";
 import { courses } from "../../_data/course";
-
+import Link from "next/link";
 const BestCourse: React.FC = () => {
   const carouselRef = useRef<HTMLDivElement>(null);
 
@@ -36,15 +36,18 @@ const BestCourse: React.FC = () => {
 
   return (
     <div className="w-full flex flex-col container mx-auto px-4 md:px-12 gap-6 pt-24 md:pt-36 py-8">
-      <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between">
+      <div className="mb-4 flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 className="text-lg md:text-2xl font-bold text-gray-900 dark:text-white">
             محبوب‌ ترین دوره ‌ها
           </h2>
           <p className="mt-2 text-gray-600 dark:text-gray-400 text-xs">
             محبوب‌ ترین دوره‌ها را از اینجا مشاهده کنید
           </p>
         </div>
+        <Link href="/courses" className="text-sm text-gray-600 dark:text-gray-400">
+          مشاهده همه
+        </Link>
       </div>
       <div className="relative" dir="rtl">
         <Carousel
@@ -62,14 +65,14 @@ const BestCourse: React.FC = () => {
             {courses.map((course) => (
               <CarouselItem
                 key={course.id}
-                className="basis-1/2 md:basis-1/3 lg:basis-1/4 xl:basis-[22%]"
+                className="basis-[80%] md:basis-1/3 lg:basis-1/4 xl:basis-[22%]"
               >
                 <CourseCard {...course} />
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious  />
-          <CarouselNext />
+          <CarouselPrevious className="hidden md:flex" />
+          <CarouselNext className="hidden md:flex" />
         </Carousel>
       </div>
     </div>

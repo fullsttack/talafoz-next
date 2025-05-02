@@ -1,7 +1,7 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FileVideo2, Clock, Star } from 'lucide-react';
+import { FileVideo2, Clock } from 'lucide-react';
 
 interface CourseCardProps {
   image: string;
@@ -15,18 +15,12 @@ interface CourseCardProps {
   isVipFree?: boolean;
 }
 
-const CourseCard: React.FC<CourseCardProps> = ({ image, title, instructor, description, price, episodes, duration, isFree, isVipFree }) => {
+const CourseCard: React.FC<CourseCardProps> = ({ image, title, instructor, description, price, episodes, duration, isFree }) => {
   // For demo, link to /courses (can be changed to course detail page)
   return (
     <Link href="/courses" className="block group">
       <div className="border rounded-2xl shadow-lg overflow-hidden flex flex-col relative transition-shadow group-hover:shadow-2xl group-hover:-translate-y-1 duration-200">
-        {/* نشان اعضای ویژه */}
-        {isVipFree && !isFree && (
-          <span className="absolute top-3 left-3 flex items-center gap-1 bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-semibold z-10 border border-yellow-300 shadow">
-            <Star size={16} className="text-yellow-500" fill="#facc15" />
-            رایگان برای اعضا ویژه
-          </span>
-        )}
+        
         <Image width={320} height={180} src={image} alt={title} className="w-full h-48 object-cover" />
         <div className="p-4 flex flex-col flex-1">
           <h2 className="text-lg font-bold mb-1">{title}</h2>
