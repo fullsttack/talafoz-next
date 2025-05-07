@@ -4,7 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner"; 
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
-import NetworkStatusToast from "@/components/NetworkStatusToast";
+import NetworkStatusToast from "@/components/tools/NetworkStatusToast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
