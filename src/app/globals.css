@@ -151,3 +151,21 @@ html, body {
   background-image: url('/gridlines/gridlines.svg');
 }
 
+
+/* Add this for Sonner toasts */
+[data-sonner-toaster] {
+  font-family: 'Yekan', system-ui, sans-serif !important;
+}
+
+[data-sonner-toast] {
+  font-family: 'Yekan', system-ui, sans-serif !important;
+  direction: rtl !important;
+}
+
+[data-sonner-toast] [data-description] {
+  font-family: 'Yekan', system-ui, sans-serif !important;
+}
+
+[data-sonner-toast] [data-title] {
+  font-family: 'Yekan', system-ui, sans-serif !important;
+}

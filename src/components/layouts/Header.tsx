@@ -236,6 +236,7 @@ const Header = () => {
   const [loadingMenu, setLoadingMenu] = useState(false);
   const { user, isLoading, logout } = useAuth();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+  const [isRegisterDialogOpen, setIsRegisterDialogOpen] = useState(false);
 
   useEffect(() => {
     // Only run on client
@@ -295,6 +296,10 @@ const Header = () => {
 
   const handleLoginDialogClose = () => {
     setIsLoginDialogOpen(false);
+  };
+
+  const handleRegisterDialogClose = () => {
+    setIsRegisterDialogOpen(false);
   };
 
   return (
@@ -517,8 +522,8 @@ const Header = () => {
               {isLoading ? (
                 <Skeleton className="h-9 w-9 rounded-full" />
               ) : user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                <DropdownMenu dir="rtl">
+                  <DropdownMenuTrigger className="" asChild>
                     <Button
                       variant="outline"
                       className="rounded-full border-none shadow-lg hover:bg-secondary transition-colors duration-300 h-8 w-8 sm:h-9 sm:w-9 p-0 overflow-hidden"
@@ -582,14 +587,21 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <div className="flex gap-2">
-                  <Button
-                    asChild
-                    variant="outline"
-                    size="sm"
-                    className="w-32 rounded-md hidden sm:flex"
-                  >
-                    <Link href="/register">ثبت نام</Link>
-                  </Button>
+                  <Dialog open={isRegisterDialogOpen} onOpenChange={setIsRegisterDialogOpen}>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-32 rounded-md hidden sm:flex"
+                      >
+                        ثبت نام
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <LoginDialogContent onClose={handleRegisterDialogClose} isOpen={isRegisterDialogOpen} isRegister={true} />
+                    </DialogContent>
+                  </Dialog>
+
                   <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
                     <DialogTrigger asChild>
                       <Button
@@ -601,7 +613,7 @@ const Header = () => {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-md">
-                      <LoginDialogContent onClose={handleLoginDialogClose} />
+                      <LoginDialogContent onClose={handleLoginDialogClose} isOpen={isLoginDialogOpen} />
                     </DialogContent>
                   </Dialog>
                 </div>

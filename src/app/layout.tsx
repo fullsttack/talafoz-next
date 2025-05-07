@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner"; 
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import NetworkStatusToast from "@/components/NetworkStatusToast";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -29,6 +30,7 @@ export default function RootLayout({
           <NextAuthProvider>
             <AuthProvider>
               <Toaster richColors position="top-center" />
+              <NetworkStatusToast />
               {children}
             </AuthProvider>
           </NextAuthProvider>
