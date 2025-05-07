@@ -44,6 +44,7 @@ import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import LoginDialogContent from "@/components/auth/LoginDialogContent";
+import { useAuth } from "@/contexts/AuthContext";
 
 // کامپوننت لینک‌های منوی ناوبری دسکتاپ با بهینه‌سازی memo
 const DesktopNavLink = memo(
@@ -231,9 +232,10 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const [isLoggedIn] = useState(false);
   const [circles, setCircles] = useState<{ cx: number; cy: number; r: number; fill: string }[]>([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
+  const { user, isLoading, logout } = useAuth();
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
 
   useEffect(() => {
     // Only run on client
@@ -282,6 +284,18 @@ const Header = () => {
       setLoadingMenu(false);
     }
   }, [isMenuOpen]);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
+  const handleLoginDialogClose = () => {
+    setIsLoginDialogOpen(false);
+  };
 
   return (
     <header
@@ -500,7 +514,9 @@ const Header = () => {
               </Button>
 
               {/* پروفایل کاربر یا دکمه ورود/ثبت‌نام */}
-              {isLoggedIn ? (
+              {isLoading ? (
+                <Skeleton className="h-9 w-9 rounded-full" />
+              ) : user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
@@ -511,19 +527,19 @@ const Header = () => {
                       <Avatar className="h-full w-full">
                         <AvatarImage
                           src="/avatars/user-profile.jpg"
-                          alt="تصویر کاربر"
+                          alt={user.name || "کاربر"}
                         />
                         <AvatarFallback className="text-xs">
-                          کاربر
+                          {user.name?.charAt(0) || "K"}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel className="flex flex-col gap-2 py-3">
-                      <span className="font-bold">رضا محمدی</span>
+                      <span className="font-bold">{user.name || user.username || "کاربر"}</span>
                       <span className="text-xs font-normal text-muted-foreground">
-                        reza@example.com
+                        {user.email || ""}
                       </span>
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -538,7 +554,7 @@ const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link
-                        href="/my-courses"
+                        href="/courses/my-courses"
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <BookOpen className="h-4 w-4" aria-hidden="true" />
@@ -547,7 +563,7 @@ const Header = () => {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link
-                        href="/settings"
+                        href="/profile/settings"
                         className="flex items-center gap-2 cursor-pointer"
                       >
                         <Settings className="h-4 w-4" aria-hidden="true" />
@@ -555,7 +571,10 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-destructive focus:text-destructive flex items-center gap-2 cursor-pointer">
+                    <DropdownMenuItem 
+                      className="text-destructive focus:text-destructive flex items-center gap-2 cursor-pointer"
+                      onClick={handleLogout}
+                    >
                       <LogOut className="h-4 w-4" aria-hidden="true" />
                       <span>خروج</span>
                     </DropdownMenuItem>
@@ -571,7 +590,7 @@ const Header = () => {
                   >
                     <Link href="/register">ثبت نام</Link>
                   </Button>
-                  <Dialog>
+                  <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
                     <DialogTrigger asChild>
                       <Button
                         variant="default"
@@ -582,7 +601,7 @@ const Header = () => {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-md">
-                      <LoginDialogContent />
+                      <LoginDialogContent onClose={handleLoginDialogClose} />
                     </DialogContent>
                   </Dialog>
                 </div>

@@ -159,9 +159,11 @@ export default function LoginDialogContent({ onClose }: LoginDialogContentProps)
       dialogCloseRef.current.click();
     }
     
-    // Navigate
-    router.push(callbackUrl);
-    router.refresh();
+    // Small delay to ensure dialog is closed before navigation
+    setTimeout(() => {
+      router.push(callbackUrl);
+      router.refresh();
+    }, 100);
   };
 
   return (
