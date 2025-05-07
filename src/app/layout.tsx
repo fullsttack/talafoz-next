@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner"; 
+import NextAuthProvider from "@/providers/NextAuthProvider";
+
 
 
 export const metadata: Metadata = {
@@ -25,8 +27,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster richColors position="top-center" />
-          {children}
+          <NextAuthProvider>
+            <Toaster richColors position="top-center" />
+            {children}
+          </NextAuthProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -42,6 +42,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import LoginDialogContent from "@/components/auth/LoginDialogContent";
 
 // کامپوننت لینک‌های منوی ناوبری دسکتاپ با بهینه‌سازی memo
 const DesktopNavLink = memo(
@@ -569,14 +571,20 @@ const Header = () => {
                   >
                     <Link href="/register">ثبت نام</Link>
                   </Button>
-                  <Button
-                    asChild
-                    variant="default"
-                    size="sm"
-                    className="w-32 bg-base-1 hover:bg-base-1/90 text-white rounded-md hidden sm:flex"
-                  >
-                    <Link href="/login">ورود</Link>
-                  </Button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <Button
+                        variant="default"
+                        size="sm"
+                        className="w-32 bg-base-1 hover:bg-base-1/90 text-white rounded-md hidden sm:flex"
+                      >
+                        ورود
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <LoginDialogContent />
+                    </DialogContent>
+                  </Dialog>
                 </div>
               )}
 

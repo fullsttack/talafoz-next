@@ -1,0 +1,76 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# ساختار پیشنهادی پروژه Next.js 15 + TypeScript
+
+این ساختار بر اساس [مستندات رسمی Next.js 15](mdc:https:/nextjs.org/blog/next-15) و تجربه پروژه فعلی تهیه شده و برای توسعه مقیاس‌پذیر و مدرن توصیه می‌شود.
+
+---
+
+## ساختار کلی
+
+```
+root/
+├── .cursor/                # قوانین Cursor و تنظیمات هوشمند
+├── .git/                   # اطلاعات گیت
+├── .next/                  # فایل‌های build (تولیدشده)
+├── node_modules/           # پکیج‌های npm
+├── public/                 # فایل‌های استاتیک (تصاویر، favicon و ...)
+├── src/                    # کد اصلی پروژه
+│   ├── app/                # روت اصلی صفحات (App Router)
+│   │   ├── actions         # use server
+│   │   ├── blog/           # صفحات بلاگ
+│   │   ├── contact/        # صفحه تماس
+│   │   ├── about/          # صفحه درباره ما
+│   │   ├── roadmap/        # صفحه نقشه راه
+│   │   ├── courses/        # صفحه دوره‌ها
+│   │   ├── cart/           # سبد خرید
+│   │   ├── profile/        # پروفایل کاربر
+│   │   ├── layout.tsx      # لایه اصلی
+│   │   ├── page.tsx        # صفحه اصلی
+│   │   └── globals.css     # استایل‌های سراسری
+│   ├── components/         # کامپوننت‌های قابل استفاده مجدد
+│   │   ├── ui/             # اجزای رابط کاربری (Button, Input, ...)
+│   │   ├── layouts/        # لایه‌های صفحه
+│   │   ├── auth/           # کامپوننت‌های احراز هویت
+│   │   ├── blog/           # کامپوننت‌های بلاگ
+│   │   ├── course/         # کامپوننت‌های دوره
+│   │   └── tools/          # ابزارها و providerها
+│   ├── contexts/           # Contextهای React برای مدیریت state
+│   ├── hooks/              # هوک‌های سفارشی
+│   ├── provider/           
+│   ├── lib/                # توابع و ابزارهای کمکی
+│   │   ├── api/            #  API 
+│   │   ├── store/          # مدیریت state (مثلاً Zustand, Redux)
+│   │   └── utils/          # توابع کمکی عمومی
+│   ├── data/               # داده‌های ثابت یا mock (blog.ts, faq.ts, ...)
+│
+├── package.json            # پیکربندی npm
+├── tsconfig.json           # پیکربندی TypeScript
+├── next.config.ts          # پیکربندی Next.js (با TypeScript)
+├── eslint.config.mjs       # پیکربندی ESLint
+├── README.md               # مستندات پروژه
+└── ...                     # سایر فایل‌های تنظیمات
+```
+
+---
+
+## نکات مهم
+- **app directory**: همه صفحات و layoutها باید در `src/app` قرار بگیرند و از قابلیت‌های App Router استفاده شود.
+- **تفکیک سرور/کلاینت**: با استفاده از "use client" فقط بخش‌های تعاملی را به کلاینت منتقل کنید.
+- **کامپوننت‌های UI**: همه اجزای رابط کاربری در `src/components/ui` قرار بگیرند و قابل استفاده مجدد باشند.
+- **هوک‌ها و contextها**: هر هوک یا context سفارشی در پوشه مخصوص خود قرار گیرد.
+- **lib/api و lib/store**: توابع API و مدیریت state به صورت ماژولار و feature-based سازمان‌دهی شوند.
+- **data**: داده‌های ثابت یا mock در پوشه جداگانه قرار گیرد.
+- **پیکربندی‌ها**: همه پیکربندی‌ها (next, ts, eslint, ...) در ریشه پروژه و ترجیحاً با TypeScript باشند.
+
+---
+
+## منابع
+- [Next.js 15 Blog](mdc:https:/nextjs.org/blog/next-15)
+- [NEXTJS15_FEATURES.md](mdc:NEXTJS15_FEATURES.md)
+- [next15-ts-best-practices.mdc](mdc:next15-ts-best-practices.mdc)
+
+> هرگونه تغییر مهم در ساختار پروژه باید در این فایل و قوانین Cursor ثبت شود.

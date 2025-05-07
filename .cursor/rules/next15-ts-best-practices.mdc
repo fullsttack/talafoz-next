@@ -1,0 +1,125 @@
+---
+description: 
+globs: 
+alwaysApply: false
+---
+# Next.js 15 + TypeScript Best Practices Rule
+
+این قانون برای توسعه پروژه‌های Next.js 15 با TypeScript است و باید همیشه به‌روز با مستندات رسمی و فایل [NEXTJS15_FEATURES.md](mdc:NEXTJS15_FEATURES.md) باشد.
+
+---
+
+## منابع مرجع
+- [مستندات رسمی Next.js 15](mdc:https:/nextjs.org/blog/next-15)
+- [راهنمای مهاجرت Next.js 15](mdc:https:/nextjs.org/docs/upgrade-guide)
+- [NEXTJS15_FEATURES.md](mdc:NEXTJS15_FEATURES.md)
+
+---
+
+## قوانین و توصیه‌ها
+
+### 1. نسخه‌ها و وابستگی‌ها
+- همیشه از آخرین نسخه stable `next`, `react`, `react-dom` و `typescript` استفاده کنید.
+- پیکربندی `package.json` باید مشابه زیر باشد:
+  ```json
+  "next": "^15.x",
+  "react": "^19.x",
+  "react-dom": "^19.x",
+  "typescript": "^5.x"
+  ```
+
+### 2. پیکربندی TypeScript
+- از فایل `next.config.ts` با تایپ `NextConfig` استفاده کنید:
+  ```ts
+  import type { NextConfig } from 'next';
+  const nextConfig: NextConfig = { /* ... */ };
+  export default nextConfig;
+  ```
+- تنظیمات `tsconfig.json` باید شامل strict mode و مسیرهای alias باشد.
+
+### 3. مهاجرت و تغییرات مهم (بر اساس [Next.js 15 Blog](mdc:https:/nextjs.org/blog/next-15))
+
+#### 3.1. ارتقا خودکار با Codemod
+- برای ارتقا سریع و امن از ابزار codemod استفاده کنید:
+  ```sh
+  npx @next/codemod@canary upgrade latest
+  ```
+- برای مهاجرت به APIهای async:
+  ```sh
+  npx @next/codemod@canary next-async-request-api .
+  ```
+
+#### 3.2. Async Request APIs (تغییر شکسته)
+- APIهای `cookies`, `headers`, `draftMode`, `params`, `searchParams` اکنون async هستند و باید با `await` فراخوانی شوند.
+  ```ts
+  import { cookies } from 'next/headers';
+  export async function AdminPanel() {
+    const cookieStore = await cookies();
+    // ...
+  }
+  ```
+- تا نسخه بعدی، حالت sync با هشدار قابل استفاده است.
+
+#### 3.3. تغییرات Caching
+- کش پیش‌فرض برای `fetch`، Route Handlerهای GET و ناوبری کلاینت غیرفعال شده است.
+- برای فعال‌سازی کش باید به صورت explicit عمل کنید:
+  ```ts
+  fetch('https://...', { cache: 'force-cache' });
+  ```
+- Route Handlerهای خاص مثل sitemap و opengraph-image همچنان استاتیک هستند مگر اینکه dynamic شوند.
+
+#### 3.4. پشتیبانی کامل از React 19
+- React 19 و React Compiler (آزمایشی) پشتیبانی می‌شوند.
+- بهبودهای hydration و خطایابی.
+
+#### 3.5. Turbopack Dev (پایدار)
+- استفاده از `next dev --turbopack` و build سریع‌تر.
+
+#### 3.6. Static Indicator
+- نمایش بصری مسیرهای استاتیک در حالت dev.
+
+#### 3.7. API جدید unstable_after (آزمایشی)
+- اجرای کد پس از پایان استریم پاسخ:
+  ```ts
+  import { after } from 'next/server';
+  after(() => { /* ... */ });
+  ```
+
+#### 3.8. instrumentation.js و instrumentation-client.js
+- API پایدار برای observability و مانیتورینگ سرور و کلاینت.
+
+#### 3.9. فرم جدید (next/form)
+- استفاده از `<Form>` برای فرم‌های HTML با ناوبری کلاینت:
+  ```tsx
+  import Form from 'next/form';
+  <Form action="/search">...</Form>
+  ```
+
+#### 3.10. پشتیبانی از next.config.ts
+- پیکربندی با TypeScript و تایپ NextConfig.
+
+#### 3.11. بهبود self-hosting و کنترل Cache-Control
+- کنترل بیشتر روی هدرهای Cache-Control.
+
+#### 3.12. امنیت Server Actions
+- endpointها غیرقابل حدس و حذف اکشن‌های بلااستفاده.
+
+#### 3.13. Bundling External Packages
+- گزینه‌های جدید برای باندل کردن پکیج‌های خارجی.
+
+#### 3.14. پشتیبانی از ESLint 9
+- استفاده از ESLint 9 و eslint-config-next@15.x.
+
+#### 3.15. بهبود عملکرد توسعه و build
+- build سریع‌تر و Fast Refresh بهتر.
+
+---
+
+## ساختار پروژه پیشنهادی
+- استفاده از app directory و تفکیک سرور/کلاینت با "use client"
+- قرار دادن اکشن‌های سروری در app/actions.ts
+- استفاده از alias برای importها (مثلاً @/components)
+
+---
+
+> هرگونه تغییر مهم در Next.js 15 باید در این قانون و فایل [NEXTJS15_FEATURES.md](mdc:NEXTJS15_FEATURES.md) ثبت شود.
