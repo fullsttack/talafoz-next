@@ -5,7 +5,6 @@ import { getToken } from 'next-auth/jwt';
 // Paths that require authentication
 const protectedPaths = [
   '/profile',
-  '/cart',
   '/courses/my-courses',
 ];
 

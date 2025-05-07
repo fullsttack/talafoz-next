@@ -1,5 +1,7 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import GoogleProvider from 'next-auth/providers/google';
+import GithubProvider from 'next-auth/providers/github';
 import { JWT } from 'next-auth/jwt';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
@@ -56,12 +58,64 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+    
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || '',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    }),
+    
+    GithubProvider({
+      clientId: process.env.GITHUB_CLIENT_ID || '',
+      clientSecret: process.env.GITHUB_CLIENT_SECRET || '',
+    }),
   ],
   session: {
     strategy: 'jwt',
     maxAge: 30 * 24 * 60 * 60,
   },
   callbacks: {
+    async signIn({ user, account }) {
+      // اگر ورود با social providers است
+      if (account && (account.provider === 'google' || account.provider === 'github')) {
+        try {
+          // ارسال اطلاعات به بکند برای ثبت یا ورود کاربر
+          const response = await fetch(`${API_URL}/auth/users/social-auth/`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              provider: account.provider,
+              access_token: account.access_token,
+              id_token: account.id_token, // برای گوگل
+              email: user.email,
+              name: user.name,
+            }),
+          });
+          
+          const data = await response.json();
+          
+          if (!response.ok) {
+            console.error('Social auth error:', data);
+            return false;
+          }
+          
+          // اضافه کردن توکن‌ها به حساب کاربری
+          user.accessToken = data.access;
+          user.refreshToken = data.refresh;
+          user.username = data.user.username;
+          user.phone_number = data.user.phone_number;
+          user.is_staff = data.user.is_staff;
+          user.is_superuser = data.user.is_superuser;
+          
+          return true;
+        } catch (error) {
+          console.error('Error during social auth:', error);
+          return false;
+        }
+      }
+      
+      return true;
+    },
+    
     // اضافه کردن توکن‌ها به JWT
     async jwt({ token, user, account }) {
       if (user && account) {

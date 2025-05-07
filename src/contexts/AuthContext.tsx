@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 2000);
       
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
       const response = await fetch(`${apiUrl}/health-check/`, {
         method: 'HEAD',
         signal: controller.signal,
@@ -41,7 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       if (refreshToken && apiAvailable) {
         try {
-          await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/users/logout/`, {
+          await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/auth/users/logout/`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
