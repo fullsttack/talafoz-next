@@ -59,7 +59,7 @@ export const authOptions: NextAuthOptions = {
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 30 * 24 * 60 * 60, // 30 روز
+    maxAge: 5 * 60, // 5 دقیقه
   },
   callbacks: {
     // اضافه کردن توکن‌ها به JWT
@@ -72,7 +72,7 @@ export const authOptions: NextAuthOptions = {
         token.phone_number = user.phone_number;
         token.is_staff = user.is_staff;
         token.is_superuser = user.is_superuser;
-        token.accessTokenExpiry = Date.now() + 30 * 60 * 1000; // 30 دقیقه
+        token.accessTokenExpiry = Date.now() + 1 * 60 * 1000; // 1 دقیقه
       }
 
       // بررسی می‌کنیم آیا توکن دسترسی منقضی شده است
@@ -118,10 +118,12 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       throw refreshedTokens;
     }
 
+    console.log('🔄 [refreshAccessToken] New access token:', refreshedTokens.access);
+
     return {
       ...token,
       accessToken: refreshedTokens.access,
-      accessTokenExpiry: Date.now() + 30 * 60 * 1000, // 30 دقیقه
+      accessTokenExpiry: Date.now() + 1 * 60 * 1000, // 1 دقیقه
     };
   } catch (error) {
     console.error('Error refreshing access token', error);
