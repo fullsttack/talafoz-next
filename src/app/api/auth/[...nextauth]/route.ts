@@ -23,7 +23,7 @@ export const authOptions: NextAuthOptions = {
             throw new Error('اطلاعات وارد شده ناقص است');
           }
 
-          // ارسال درخواست به API برای بررسی کد OTP
+
           const response = await fetch(`${API_URL}/auth/users/verify_otp/`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },

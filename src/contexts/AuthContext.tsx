@@ -4,6 +4,7 @@ import React, { createContext, useContext, ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSession, signOut } from 'next-auth/react';
 import { User, AuthContextType } from '@/types/auth';
+import { toast } from 'sonner';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -59,6 +60,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       
       // Always perform client-side logout
       await signOut({ redirect: false });
+      
+      // نمایش پیام موفقیت
+      toast.success('شما با موفقیت از حساب کاربری خارج شدید');
+      
+
       router.push('/');
       router.refresh();
     } catch (error) {

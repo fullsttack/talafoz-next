@@ -255,14 +255,19 @@ export default function Sidebar() {
           <div className={`p-4 pt-0 ${isCollapsed ? 'flex justify-center' : ''}`}>
             {isCollapsed ? (
               <button 
-                onClick={logout}
+                onClick={async () => {
+                  await logout();
+                }}
                 className="p-2 rounded-lg text-red-500 hover:bg-red-500/10 transition-all duration-300"
+                aria-label="خروج از حساب"
               >
                 <LogOut size={24} />
               </button>
             ) : (
               <button 
-                onClick={logout}
+                onClick={async () => {
+                  await logout();
+                }}
                 className="flex w-full justify-center items-center gap-3 px-4 py-3 rounded-lg bg-red-100 text-red-500 hover:bg-red-500/10 transition-all duration-300"
               >
                 <LogOut size={20} />

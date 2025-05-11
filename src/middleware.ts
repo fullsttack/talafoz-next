@@ -2,27 +2,28 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 
-// Paths that require authentication
-const protectedPaths = [
+
+const protectedRoots = [
+  '/dashboard',
   '/profile',
+  '/settings',
+  '/wallet',
+  '/tickets',
   '/courses/my-courses',
 ];
 
-// Paths that should not be accessed when authenticated
-const authPaths = [
-  '/login',
-  '/register',
-];
+
+const authPaths: string[] = [];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // Check if the current path is protected
-  const isProtectedPath = protectedPaths.some(path => 
-    pathname === path || pathname.startsWith(`${path}/`)
+  // check if the current path is a protected path
+  const isProtectedPath = protectedRoots.some(root => 
+    pathname === root || pathname.startsWith(`${root}/`)
   );
   
-  // Check if the current path is an auth path
+  // check if the current path is an auth path
   const isAuthPath = authPaths.some(path => 
     pathname === path || pathname.startsWith(`${path}/`)
   );
@@ -38,14 +39,16 @@ export async function middleware(request: NextRequest) {
 
   // Redirect based on authentication status and requested path
   if (isProtectedPath && !isAuthenticated) {
-    // Redirect to login if trying to access protected route while not authenticated
-    const url = new URL('/login', request.url);
+    // redirect to the home page instead of the login page
+    const url = new URL('/', request.url);
+    // add the showLogin parameter to display the login dialog on the home page
+    url.searchParams.set('showLogin', 'true');
     url.searchParams.set('callbackUrl', encodeURI(pathname));
     return NextResponse.redirect(url);
   }
   
   if (isAuthPath && isAuthenticated) {
-    // Redirect to home if trying to access auth routes while authenticated
+    // redirect to the home page if the user is authenticated and tries to access the auth pages
     return NextResponse.redirect(new URL('/', request.url));
   }
   

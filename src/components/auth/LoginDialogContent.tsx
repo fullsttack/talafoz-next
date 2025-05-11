@@ -21,6 +21,7 @@ interface LoginDialogContentProps {
   onClose?: () => void;
   isOpen?: boolean;
   isRegister?: boolean;
+  callbackUrl?: string;
 }
 
 
@@ -45,7 +46,7 @@ const isValidEmail = (email: string): boolean => {
   return emailRegex.test(email);
 };
 
-export default function LoginDialogContent({ onClose, isOpen, isRegister = false }: LoginDialogContentProps) {
+export default function LoginDialogContent({ onClose, isOpen, isRegister = false, callbackUrl: propCallbackUrl }: LoginDialogContentProps) {
   const [authStep, setAuthStep] = useState<AuthStep>(AuthStep.RequestOTP);
   const [identifier, setIdentifier] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -53,7 +54,7 @@ export default function LoginDialogContent({ onClose, isOpen, isRegister = false
   const [timer, setTimer] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl") || "/";
+  const callbackUrl = propCallbackUrl || searchParams.get("callbackUrl") || "/";
   const otpRef = useRef<HTMLInputElement>(null);
   const dialogCloseRef = useRef<HTMLButtonElement>(null);
 
