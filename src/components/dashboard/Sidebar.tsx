@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -12,13 +12,12 @@ import {
   User, 
   Settings, 
   LogOut, 
-  Menu, 
-  X,
   Wallet,
   MessageSquare,
   Award,
   ChevronDown,
-  ChevronRight
+  GraduationCap,
+  ChevronLeft
 } from 'lucide-react';
 
 interface SidebarItemProps {
@@ -29,26 +28,42 @@ interface SidebarItemProps {
   hasChildren?: boolean;
   isOpen?: boolean;
   onClick?: () => void;
+  isCollapsed?: boolean;
 }
 
-const SidebarItem = ({ href, icon, label, isActive, hasChildren, isOpen, onClick }: SidebarItemProps) => {
+const SidebarItem = ({ href, icon, label, isActive, hasChildren, isOpen, onClick, isCollapsed }: SidebarItemProps) => {
+  if (isCollapsed) {
+    return (
+      <Link 
+        href={href}
+        className={`flex items-center justify-center p-2 rounded-lg transition-all duration-300 ${
+          isActive 
+            ? 'bg-primary text-primary-foreground' 
+            : 'hover:bg-primary/10'
+        }`}
+      >
+        <span className="text-xl">{icon}</span>
+      </Link>
+    );
+  }
+
   return (
     <Link 
       href={href}
       onClick={onClick}
-      className={`flex items-center justify-between px-4 py-3 rounded-lg transition-colors ${
+      className={`flex items-center justify-between  px-4 py-3 rounded-lg transition-all duration-300 ${
         isActive 
-          ? 'bg-primary text-primary-foreground' 
+          ? 'bg-primary text-primary-foreground ' 
           : 'hover:bg-primary/10'
       }`}
     >
       <div className="flex items-center gap-3">
         <span className="text-xl">{icon}</span>
-        <span className="text-sm font-medium">{label}</span>
+        <span className="text-sm font-medium whitespace-nowrap opacity-100 transition-opacity duration-300">{label}</span>
       </div>
       {hasChildren && (
         <span className="text-sm">
-          {isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+          {isOpen ? <ChevronDown size={16} /> : <ChevronLeft size={16} />}
         </span>
       )}
     </Link>
@@ -58,10 +73,12 @@ const SidebarItem = ({ href, icon, label, isActive, hasChildren, isOpen, onClick
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true);
   const [openMenus, setOpenMenus] = useState<Record<string, boolean>>({
     courses: false,
   });
+  const sidebarRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const toggleMenu = (menu: string) => {
     setOpenMenus(prev => ({
@@ -72,40 +89,67 @@ export default function Sidebar() {
 
   const isActive = (path: string) => pathname === path;
 
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setIsCollapsed(false);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeoutRef.current = setTimeout(() => {
+      setIsCollapsed(true);
+    }, 500); // افزایش تاخیر به 500 میلی‌ثانیه برای تجربه بهتر
+  };
+
+  // پاکسازی تایمر هنگام آنمانت کامپوننت
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
     <div 
-      className={`bg-card border-r border-border transition-all duration-300 ${
+      ref={sidebarRef}
+      className={`bg-card border-l border-border  transition-all duration-500 ease-in-out ${
         isCollapsed ? 'w-[80px]' : 'w-[280px]'
       }`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
       <div className="flex flex-col h-full">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
-          {!isCollapsed && (
-            <Link href="/" className="flex items-center gap-2">
-              <span className="font-bold text-xl">تلافز</span>
-            </Link>
+          {isCollapsed ? (
+            <div className="flex items-center justify-center w-full">
+              <GraduationCap size={28} className="text-primary" />
+            </div>
+          ) : (
+            <div className="flex items-center gap-2 transition-all duration-500">
+              <Link href="/" className="flex items-center gap-2">
+                <GraduationCap size={24} className="text-primary" />
+                <span className="font-bold text-xl whitespace-nowrap">تلافز</span>
+              </Link>
+            </div>
           )}
-          <button 
-            onClick={() => setIsCollapsed(prev => !prev)} 
-            className="p-2 rounded-md hover:bg-accent"
-          >
-            {isCollapsed ? <Menu size={20} /> : <X size={20} />}
-          </button>
         </div>
 
         {/* Navigation */}
         <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          {!isCollapsed ? (
-            <>
-              <SidebarItem 
-                href="/dashboard" 
-                icon={<Home size={20} />} 
-                label="داشبورد" 
-                isActive={isActive('/dashboard')} 
-              />
-              
-              {/* دوره‌های من */}
+          <div className={`flex flex-col ${isCollapsed ? 'items-center space-y-6 pt-4' : 'space-y-2'}`}>
+            <SidebarItem 
+              href="/dashboard" 
+              icon={<Home size={isCollapsed ? 24 : 20} />} 
+              label="داشبورد" 
+              isActive={isActive('/dashboard')}
+              isCollapsed={isCollapsed}
+            />
+            
+            {!isCollapsed ? (
               <div className="space-y-1">
                 <SidebarItem 
                   href="#" 
@@ -134,119 +178,99 @@ export default function Sidebar() {
                   </div>
                 )}
               </div>
-              
+            ) : (
               <SidebarItem 
-                href="/cart" 
-                icon={<ShoppingCart size={20} />} 
-                label="سبد خرید" 
-                isActive={isActive('/cart')} 
-              />
-              
-              <SidebarItem 
-                href="/wallet" 
-                icon={<Wallet size={20} />} 
-                label="کیف پول" 
-                isActive={isActive('/wallet')} 
-              />
-              
-              <SidebarItem 
-                href="/tickets" 
-                icon={<MessageSquare size={20} />} 
-                label="پشتیبانی" 
-                isActive={isActive('/tickets')} 
-              />
-              
-              <SidebarItem 
-                href="/profile" 
-                icon={<User size={20} />} 
-                label="پروفایل" 
-                isActive={isActive('/profile')} 
-              />
-              
-              <SidebarItem 
-                href="/settings" 
-                icon={<Settings size={20} />} 
-                label="تنظیمات" 
-                isActive={isActive('/settings')} 
-              />
-              
-              <button 
-                onClick={logout}
-                className="flex w-full items-center gap-3 px-4 py-3 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
-              >
-                <LogOut size={20} />
-                <span className="text-sm font-medium">خروج</span>
-              </button>
-            </>
-          ) : (
-            // نسخه جمع شده سایدبار
-            <div className="flex flex-col items-center space-y-6 pt-4">
-              <Link 
-                href="/dashboard"
-                className={`p-2 rounded-lg ${isActive('/dashboard') ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`}
-              >
-                <Home size={24} />
-              </Link>
-              <Link 
                 href="/courses/my-courses"
-                className={`p-2 rounded-lg ${isActive('/courses/my-courses') ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`}
-              >
-                <BookOpen size={24} />
-              </Link>
-              <Link 
-                href="/cart"
-                className={`p-2 rounded-lg ${isActive('/cart') ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`}
-              >
-                <ShoppingCart size={24} />
-              </Link>
-              <Link 
-                href="/wallet"
-                className={`p-2 rounded-lg ${isActive('/wallet') ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`}
-              >
-                <Wallet size={24} />
-              </Link>
-              <Link 
-                href="/tickets"
-                className={`p-2 rounded-lg ${isActive('/tickets') ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`}
-              >
-                <MessageSquare size={24} />
-              </Link>
-              <Link 
-                href="/profile"
-                className={`p-2 rounded-lg ${isActive('/profile') ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`}
-              >
-                <User size={24} />
-              </Link>
-              <Link 
-                href="/settings"
-                className={`p-2 rounded-lg ${isActive('/settings') ? 'bg-primary text-primary-foreground' : 'hover:bg-primary/10'}`}
-              >
-                <Settings size={24} />
-              </Link>
-              <button 
-                onClick={logout}
-                className="p-2 rounded-lg text-red-500 hover:bg-red-500/10"
-              >
-                <LogOut size={24} />
-              </button>
-            </div>
-          )}
+                icon={<BookOpen size={24} />}
+                label="دوره‌های من"
+                isActive={pathname.includes('/courses')}
+                isCollapsed={isCollapsed}
+              />
+            )}
+            
+            <SidebarItem 
+              href="/cart" 
+              icon={<ShoppingCart size={isCollapsed ? 24 : 20} />} 
+              label="سبد خرید" 
+              isActive={isActive('/cart')} 
+              isCollapsed={isCollapsed}
+            />
+            
+            <SidebarItem 
+              href="/wallet" 
+              icon={<Wallet size={isCollapsed ? 24 : 20} />} 
+              label="کیف پول" 
+              isActive={isActive('/wallet')} 
+              isCollapsed={isCollapsed}
+            />
+            
+            <SidebarItem 
+              href="/tickets" 
+              icon={<MessageSquare size={isCollapsed ? 24 : 20} />} 
+              label="پشتیبانی" 
+              isActive={isActive('/tickets')} 
+              isCollapsed={isCollapsed}
+            />
+            
+            <SidebarItem 
+              href="/profile" 
+              icon={<User size={isCollapsed ? 24 : 20} />} 
+              label="پروفایل" 
+              isActive={isActive('/profile')} 
+              isCollapsed={isCollapsed}
+            />
+            
+            <SidebarItem 
+              href="/settings" 
+              icon={<Settings size={isCollapsed ? 24 : 20} />} 
+              label="تنظیمات" 
+              isActive={isActive('/settings')} 
+              isCollapsed={isCollapsed}
+            />
+          </div>
         </nav>
 
-        {/* User Profile */}
-        {!isCollapsed && (
-          <div className="p-4 border-t border-border">
-            <div className="flex items-center gap-3">
+        {/* User Profile and Logout Button */}
+        <div className="mt-auto">
+          {/* User Profile */}
+          <div className={`p-4 transition-all duration-500 ${isCollapsed ? 'flex justify-center' : ''}`}>
+            {isCollapsed ? (
               <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                 <User size={20} className="text-primary" />
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium truncate">{user?.name || user?.username}</p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email || user?.phone_number}</p>
+            ) : (
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <User size={20} className="text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{user?.name || user?.username}</p>
+                  <p className="text-xs text-muted-foreground truncate">{user?.email || user?.phone_number}</p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
-        )}
+          
+          {/* Logout Button */}
+          <div className={`p-4 pt-0 ${isCollapsed ? 'flex justify-center' : ''}`}>
+            {isCollapsed ? (
+              <button 
+                onClick={logout}
+                className="p-2 rounded-lg text-red-500 hover:bg-red-500/10 transition-all duration-300"
+              >
+                <LogOut size={24} />
+              </button>
+            ) : (
+              <button 
+                onClick={logout}
+                className="flex w-full justify-center items-center gap-3 px-4 py-3 rounded-lg bg-red-100 text-red-500 hover:bg-red-500/10 transition-all duration-300"
+              >
+                <LogOut size={20} />
+                <span className="text-sm font-medium">خروج از حساب</span>
+              </button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -5,10 +5,9 @@ import {
   Clock, 
   Award, 
   Wallet, 
-  ChevronRight,
   BarChart3
 } from 'lucide-react';
-import Link from 'next/link';
+import LearningCourses from '@/components/dashboard/LearningCourses';
 
 interface StatCardProps {
   title: string;
@@ -54,50 +53,7 @@ const StatCard = ({ title, value, icon, description, trend }: StatCardProps) => 
   );
 };
 
-interface CourseCardProps {
-  title: string;
-  progress: number;
-  image: string;
-  href: string;
-}
-
-const CourseCard = ({ title, progress, image, href }: CourseCardProps) => {
-  return (
-    <Link href={href} className="block group">
-      <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm transition-all hover:shadow-md">
-        <div className="relative h-40 w-full">
-          <img
-            src={image}
-            alt={title}
-            className="h-full w-full object-cover transition-transform group-hover:scale-105"
-          />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <span className="text-white font-medium">ادامه دوره</span>
-          </div>
-        </div>
-        <div className="p-4">
-          <h3 className="font-medium line-clamp-1">{title}</h3>
-          <div className="mt-2">
-            <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
-              <div
-                className="h-full bg-primary"
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
-            <div className="mt-1 flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">پیشرفت</span>
-              <span className="text-xs font-medium">{progress}%</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </Link>
-  );
-};
-
 export default function DashboardPage() {
-  // حذف استفاده از useAuth که استفاده نشده است
-
   // داده‌های نمونه - در پروژه واقعی باید از API دریافت شوند
   const stats = [
     {
@@ -126,31 +82,10 @@ export default function DashboardPage() {
     },
   ];
 
-  const inProgressCourses = [
-    {
-      id: 1,
-      title: 'آموزش جامع React.js',
-      progress: 65,
-      image: 'https://placehold.co/600x400/3b82f6/FFFFFF/png?text=React.js',
-    },
-    {
-      id: 2,
-      title: 'دوره پیشرفته Django',
-      progress: 30,
-      image: 'https://placehold.co/600x400/10b981/FFFFFF/png?text=Django',
-    },
-    {
-      id: 3,
-      title: 'آموزش TypeScript از صفر تا صد',
-      progress: 15,
-      image: 'https://placehold.co/600x400/6366f1/FFFFFF/png?text=TypeScript',
-    },
-  ];
-
   return (
     <div className="space-y-8">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">داشبورد</h1>
+        <h1 className="text-xl font-bold">داشبورد</h1>
         <div className="flex items-center gap-4">
           <span className="text-sm text-muted-foreground">
             {new Date().toLocaleDateString('fa-IR', {
@@ -168,30 +103,7 @@ export default function DashboardPage() {
         ))}
       </div>
 
-      <div>
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold">دوره‌های در حال یادگیری</h2>
-          <Link
-            href="/courses/in-progress"
-            className="flex items-center text-sm text-primary hover:underline"
-          >
-            مشاهده همه
-            <ChevronRight size={16} />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {inProgressCourses.map((course) => (
-            <CourseCard
-              key={course.id}
-              title={course.title}
-              progress={course.progress}
-              image={course.image}
-              href={`/courses/${course.id}`}
-            />
-          ))}
-        </div>
-      </div>
+      <LearningCourses />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 bg-card rounded-xl border border-border p-6 shadow-sm">
