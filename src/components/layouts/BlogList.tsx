@@ -16,11 +16,7 @@ const BlogList: React.FC = () => {
             جدیدترین مقالات و مطالب آموزشی را اینجا بخوانید
           </p>
         </div>
-        <Link 
-          href="/blog" 
-          className="text-sm font-medium bg-primary text-white dark:bg-primary dark:text-white px-3 py-1 rounded-md hover:bg-primary/90 transition-colors" 
-          aria-label="مشاهده همه مقالات وبلاگ"
-        >
+        <Link href="/blogs" className="text-sm text-gray-600 dark:text-gray-400">
           مشاهده همه
         </Link>
       </div>

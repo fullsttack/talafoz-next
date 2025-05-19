@@ -321,7 +321,7 @@ const Header = () => {
         ></div>
 
         {/* افکت‌های پس‌زمینه */}
-        <div className="absolute inset-x-0 -z-10 -mt-24 py-20 pointer-events-none select-none" aria-hidden="true">
+        <div className="hidden md:block  absolute inset-x-0 -z-10 -mt-24 py-20 pointer-events-none select-none" aria-hidden="true">
           {/* لایه بلور رنگی ملایم */}
           <div className="absolute right-1/12 top-0 w-10/12 h-32 rounded-full bg-gradient-to-r from-sky-500/40 via-yellow-100/40 to-sky-500/40 blur-2xl"></div>
           {/* پترن نقطه‌ای */}
