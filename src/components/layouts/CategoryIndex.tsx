@@ -123,7 +123,7 @@ export default function CategoryIndex() {
       <div className="container mx-auto px-4 md:px-12">
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-4">
-            دسته‌بندی‌های آموزشی
+            دسته‌ بندی‌ های آموزشی
           </h2>
           <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
             دوره‌های آموزشی در دسته‌بندی‌های متنوع برای پاسخگویی به نیازهای

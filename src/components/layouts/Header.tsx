@@ -327,7 +327,7 @@ const Header = () => {
           {/* پترن نقطه‌ای */}
           {circles.length > 0 && (
             <svg
-              className="absolute inset-0 w-full h-72"
+              className="absolute inset-0 w-full h-full"
               width="100%"
               height="100%"
               viewBox="0 0 1440 320"
