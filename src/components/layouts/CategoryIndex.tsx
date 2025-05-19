@@ -1,22 +1,7 @@
 import Link from "next/link";
 import { Code, Palette, BarChart3, Brain, ServerCrash, Bitcoin, Languages, NotebookPen } from "lucide-react";
-import { useState, useEffect } from "react";
-
 
 export default function CategoryIndex() {
-  const [circles, setCircles] = useState<{ cx: number; cy: number; r: number; fill: string }[]>([]);
-
-  useEffect(() => {
-    // Only run on client
-    const generated = Array.from({ length: 30 }).map((_, i) => ({
-      cx: Math.random() * 1440,
-      cy: Math.random() * 320,
-      r: Math.random() * 6 + 2,
-      fill: i % 2 === 0 ? "#06b6d4" : "#facc15",
-    }));
-    setCircles(generated);
-  }, []);
-
   const categories = [
     {
       id: 1,
@@ -85,41 +70,8 @@ export default function CategoryIndex() {
     },
   ];
 
-  
-
   return (
     <div className="py-12 md:py-16">
-      
-
-
-      <div
-        className="absolute inset-x-0 -z-10 -mt-24 py-20 pointer-events-none select-none"
-        aria-hidden="true"
-      >
-        {circles.length > 0 && (
-          <svg
-            className="absolute inset-0 w-full h-[300px]"
-            width="100%"
-            height="100%"
-            viewBox="0 0 1440 320"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            style={{ opacity: 0.18 }}
-            aria-hidden="true"
-          >
-            {circles.map((circle, i) => (
-              <circle
-                key={i}
-                cx={circle.cx}
-                cy={circle.cy}
-                r={circle.r}
-                fill={circle.fill}
-                opacity="0.5"
-              />
-            ))}
-          </svg>
-        )}
-      </div>
       <div className="container mx-auto px-4 md:px-12">
         <div className="text-center mb-10">
           <h2 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-4">
