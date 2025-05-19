@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from "@/components/layouts/Header";  
 import Slider from "@/components/layouts/Slider";
@@ -14,7 +14,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import LoginDialogContent from "@/components/auth/LoginDialogContent";
 import { toast } from "sonner";
 import CategoryIndex from "@/components/layouts/CategoryIndex";
-export default function Home() {
+
+// Component that uses useSearchParams
+function HomeContent() {
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const searchParams = useSearchParams();
   const showLogin = searchParams.get('showLogin');
@@ -28,13 +30,11 @@ export default function Home() {
         duration: 5000,
       });
       
-
       const newURL = new URL(window.location.href);
       newURL.searchParams.delete('showLogin');
       window.history.replaceState({}, '', newURL.toString());
     }
   }, [showLogin]);
-
 
   const handleLoginDialogClose = () => {
     setIsLoginDialogOpen(false);
@@ -63,5 +63,14 @@ export default function Home() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+// Main component with Suspense
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

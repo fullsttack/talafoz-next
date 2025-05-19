@@ -1,7 +1,7 @@
 'use server';
 
 import { getServerSession } from 'next-auth';
-import { authOptions } from './[...nextauth]/route';
+import { authOptions } from './[...nextauth]/options';
 
 /**
  * Fetch utility for authenticated requests - server side
