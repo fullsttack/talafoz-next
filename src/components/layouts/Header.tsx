@@ -311,6 +311,8 @@ const Header = () => {
       }`}
     >
       <div className="relative">
+
+      
         
         <div
           className="gridlines absolute inset-x-0  -mt-8 py-12 -z-10"
@@ -321,11 +323,11 @@ const Header = () => {
         {/* افکت‌های پس‌زمینه */}
         <div className="absolute inset-x-0 -z-10 -mt-24 py-20 pointer-events-none select-none" aria-hidden="true">
           {/* لایه بلور رنگی ملایم */}
-          <div className="absolute right-1/12 top-0 w-10/12 h-32 rounded-full bg-gradient-to-r from-base1 via-yellow-100/40 to-sky-500/40 blur-2xl"></div>
+          <div className="absolute right-1/12 top-0 w-10/12 h-32 rounded-full bg-gradient-to-r from-sky-500/40 via-yellow-100/40 to-sky-500/40 blur-2xl"></div>
           {/* پترن نقطه‌ای */}
           {circles.length > 0 && (
             <svg
-              className="absolute inset-0 w-full h-full"
+              className="absolute inset-0 w-full h-72"
               width="100%"
               height="100%"
               viewBox="0 0 1440 320"

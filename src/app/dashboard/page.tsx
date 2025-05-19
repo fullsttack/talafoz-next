@@ -22,32 +22,47 @@ interface StatCardProps {
 
 const StatCard = ({ title, value, icon, description, trend }: StatCardProps) => {
   return (
-    <div className="bg-card rounded-xl border border-border p-6 shadow-sm">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium text-muted-foreground">{title}</h3>
-        <div className="rounded-full bg-primary/10 p-2 text-primary">
-          {icon}
+    <div className="group relative overflow-hidden rounded-xl border border-border/50 bg-background dark:bg-background/80 shadow-sm hover:shadow-md transition-all duration-300">
+      {/* خط نازک بالای کارت */}
+      <div className="absolute inset-x-0 top-0 h-[2px] bg-foreground/5 dark:bg-foreground/10"></div>
+      
+      {/* افکت هاور روی کارت */}
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-b from-foreground/[0.02] to-foreground/[0.01]"></div>
+      
+      <div className="relative z-10 p-5">
+        {/* عنوان و مقدار */}
+        <div className="mb-4">
+          <h3 className="text-sm font-medium text-muted-foreground group-hover:text-foreground/70 transition-colors duration-300">{title}</h3>
+          <p className="text-2xl font-bold mt-1 transition-all duration-300 group-hover:translate-x-1">{value}</p>
+          
+          {/* توضیحات اضافی */}
+          {description && (
+            <p className="mt-1 text-sm text-muted-foreground">{description}</p>
+          )}
         </div>
-      </div>
-      <div className="mt-4">
-        <p className="text-3xl font-bold">{value}</p>
-        {description && (
-          <p className="mt-1 text-sm text-muted-foreground">{description}</p>
-        )}
-        {trend && (
-          <div className="mt-2 flex items-center">
-            <span
-              className={`text-sm ${
-                trend.isPositive ? 'text-green-500' : 'text-red-500'
-              }`}
-            >
-              {trend.isPositive ? '+' : '-'}{Math.abs(trend.value)}%
-            </span>
-            <span className="mx-1 text-xs text-muted-foreground">
-              نسبت به ماه قبل
-            </span>
+        
+        <div className="flex items-center justify-between">
+          {/* آیکون */}
+          <div className="flex-shrink-0 flex items-center justify-center h-10 w-10 rounded-full bg-foreground/[0.03] text-foreground/70 transition-all duration-300 group-hover:scale-110 group-hover:bg-foreground/[0.05]">
+            {icon}
           </div>
-        )}
+          
+          {/* نمایش روند تغییرات */}
+          {trend && (
+            <div className="flex items-center bg-foreground/[0.03] px-2 py-1 rounded-md w-fit">
+              <span
+                className={`text-sm font-medium ${
+                  trend.isPositive ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'
+                }`}
+              >
+                {trend.isPositive ? '+' : '-'}{Math.abs(trend.value)}%
+              </span>
+              <span className="mr-1 text-xs text-muted-foreground">
+                نسبت به ماه قبل
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -59,26 +74,30 @@ export default function DashboardPage() {
     {
       title: 'دوره‌های من',
       value: 5,
-      icon: <BookOpen size={18} />,
+      icon: <BookOpen strokeWidth={1.5} />,
+      color: 'blue' as const,
     },
     {
       title: 'ساعات یادگیری',
       value: '۲۸ ساعت',
-      icon: <Clock size={18} />,
+      icon: <Clock strokeWidth={1.5} />,
       trend: {
         value: 12,
         isPositive: true,
       },
+      color: 'yellow' as const,
     },
     {
       title: 'گواهینامه‌ها',
       value: 2,
-      icon: <Award size={18} />,
+      icon: <Award strokeWidth={1.5} />,
+      color: 'green' as const,
     },
     {
       title: 'اعتبار کیف پول',
       value: '۴۵۰,۰۰۰ تومان',
-      icon: <Wallet size={18} />,
+      icon: <Wallet strokeWidth={1.5} />,
+      color: 'purple' as const,
     },
   ];
 
