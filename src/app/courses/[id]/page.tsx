@@ -22,6 +22,7 @@ import {
   Calendar,
   Globe,
   Zap,
+  Heart,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -143,10 +144,10 @@ export default function CourseDetailPage() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen ">
       {/* Hero Section */}
       <div className="">
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 md:px-12 py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
             <Link href="/" className="hover:text-primary">خانه</Link>
@@ -369,8 +370,9 @@ export default function CourseDetailPage() {
                   <div className="mb-6">
                     {course.isFree ? (
                       <div className="text-center">
-                        <Badge variant="default" className="text-lg px-4 py-2">
-                          ثبت نام رایگان 
+                        <Badge variant="outline" className="text-lg px-4 py-2 border-none">
+                          مشاهده این دوره رایگان است
+                          <Heart size={24} className="ml-2 text-base-1" />
                         </Badge>
                       </div>
                     ) : (
