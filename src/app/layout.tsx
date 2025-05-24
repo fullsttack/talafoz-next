@@ -4,6 +4,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner"; 
 import NextAuthProvider from "@/providers/NextAuthProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 import NetworkStatusToast from "@/components/tools/NetworkStatusToast";
 
 export const metadata: Metadata = {
@@ -29,9 +30,11 @@ export default function RootLayout({
         >
           <NextAuthProvider>
             <AuthProvider>
-              <Toaster richColors position="top-center" />
-              <NetworkStatusToast />
-              {children}
+              <CartProvider>
+                <Toaster richColors position="top-center" />
+                <NetworkStatusToast />
+                {children}
+              </CartProvider>
             </AuthProvider>
           </NextAuthProvider>
         </ThemeProvider>

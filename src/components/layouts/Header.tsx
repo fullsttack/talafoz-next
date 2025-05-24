@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
   Menu,
   X,
-  ShoppingCart,
   User,
   Search,
   BookOpen,
@@ -37,14 +36,20 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+  SheetTitle,
+} from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import LoginDialogContent from "@/components/auth/LoginDialogContent";
 import { useAuth } from "@/contexts/AuthContext";
+// import { useCart } from "@/contexts/CartContext";
+import MiniCart from "@/components/course/MiniCart";
 
 // کامپوننت لینک‌های منوی ناوبری دسکتاپ با بهینه‌سازی memo
 const DesktopNavLink = memo(
@@ -127,7 +132,10 @@ const CoursesNavContent = () => (
             href="/courses/frontend"
             className="text-sm hover:text-primary flex items-center gap-2"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/70" aria-hidden="true"></span>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/70"
+              aria-hidden="true"
+            ></span>
             <span>برنامه‌نویسی فرانت‌اند</span>
           </Link>
         </li>
@@ -136,7 +144,10 @@ const CoursesNavContent = () => (
             href="/courses/backend"
             className="text-sm hover:text-primary flex items-center gap-2"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/70" aria-hidden="true"></span>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/70"
+              aria-hidden="true"
+            ></span>
             <span>برنامه‌نویسی بک‌اند</span>
           </Link>
         </li>
@@ -145,7 +156,10 @@ const CoursesNavContent = () => (
             href="/courses/mobile"
             className="text-sm hover:text-primary flex items-center gap-2"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/70" aria-hidden="true"></span>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/70"
+              aria-hidden="true"
+            ></span>
             <span>برنامه‌نویسی موبایل</span>
           </Link>
         </li>
@@ -154,7 +168,10 @@ const CoursesNavContent = () => (
             href="/courses/ai"
             className="text-sm hover:text-primary flex items-center gap-2"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/70" aria-hidden="true"></span>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/70"
+              aria-hidden="true"
+            ></span>
             <span>هوش مصنوعی و یادگیری ماشین</span>
           </Link>
         </li>
@@ -169,7 +186,10 @@ const CoursesNavContent = () => (
             href="/courses/ui-design"
             className="text-sm hover:text-primary flex items-center gap-2"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/70" aria-hidden="true"></span>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/70"
+              aria-hidden="true"
+            ></span>
             <span>طراحی رابط کاربری</span>
           </Link>
         </li>
@@ -178,7 +198,10 @@ const CoursesNavContent = () => (
             href="/courses/ux-design"
             className="text-sm hover:text-primary flex items-center gap-2"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/70" aria-hidden="true"></span>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/70"
+              aria-hidden="true"
+            ></span>
             <span>تجربه کاربری</span>
           </Link>
         </li>
@@ -187,7 +210,10 @@ const CoursesNavContent = () => (
             href="/courses/graphic-design"
             className="text-sm hover:text-primary flex items-center gap-2"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/70" aria-hidden="true"></span>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/70"
+              aria-hidden="true"
+            ></span>
             <span>طراحی گرافیک</span>
           </Link>
         </li>
@@ -196,7 +222,10 @@ const CoursesNavContent = () => (
             href="/courses/3d"
             className="text-sm hover:text-primary flex items-center gap-2"
           >
-            <span className="h-1.5 w-1.5 rounded-full bg-primary/70" aria-hidden="true"></span>
+            <span
+              className="h-1.5 w-1.5 rounded-full bg-primary/70"
+              aria-hidden="true"
+            ></span>
             <span>مدل‌سازی سه‌بعدی</span>
           </Link>
         </li>
@@ -232,7 +261,9 @@ const Header = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const [circles, setCircles] = useState<{ cx: number; cy: number; r: number; fill: string }[]>([]);
+  const [circles, setCircles] = useState<
+    { cx: number; cy: number; r: number; fill: string }[]
+  >([]);
   const [loadingMenu, setLoadingMenu] = useState(false);
   const { user, isLoading, logout } = useAuth();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
@@ -302,6 +333,8 @@ const Header = () => {
     setIsRegisterDialogOpen(false);
   };
 
+  // const { getTotalItems } = useCart();
+  // const cartItemsCount = getTotalItems();
   return (
     <header
       className={`sticky top-0 z-50 w-full transition-all duration-300 ${
@@ -311,9 +344,6 @@ const Header = () => {
       }`}
     >
       <div className="relative">
-
-      
-        
         <div
           className="gridlines absolute inset-x-0  -mt-8 py-12 -z-10"
           data-v-257aca76=""
@@ -321,7 +351,10 @@ const Header = () => {
         ></div>
 
         {/* افکت‌های پس‌زمینه */}
-        <div className="hidden md:block  absolute inset-x-0 -z-10 -mt-24 py-20 pointer-events-none select-none" aria-hidden="true">
+        <div
+          className="hidden md:block  absolute inset-x-0 -z-10 -mt-24 py-20 pointer-events-none select-none"
+          aria-hidden="true"
+        >
           {/* لایه بلور رنگی ملایم */}
           <div className="absolute right-1/12 top-0 w-10/12 h-32 rounded-full bg-gradient-to-r from-sky-500/40 via-yellow-100/40 to-sky-500/40 blur-2xl"></div>
           {/* پترن نقطه‌ای */}
@@ -354,8 +387,15 @@ const Header = () => {
           <div className="flex justify-between py-2 items-center">
             {/* لوگو و برند */}
             <div className="flex items-center ">
-              <Link href="/" className="flex items-center" aria-label="صفحه اصلی تلفظ">
-                <MessageSquareCode className="text-primary h-8 w-8" aria-hidden="true" />
+              <Link
+                href="/"
+                className="flex items-center"
+                aria-label="صفحه اصلی تلفظ"
+              >
+                <MessageSquareCode
+                  className="text-primary h-8 w-8"
+                  aria-hidden="true"
+                />
                 <span className="sr-only">تلفظ</span>
               </Link>
 
@@ -372,7 +412,12 @@ const Header = () => {
                             : "text-foreground"
                         } px-3 py-2 text-sm font-medium hover:text-primary transition-colors`}
                       >
-                        <Link href="/" aria-current={pathname === "/" ? "page" : undefined}>خانه</Link>
+                        <Link
+                          href="/"
+                          aria-current={pathname === "/" ? "page" : undefined}
+                        >
+                          خانه
+                        </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
 
@@ -401,7 +446,14 @@ const Header = () => {
                             : "text-foreground"
                         } px-3 py-2 text-sm font-medium hover:text-primary transition-colors`}
                       >
-                        <Link href="/roadmap" aria-current={pathname === "/roadmap" ? "page" : undefined}>مسیر آموزشی</Link>
+                        <Link
+                          href="/roadmap"
+                          aria-current={
+                            pathname === "/roadmap" ? "page" : undefined
+                          }
+                        >
+                          مسیر آموزشی
+                        </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
 
@@ -414,7 +466,14 @@ const Header = () => {
                             : "text-foreground"
                         } px-3 py-2 text-sm font-medium hover:text-primary transition-colors`}
                       >
-                        <Link href="/blog" aria-current={pathname === "/blog" ? "page" : undefined}>وبلاگ</Link>
+                        <Link
+                          href="/blog"
+                          aria-current={
+                            pathname === "/blog" ? "page" : undefined
+                          }
+                        >
+                          وبلاگ
+                        </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
 
@@ -427,7 +486,14 @@ const Header = () => {
                             : "text-foreground"
                         } px-3 py-2 text-sm font-medium hover:text-primary transition-colors`}
                       >
-                        <Link href="/about" aria-current={pathname === "/about" ? "page" : undefined}>درباره ما</Link>
+                        <Link
+                          href="/about"
+                          aria-current={
+                            pathname === "/about" ? "page" : undefined
+                          }
+                        >
+                          درباره ما
+                        </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
 
@@ -440,7 +506,14 @@ const Header = () => {
                             : "text-foreground"
                         } px-3 py-2 text-sm font-medium hover:text-primary transition-colors`}
                       >
-                        <Link href="/contact" aria-current={pathname === "/contact" ? "page" : undefined}>تماس با ما</Link>
+                        <Link
+                          href="/contact"
+                          aria-current={
+                            pathname === "/contact" ? "page" : undefined
+                          }
+                        >
+                          تماس با ما
+                        </Link>
                       </NavigationMenuLink>
                     </NavigationMenuItem>
                   </NavigationMenuList>
@@ -465,7 +538,10 @@ const Header = () => {
                   autoFocus={isSearchOpen}
                   aria-label="عبارت جستجو"
                 />
-                <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" aria-hidden="true" />
+                <Search
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5"
+                  aria-hidden="true"
+                />
                 <Button
                   variant="ghost"
                   size="icon"
@@ -480,7 +556,6 @@ const Header = () => {
 
             {/* آیکون‌های سمت راست - هر دو حالت */}
             <div className="flex gap-2 sm:gap-3 items-center">
-
               {/* تم */}
               <ModeToggle />
 
@@ -492,33 +567,19 @@ const Header = () => {
                 aria-label="اعلان‌های هوش مصنوعی"
               >
                 {/* Animated blue badge */}
-                <span className="absolute -top-1 -right-1 flex h-4 w-4" aria-hidden="true">
+                <span
+                  className="absolute -top-1 -right-1 flex h-4 w-4"
+                  aria-hidden="true"
+                >
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-base-1 border-2 border-background"></span>
                 </span>
                 <BotMessageSquare className="w-4 h-4" aria-hidden="true" />
               </Button>
 
-              {/* سبد خرید */}
-              <Button
-                asChild
-                variant="outline"
-                size="icon"
-                className="relative rounded-full border-none shadow-lg hover:bg-secondary transition-colors duration-300 h-8 w-8 sm:h-9 sm:w-9"
-                aria-label="سبد خرید - ۲ مورد"
-              >
-                <Link href="/cart">
-                  <Badge
-                    variant="default"
-                    className="absolute -top-1 -right-1 flex items-center justify-center h-4 w-4 text-[10px] p-0"
-                    aria-hidden="true"
-                  >
-                    2
-                  </Badge>
-                  <ShoppingCart className="w-4 h-4" aria-hidden="true" />
-                  <span className="sr-only">مشاهده سبد خرید</span>
-                </Link>
-              </Button>
+             
+
+              <MiniCart />
 
               {/* پروفایل کاربر یا دکمه ورود/ثبت‌نام */}
               {isLoading ? (
@@ -544,7 +605,9 @@ const Header = () => {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-56">
                     <DropdownMenuLabel className="flex flex-col gap-2 py-3">
-                      <span className="font-bold">{user.name || user.username || "کاربر"}</span>
+                      <span className="font-bold">
+                        {user.name || user.username || "کاربر"}
+                      </span>
                       <span className="text-xs font-normal text-muted-foreground">
                         {user.email || ""}
                       </span>
@@ -555,7 +618,10 @@ const Header = () => {
                         href="/dashboard"
                         className="flex items-center gap-2 cursor-pointer"
                       >
-                        <LayoutDashboard className="h-4 w-4" aria-hidden="true" />
+                        <LayoutDashboard
+                          className="h-4 w-4"
+                          aria-hidden="true"
+                        />
                         <span>داشبورد</span>
                       </Link>
                     </DropdownMenuItem>
@@ -578,7 +644,7 @@ const Header = () => {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem 
+                    <DropdownMenuItem
                       className="text-destructive focus:text-destructive flex items-center gap-2 cursor-pointer"
                       onClick={handleLogout}
                     >
@@ -589,7 +655,10 @@ const Header = () => {
                 </DropdownMenu>
               ) : (
                 <div className="flex gap-2">
-                  <Dialog open={isRegisterDialogOpen} onOpenChange={setIsRegisterDialogOpen}>
+                  <Dialog
+                    open={isRegisterDialogOpen}
+                    onOpenChange={setIsRegisterDialogOpen}
+                  >
                     <DialogTrigger asChild>
                       <Button
                         variant="outline"
@@ -600,11 +669,18 @@ const Header = () => {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-md">
-                      <LoginDialogContent onClose={handleRegisterDialogClose} isOpen={isRegisterDialogOpen} isRegister={true} />
+                      <LoginDialogContent
+                        onClose={handleRegisterDialogClose}
+                        isOpen={isRegisterDialogOpen}
+                        isRegister={true}
+                      />
                     </DialogContent>
                   </Dialog>
 
-                  <Dialog open={isLoginDialogOpen} onOpenChange={setIsLoginDialogOpen}>
+                  <Dialog
+                    open={isLoginDialogOpen}
+                    onOpenChange={setIsLoginDialogOpen}
+                  >
                     <DialogTrigger asChild>
                       <Button
                         variant="default"
@@ -615,7 +691,10 @@ const Header = () => {
                       </Button>
                     </DialogTrigger>
                     <DialogContent className="max-w-md">
-                      <LoginDialogContent onClose={handleLoginDialogClose} isOpen={isLoginDialogOpen} />
+                      <LoginDialogContent
+                        onClose={handleLoginDialogClose}
+                        isOpen={isLoginDialogOpen}
+                      />
                     </DialogContent>
                   </Dialog>
                 </div>
@@ -635,7 +714,11 @@ const Header = () => {
                     <Menu className="w-4 h-4" aria-hidden="true" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="w-[85%] sm:w-[350px] p-0" id="mobile-menu">
+                <SheetContent
+                  side="left"
+                  className="w-[85%] sm:w-[350px] p-0"
+                  id="mobile-menu"
+                >
                   <SheetTitle className="sr-only">منوی موبایل</SheetTitle>
                   <div id="mobile-menu-description" className="sr-only">
                     منوی موبایل سایت تلفظ. این منو شامل لینک‌های اصلی سایت است.
@@ -656,7 +739,11 @@ const Header = () => {
 
                     <div className="p-4 flex flex-col gap-2 flex-grow overflow-auto">
                       <div className="mb-2">
-                        <Input placeholder="جستجو..." className="w-full" aria-label="جستجو در سایت" />
+                        <Input
+                          placeholder="جستجو..."
+                          className="w-full"
+                          aria-label="جستجو در سایت"
+                        />
                       </div>
 
                       <div className="space-y-1">
@@ -678,42 +765,72 @@ const Header = () => {
                                 href="/"
                                 label="خانه"
                                 isActive={pathname === "/"}
-                                icon={<LayoutDashboard className="h-5 w-5" aria-hidden="true" />}
+                                icon={
+                                  <LayoutDashboard
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                }
                                 onClick={() => setIsMenuOpen(false)}
                               />
                               <MobileNavLink
                                 href="/courses"
                                 label="دوره‌ها"
                                 isActive={pathname.includes("/courses")}
-                                icon={<BookOpen className="h-5 w-5" aria-hidden="true" />}
+                                icon={
+                                  <BookOpen
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                }
                                 onClick={() => setIsMenuOpen(false)}
                               />
                               <MobileNavLink
                                 href="/roadmap"
                                 label="مسیر آموزشی"
                                 isActive={pathname === "/roadmap"}
-                                icon={<GraduationCap className="h-5 w-5" aria-hidden="true" />}
+                                icon={
+                                  <GraduationCap
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                }
                                 onClick={() => setIsMenuOpen(false)}
                               />
                               <MobileNavLink
                                 href="/blog"
                                 label="وبلاگ"
                                 isActive={pathname === "/blog"}
-                                icon={<BookOpen className="h-5 w-5" aria-hidden="true" />}
+                                icon={
+                                  <BookOpen
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                }
                                 onClick={() => setIsMenuOpen(false)}
                               />
                               <MobileNavLink
                                 href="/about"
                                 label="درباره ما"
                                 isActive={pathname === "/about"}
-                                icon={<User className="h-5 w-5" aria-hidden="true" />}
+                                icon={
+                                  <User
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                }
                                 onClick={() => setIsMenuOpen(false)}
                               />
                               <MobileNavLink
                                 href="/contact"
                                 label="تماس با ما"
                                 isActive={pathname === "/contact"}
-                                icon={<Settings className="h-5 w-5" aria-hidden="true" />}
+                                icon={
+                                  <Settings
+                                    className="h-5 w-5"
+                                    aria-hidden="true"
+                                  />
+                                }
                                 onClick={() => setIsMenuOpen(false)}
                               />
                             </>

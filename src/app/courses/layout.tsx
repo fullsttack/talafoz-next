@@ -1,18 +1,19 @@
 import React from "react";
 import Header from "@/components/layouts/Header";
 import Footer from "@/components/layouts/Footer";
+
 export default function CoursesLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <section className="">
+    <div className="min-h-screen flex flex-col">
       <Header />
-      <div className="container mx-auto flex-1 flex flex-col justify-center items-center py-8">
+      <main className="flex-1">
         {children}
-      </div>
+      </main>
       <Footer />
-    </section>
+    </div>
   );
 }
