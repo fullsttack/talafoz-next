@@ -7,8 +7,9 @@ import Link from "next/link";
 import { courses } from "@/data/course";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import LoginDialogContent from "@/components/auth/LoginDialogContent";
+import VideoPlayer from "@/components/video/VideoPlayer";
 import {
   ArrowRight,
   Clock,
@@ -144,8 +145,9 @@ export default function CourseDetailPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { addToCart, isInCart } = useCart();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("curriculum");
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+  const [isVideoDialogOpen, setIsVideoDialogOpen] = useState(false);
 
   // پیدا کردن دوره
   const courseId = parseInt(params.id as string);
@@ -213,6 +215,7 @@ export default function CourseDetailPage() {
                     <Button
                       size="lg"
                       className="gap-2 bg-white text-black hover:bg-white/80 cursor-pointer"
+                      onClick={() => setIsVideoDialogOpen(true)}
                     >
                       <Play className="h-5 w-5" />
                       مشاهده پیش‌ نمایش
@@ -251,29 +254,12 @@ export default function CourseDetailPage() {
               {/* Tabs */}
               <Tabs value={activeTab} onValueChange={setActiveTab}>
                 <TabsList className="grid w-full grid-cols-4">
-                  <TabsTrigger value="overview">نمای کلی</TabsTrigger>
+                  
                   <TabsTrigger value="curriculum">سرفصل‌ها</TabsTrigger>
                   <TabsTrigger value="reviews">نظرات</TabsTrigger>
                   <TabsTrigger value="faq">سوالات</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="overview" className="mt-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>درباره این دوره</CardTitle>
-                    </CardHeader>
-                    <CardContent className="prose dark:prose-invert max-w-none">
-                      <p>{course.description}</p>
-                      <h3>چه چیزی یاد خواهید گرفت:</h3>
-                      <ul>
-                        <li>مفاهیم پایه و پیشرفته React</li>
-                        <li>ساخت اپلیکیشن‌های واقعی</li>
-                        <li>بهترین شیوه‌های کدنویسی</li>
-                        <li>مدیریت State و Performance</li>
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </TabsContent>
 
                 <TabsContent value="curriculum" className="mt-6">
                   <Card>
@@ -643,6 +629,25 @@ export default function CourseDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Video Preview Dialog */}
+      <Dialog open={isVideoDialogOpen} onOpenChange={setIsVideoDialogOpen}>
+        <DialogContent className="!max-w-none w-[60vw] h-[70vh] p-0 !max-h-[90vh]">
+          <DialogHeader className="p-4 pb-2">
+            <DialogTitle className="text-lg font-bold">
+              پیش‌نمایش: {course.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="px-4 pb-4 flex-1 min-h-0">
+            <div className="w-full h-[calc(70vh-80px)]">
+              <VideoPlayer
+                url="https://www.youtube.com/watch?v=LXb3EKWsInQ"
+                className="w-full h-full"
+              />
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
