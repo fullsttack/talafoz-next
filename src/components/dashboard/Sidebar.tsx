@@ -132,7 +132,7 @@ export default function Sidebar() {
             <div className="flex items-center gap-2 transition-all duration-500">
               <Link href="/" className="flex items-center gap-2">
                 <GraduationCap size={24} className="text-primary" />
-                <span className="font-bold text-xl whitespace-nowrap">تلافز</span>
+                <span className="font-bold text-xl whitespace-nowrap">تلفظ</span>
               </Link>
             </div>
           )}

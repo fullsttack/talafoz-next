@@ -7,7 +7,7 @@ import {
   Wallet, 
   BarChart3
 } from 'lucide-react';
-import LearningCourses from '@/components/dashboard/LearningCourses';
+import LearningCourses from '@/components/dashboard/course/LearningCourses';
 
 interface StatCardProps {
   title: string;
