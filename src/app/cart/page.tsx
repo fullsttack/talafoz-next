@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useCart } from "@/contexts/CartContext";
-import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from "lucide-react";
+import { Trash2, Plus, Minus, ShoppingBag, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -19,6 +19,10 @@ export default function CartPage() {
   const formatPrice = (price: number): string => {
     return price.toLocaleString('fa-IR') + ' تومان';
   };
+
+  const handleRemoveFromCart = useCallback((itemId: number) => {
+    removeFromCart(itemId);
+  }, [removeFromCart]);
 
   if (items.length === 0) {
     return (
@@ -83,7 +87,7 @@ export default function CartPage() {
                         size="icon"
                         variant="ghost"
                         className="sm:hidden text-destructive hover:text-destructive hover:bg-destructive/10"
-                        onClick={() => removeFromCart(item.id)}
+                        onClick={() => handleRemoveFromCart(item.id)}
                       >
                         <Trash2 size={18} />
                       </Button>
@@ -129,7 +133,7 @@ export default function CartPage() {
                           size="icon"
                           variant="ghost"
                           className="hidden sm:flex text-destructive hover:text-destructive hover:bg-destructive/10"
-                          onClick={() => removeFromCart(item.id)}
+                          onClick={() => handleRemoveFromCart(item.id)}
                         >
                           <Trash2 size={18} />
                         </Button>
@@ -193,14 +197,10 @@ export default function CartPage() {
             
             <CardFooter className="flex flex-col gap-3">
               <Button className="w-full gap-2" size="lg">
-                <ArrowRight size={20} />
+                <ArrowLeft size={20} />
                 ادامه و پرداخت
               </Button>
-              <Button variant="outline" className="w-full" asChild>
-                <Link href="/courses">
-                  ادامه خرید
-                </Link>
-              </Button>
+              
             </CardFooter>
           </Card>
         </div>

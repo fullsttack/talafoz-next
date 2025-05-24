@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { FileVideo2, Clock, ShoppingCart, Check } from 'lucide-react';
+import { FileVideo2, Clock, ShoppingCart, Check, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCart } from '@/contexts/CartContext';
@@ -36,7 +36,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
   const { addToCart, isInCart } = useCart();
   const inCart = isInCart(id);
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
     if (!inCart) {
       addToCart({
@@ -48,7 +48,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         isFree,
       });
     }
-  };
+  }, [addToCart, id, title, instructor, price, isFree, image, inCart]);
 
   return (
     <div className="border rounded-2xl shadow-lg overflow-hidden flex flex-col relative transition-shadow hover:shadow-2xl hover:-translate-y-1 duration-200 group">
@@ -86,7 +86,7 @@ const CourseCard: React.FC<CourseCardProps> = ({
         <div className="flex items-center justify-between gap-2">
           <div className="flex flex-col">
             {isFree ? (
-              <Badge variant="secondary" className="text-base px-3 py-1">
+              <Badge variant="outline" className="text-base px-3 py-1 border-none">
                 رایگان
               </Badge>
             ) : (
@@ -94,29 +94,52 @@ const CourseCard: React.FC<CourseCardProps> = ({
             )}
           </div>
           
-          <Button
-            onClick={handleAddToCart}
-            size="sm"
-            variant={inCart ? "secondary" : "default"}
-            className={`gap-2 transition-all ${
-              inCart 
-                ? 'bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/30 dark:hover:bg-green-900/50 dark:text-green-400' 
-                : ''
-            }`}
-            disabled={inCart}
-          >
-            {inCart ? (
-              <>
-                <Check size={16} />
-                <span>در سبد خرید</span>
-              </>
-            ) : (
-              <>
-                <ShoppingCart size={16} />
-                <span>افزودن به سبد</span>
-              </>
-            )}
-          </Button>
+          {isFree ? (
+            // دوره رایگان: فقط دکمه مشاهده جزییات
+            <Button
+              size="icon"
+              variant="outline"
+              className="rounded-full"
+              asChild
+            >
+              <Link href={`/courses/${id}`} title="مشاهده جزییات دوره">
+                <ArrowLeft size={16} />
+              </Link>
+            </Button>
+          ) : (
+            // دوره غیررایگان: دو دکمه آیکون
+            <div className="flex gap-2">
+              <Button
+                size="icon"
+                variant="outline"
+                className="rounded-full"
+                asChild
+              >
+                <Link href={`/courses/${id}`} title="مشاهده جزییات دوره">
+                  <ArrowLeft size={16} />
+                </Link>
+              </Button>
+              
+              <Button
+                onClick={handleAddToCart}
+                size="icon"
+                variant={inCart ? "outline" : "outline"}
+                className={`rounded-full ${
+                  inCart 
+                    ? 'bg-blue-100 hover:bg-blue-200 text-base-1 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 dark:text-base-1' 
+                    : ''
+                }`}
+                disabled={inCart}
+                title={inCart ? "در سبد خرید" : "افزودن به سبد خرید"}
+              >
+                {inCart ? (
+                  <Check size={16} />
+                ) : (
+                  <ShoppingCart size={16} />
+                )}
+              </Button>
+            </div>
+          )}
         </div>
       </div>
     </div>

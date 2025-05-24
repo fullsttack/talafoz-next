@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useCallback } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useCart } from '@/contexts/CartContext';
@@ -23,6 +23,10 @@ export default function MiniCart() {
   const formatPrice = (price: number): string => {
     return price.toLocaleString('fa-IR') + ' تومان';
   };
+
+  const handleRemoveFromCart = useCallback((itemId: number) => {
+    removeFromCart(itemId);
+  }, [removeFromCart]);
 
   return (
     <HoverCard openDelay={200} closeDelay={100}>
@@ -89,7 +93,7 @@ export default function MiniCart() {
                       className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                       onClick={(e) => {
                         e.preventDefault();
-                        removeFromCart(item.id);
+                        handleRemoveFromCart(item.id);
                       }}
                     >
                       <Trash2 size={14} />

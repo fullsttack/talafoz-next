@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useRef, useCallback } from 'react';
 import { toast } from 'sonner';
 
 // نوع دوره در سبد خرید
@@ -31,6 +31,7 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
+  const toastRef = useRef<Set<string>>(new Set());
 
   // بارگذاری سبد خرید از localStorage
   useEffect(() => {
@@ -72,33 +73,48 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   // اضافه کردن به سبد خرید
-  const addToCart = (item: Omit<CartItem, 'quantity'>) => {
+  const addToCart = useCallback((item: Omit<CartItem, 'quantity'>) => {
     setItems(prevItems => {
       const existingItem = prevItems.find(i => i.id === item.id);
       
       if (existingItem) {
-        toast.info(`${item.title} قبلاً در سبد خرید موجود است`);
+        const toastKey = `exists-${item.id}`;
+        if (!toastRef.current.has(toastKey)) {
+          toastRef.current.add(toastKey);
+          toast.info(`${item.title} قبلاً در سبد خرید موجود است`);
+          setTimeout(() => toastRef.current.delete(toastKey), 1000);
+        }
         return prevItems;
       }
       
-      toast.success(`${item.title} به سبد خرید اضافه شد`);
+      const toastKey = `add-${item.id}`;
+      if (!toastRef.current.has(toastKey)) {
+        toastRef.current.add(toastKey);
+        toast.success(`${item.title} به سبد خرید اضافه شد`);
+        setTimeout(() => toastRef.current.delete(toastKey), 1000);
+      }
       return [...prevItems, { ...item, quantity: 1 }];
     });
-  };
+  }, []);
 
   // حذف از سبد خرید
-  const removeFromCart = (id: number) => {
+  const removeFromCart = useCallback((id: number) => {
     setItems(prevItems => {
       const item = prevItems.find(i => i.id === id);
       if (item) {
-        toast.info(`${item.title} از سبد خرید حذف شد`);
+        const toastKey = `remove-${id}`;
+        if (!toastRef.current.has(toastKey)) {
+          toastRef.current.add(toastKey);
+          toast.info(`${item.title} از سبد خرید حذف شد`);
+          setTimeout(() => toastRef.current.delete(toastKey), 1000);
+        }
       }
       return prevItems.filter(item => item.id !== id);
     });
-  };
+  }, []);
 
   // به‌روزرسانی تعداد
-  const updateQuantity = (id: number, quantity: number) => {
+  const updateQuantity = useCallback((id: number, quantity: number) => {
     if (quantity < 1) return;
     
     setItems(prevItems =>
@@ -106,31 +122,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
         item.id === id ? { ...item, quantity } : item
       )
     );
-  };
+  }, []);
 
   // پاک کردن کل سبد خرید
-  const clearCart = () => {
+  const clearCart = useCallback(() => {
     setItems([]);
-    toast.success('سبد خرید پاک شد');
-  };
+    const toastKey = `clear`;
+    if (!toastRef.current.has(toastKey)) {
+      toastRef.current.add(toastKey);
+      toast.success('سبد خرید پاک شد');
+      setTimeout(() => toastRef.current.delete(toastKey), 1000);
+    }
+  }, []);
 
   // محاسبه قیمت کل
-  const getTotalPrice = (): number => {
+  const getTotalPrice = useCallback((): number => {
     return items.reduce((total, item) => {
       const price = parsePersianPrice(item.price);
       return total + (price * item.quantity);
     }, 0);
-  };
+  }, [items]);
 
   // تعداد کل آیتم‌ها
-  const getTotalItems = (): number => {
+  const getTotalItems = useCallback((): number => {
     return items.reduce((total, item) => total + item.quantity, 0);
-  };
+  }, [items]);
 
   // بررسی وجود در سبد خرید
-  const isInCart = (id: number): boolean => {
+  const isInCart = useCallback((id: number): boolean => {
     return items.some(item => item.id === id);
-  };
+  }, [items]);
 
   return (
     <CartContext.Provider

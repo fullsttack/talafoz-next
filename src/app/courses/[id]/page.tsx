@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -114,6 +114,22 @@ export default function CourseDetailPage() {
   const courseId = parseInt(params.id as string);
   const course = courses.find(c => c.id === courseId);
 
+  const inCart = course ? isInCart(course.id) : false;
+  const hasAccess = user && course?.isFree; // فرض: دوره‌های رایگان با لاگین قابل دسترسی هستند
+
+  const handleAddToCart = useCallback(() => {
+    if (course && !inCart) {
+      addToCart({
+        id: course.id,
+        title: course.title,
+        instructor: course.instructor,
+        price: course.isFree ? 'رایگان' : course.price,
+        image: course.image,
+        isFree: course.isFree,
+      });
+    }
+  }, [addToCart, course, inCart]);
+
   if (!course) {
     return (
       <div className="container mx-auto py-12 text-center">
@@ -125,22 +141,6 @@ export default function CourseDetailPage() {
       </div>
     );
   }
-
-  const inCart = isInCart(course.id);
-  const hasAccess = user && course.isFree; // فرض: دوره‌های رایگان با لاگین قابل دسترسی هستند
-
-  const handleAddToCart = () => {
-    if (!inCart) {
-      addToCart({
-        id: course.id,
-        title: course.title,
-        instructor: course.instructor,
-        price: course.isFree ? 'رایگان' : course.price,
-        image: course.image,
-        isFree: course.isFree,
-      });
-    }
-  };
 
   return (
     <div className="min-h-screen">
@@ -378,11 +378,7 @@ export default function CourseDetailPage() {
                         <div className="text-3xl font-bold text-primary text-center mb-2">
                           {course.price}
                         </div>
-                        {course.isVipFree && (
-                          <Badge className="w-full justify-center bg-yellow-500 hover:bg-yellow-600">
-                            رایگان برای اعضای VIP
-                          </Badge>
-                        )}
+                        
                       </>
                     )}
                   </div>
@@ -393,6 +389,11 @@ export default function CourseDetailPage() {
                       <Button className="w-full" size="lg">
                         <Play className="ml-2 h-5 w-5" />
                         ادامه یادگیری
+                      </Button>
+                    ) : course.isFree ? (
+                      <Button className="w-full" size="lg">
+                        <Play className="ml-2 h-5 w-5" />
+                        شروع یادگیری رایگان
                       </Button>
                     ) : (
                       <>
