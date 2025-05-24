@@ -143,9 +143,9 @@ export default function CourseDetailPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-primary/10 to-background">
+      <div className="">
         <div className="container mx-auto px-4 py-8">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-6">
@@ -182,24 +182,10 @@ export default function CourseDetailPage() {
                 </div>
               </div>
 
-              {/* Instructor */}
-              <Card className="mb-8">
-                <CardContent className="p-6">
-                  <div className="flex items-center gap-4">
-                    <Avatar className="h-16 w-16">
-                      <AvatarImage src="/avatars/instructor.jpg" />
-                      <AvatarFallback>{course.instructor[0]}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h3 className="font-semibold">مدرس: {course.instructor}</h3>
-                      <p className="text-sm text-muted-foreground">مدرس برنامه‌نویسی با ۱۰ سال سابقه</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              
 
               {/* Video Preview */}
-              <Card className="mb-8 overflow-hidden">
+              <div className="mb-8 overflow-hidden">
                 <div className="relative aspect-video bg-muted">
                   <Image
                     src={course.image}
@@ -208,13 +194,13 @@ export default function CourseDetailPage() {
                     className="object-cover"
                   />
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                    <Button size="lg" className="gap-2">
+                    <Button size="lg" className="gap-2 bg-white text-black hover:bg-white/80 cursor-pointer">
                       <Play className="h-5 w-5" />
-                      مشاهده پیش‌نمایش
+                      مشاهده پیش‌ نمایش
                     </Button>
                   </div>
                 </div>
-              </Card>
+              </div>
 
               {/* Tabs */}
               <Tabs value={activeTab} onValueChange={setActiveTab}>
@@ -383,8 +369,8 @@ export default function CourseDetailPage() {
                   <div className="mb-6">
                     {course.isFree ? (
                       <div className="text-center">
-                        <Badge variant="secondary" className="text-2xl px-4 py-2">
-                          رایگان
+                        <Badge variant="default" className="text-lg px-4 py-2">
+                          ثبت نام رایگان 
                         </Badge>
                       </div>
                     ) : (
@@ -498,6 +484,22 @@ export default function CourseDetailPage() {
                         </div>
                       </Link>
                     ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Instructor */}
+              <Card className="mt-4">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src="/avatars/instructor.jpg" />
+                      <AvatarFallback>{course.instructor[0]}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <h3 className="font-semibold">مدرس: {course.instructor}</h3>
+                      <p className="text-sm text-muted-foreground">مدرس برنامه‌نویسی با ۱۰ سال سابقه</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>

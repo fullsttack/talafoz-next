@@ -70,7 +70,7 @@ export default function MiniCart() {
                       alt={item.title}
                       width={60}
                       height={40}
-                      className="rounded object-cover"
+                      className="rounded "
                     />
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-medium line-clamp-1">{item.title}</h4>
